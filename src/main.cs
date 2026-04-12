@@ -316,6 +316,13 @@ public class Main : BasePlugin
         ClassInjector.RegisterTypeInIl2Cpp<ErrorText>();
         ClassInjector.RegisterTypeInIl2Cpp<LogoAnimationController>();
         ClassInjector.RegisterTypeInIl2Cpp<MobileControlGUI>();
+        
+        if (MobileControlGUI.Instance == null)
+        {
+            var go = new GameObject("MobileControlGUI");
+            GameObject.DontDestroyOnLoad(go);
+            go.AddComponent<MobileControlGUI>();
+        }
 
         Task.Run(SystemEnvironment.SetEnvironmentVariablesAsync);
         
