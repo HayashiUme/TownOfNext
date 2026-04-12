@@ -1,13 +1,11 @@
-// 灵感来源 / Inspired by: https://github.com/Gurge44/EndlessHostRoles (ClientControlGUI.cs)
-// 为 TONX 安卓版本重新设计，粉色主题，可折叠分区，适配多语言
+// 灵感来源 / Inspired by: https://github.com/Gurge44/EndlessHostRoles
 
-using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using static TONX.Translator;
 
-namespace TONX;
+namespace TONX.Modules;
 
+//EHR的，不知道能不能用啊
 public class MobileControlGUI : MonoBehaviour
 {
     public static MobileControlGUI Instance;
@@ -24,8 +22,7 @@ public class MobileControlGUI : MonoBehaviour
     private Vector2 _dragOffset;
     private bool _initialized;
     private float _zoomValue = 3.0f;
-
-    // 各分区折叠状态
+    
     private bool _secGeneral = true;
     private bool _secCamera = true;
     private bool _secLobby = true;
@@ -33,28 +30,26 @@ public class MobileControlGUI : MonoBehaviour
 
     private float _lastScale = -1f;
     private Camera _cam;
-
-    // ── 主题色（粉色系） ──────────────────────────────────────────────
-    private static readonly Color PinkBase    = new(1.00f, 0.75f, 0.80f, 1f);
-    private static readonly Color PinkDeep    = new(0.88f, 0.40f, 0.55f, 1f);
-    private static readonly Color PinkDark    = new(0.28f, 0.10f, 0.16f, 1f);
-    private static readonly Color PinkPanel   = new(0.18f, 0.07f, 0.11f, 1f);
-    private static readonly Color PinkMid     = new(0.40f, 0.14f, 0.22f, 1f);
-    private static readonly Color HostBlue    = new(0.10f, 0.20f, 0.45f, 1f);
-    private static readonly Color HostHover   = new(0.16f, 0.32f, 0.66f, 1f);
-    private static readonly Color DangerRed   = new(0.50f, 0.07f, 0.07f, 1f);
+    
+    private static readonly Color PinkBase = new(1.00f, 0.75f, 0.80f, 1f);
+    private static readonly Color PinkDeep = new(0.88f, 0.40f, 0.55f, 1f);
+    private static readonly Color PinkDark = new(0.28f, 0.10f, 0.16f, 1f);
+    private static readonly Color PinkPanel = new(0.18f, 0.07f, 0.11f, 1f);
+    private static readonly Color PinkMid = new(0.40f, 0.14f, 0.22f, 1f);
+    private static readonly Color HostBlue = new(0.10f, 0.20f, 0.45f, 1f);
+    private static readonly Color HostHover = new(0.16f, 0.32f, 0.66f, 1f);
+    private static readonly Color DangerRed = new(0.50f, 0.07f, 0.07f, 1f);
     private static readonly Color DangerHover = new(0.72f, 0.12f, 0.12f, 1f);
-    // ─────────────────────────────────────────────────────────────────
 
     private static bool IsAndroid => OperatingSystem.IsAndroid();
     private static float PlatformScale => IsAndroid ? 0.62f : 0.50f;
-    private static float Scale       => Screen.width / 1080f * PlatformScale;
-    private static int   FontSize    => Mathf.Max(12, Mathf.RoundToInt(20f * Scale));
-    private static float BtnH        => 64f * Scale;
-    private static float BtnW        => (IsAndroid ? 370f : 345f) * Scale;
-    private static float Pad         => 10f * Scale;
-    private static float SbW         => (IsAndroid ? 44f : 24f) * Scale;
-    private static int   SmallFont   => Mathf.Max(9, FontSize - 5);
+    private static float Scale => Screen.width / 1080f * PlatformScale;
+    private static int   FontSize => Mathf.Max(12, Mathf.RoundToInt(20f * Scale));
+    private static float BtnH => 64f * Scale;
+    private static float BtnW => (IsAndroid ? 370f : 345f) * Scale;
+    private static float Pad => 10f * Scale;
+    private static float SbW => (IsAndroid ? 44f : 24f) * Scale;
+    private static int SmallFont => Mathf.Max(9, FontSize - 5);
 
     private GUIStyle _sAction, _sHost, _sDanger, _sSection, _sWindow, _sTitle, _sDragHint, _sToggle, _sCollapse;
 
@@ -88,9 +83,9 @@ public class MobileControlGUI : MonoBehaviour
             fontSize  = FontSize + 2,
             fontStyle = FontStyle.Bold,
             alignment = TextAnchor.MiddleCenter,
-            normal = { background = RoundedTex(toggleSz, toggleSz, toggleR, PinkDeep,  Lift(PinkDeep,  0.12f)), textColor = Color.white },
-            hover  = { background = RoundedTex(toggleSz, toggleSz, toggleR, PinkBase,  Lift(PinkBase,  0.08f)), textColor = PinkDark  },
-            active = { background = RoundedTex(toggleSz, toggleSz, toggleR, PinkDark,  Lift(PinkDark,  0.06f)), textColor = Color.white }
+            normal = { background = RoundedTex(toggleSz, toggleSz, toggleR, PinkDeep, Lift(PinkDeep, 0.12f)), textColor = Color.white },
+            hover = { background = RoundedTex(toggleSz, toggleSz, toggleR, PinkBase, Lift(PinkBase, 0.08f)), textColor = PinkDark  },
+            active = { background = RoundedTex(toggleSz, toggleSz, toggleR, PinkDark, Lift(PinkDark, 0.06f)), textColor = Color.white }
         };
 
         int winW = Mathf.Max(1, Mathf.RoundToInt(BtnW + Pad * 4f + SbW));
@@ -106,37 +101,37 @@ public class MobileControlGUI : MonoBehaviour
             fontSize  = FontSize + 4,
             fontStyle = FontStyle.BoldAndItalic,
             alignment = TextAnchor.MiddleCenter,
-            normal    = { textColor = PinkBase }
+            normal = { textColor = PinkBase }
         };
 
         _sDragHint = new GUIStyle
         {
-            fontSize  = SmallFont,
+            fontSize = SmallFont,
             fontStyle = FontStyle.Italic,
             alignment = TextAnchor.MiddleCenter,
-            normal    = { textColor = new Color(0.90f, 0.65f, 0.72f, 0.80f) }
+            normal = { textColor = new Color(0.90f, 0.65f, 0.72f, 0.80f) }
         };
 
         _sSection = new GUIStyle
         {
-            fontSize  = FontSize,
+            fontSize = FontSize,
             fontStyle = FontStyle.Bold,
             alignment = TextAnchor.MiddleLeft,
-            normal    = { textColor = PinkBase }
+            normal = { textColor = PinkBase }
         };
 
         _sCollapse = new GUIStyle
         {
-            fontSize  = SmallFont + 2,
+            fontSize = SmallFont + 2,
             fontStyle = FontStyle.Bold,
             alignment = TextAnchor.MiddleCenter,
-            normal    = { background = RoundedTex(
+            normal = { background = RoundedTex(
                               Mathf.Max(1, Mathf.RoundToInt(BtnH * 0.55f)),
                               Mathf.Max(1, Mathf.RoundToInt(BtnH * 0.55f)),
                               Mathf.Max(1, Mathf.RoundToInt(BtnH * 0.28f)),
                               PinkMid, Lift(PinkMid, 0.10f)),
                           textColor = PinkBase },
-            hover  = { background = RoundedTex(
+            hover = { background = RoundedTex(
                            Mathf.Max(1, Mathf.RoundToInt(BtnH * 0.55f)),
                            Mathf.Max(1, Mathf.RoundToInt(BtnH * 0.55f)),
                            Mathf.Max(1, Mathf.RoundToInt(BtnH * 0.28f)),
@@ -145,7 +140,7 @@ public class MobileControlGUI : MonoBehaviour
         };
 
         _sAction = MakeBtn(PinkDark, PinkMid, new Color(0.12f, 0.04f, 0.08f, 1f));
-        _sHost   = MakeBtn(HostBlue, HostHover, new Color(0.06f, 0.12f, 0.30f, 1f));
+        _sHost = MakeBtn(HostBlue, HostHover, new Color(0.06f, 0.12f, 0.30f, 1f));
         _sDanger = MakeBtn(DangerRed, DangerHover, new Color(0.30f, 0.04f, 0.04f, 1f));
     }
 
@@ -156,13 +151,13 @@ public class MobileControlGUI : MonoBehaviour
         int r = Mathf.Max(1, Mathf.RoundToInt(BtnH * 0.36f));
         return new GUIStyle
         {
-            fontSize  = FontSize,
+            fontSize = FontSize,
             fontStyle = FontStyle.Bold,
             alignment = TextAnchor.MiddleCenter,
-            wordWrap  = true,
-            richText  = true,
+            wordWrap = true,
+            richText = true,
             normal = { background = RoundedTex(w, h, r, normal, Lift(normal, 0.10f)), textColor = Color.white },
-            hover  = { background = RoundedTex(w, h, r, hover,  Lift(hover,  0.10f)), textColor = Color.white },
+            hover = { background = RoundedTex(w, h, r, hover,  Lift(hover,  0.10f)), textColor = Color.white },
             active = { background = RoundedTex(w, h, r, active, Lift(active, 0.06f)), textColor = Color.white }
         };
     }
@@ -189,10 +184,10 @@ public class MobileControlGUI : MonoBehaviour
     private static float CornerAlpha(int px, int py, int w, int h, int r)
     {
         int cx, cy;
-        if      (px < r    && py < r   ) { cx = r;     cy = r;     }
-        else if (px >= w-r && py < r   ) { cx = w - r; cy = r;     }
-        else if (px < r    && py >= h-r) { cx = r;     cy = h - r; }
-        else if (px >= w-r && py >= h-r) { cx = w - r; cy = h - r; }
+        if (px < r && py < r ) { cx = r; cy = r; }
+        else if (px >= w-r && py < r) { cx = w - r; cy = r;}
+        else if (px < r && py >= h-r) { cx = r; cy = h - r;}
+        else if (px >= w-r && py >= h-r) { cx = w - r; cy = h - r;}
         else return 1f;
         float d = Mathf.Sqrt((px - cx) * (px - cx) + (py - cy) * (py - cy));
         if (d >= r + 1f) return 0f;
@@ -277,12 +272,12 @@ public class MobileControlGUI : MonoBehaviour
 
         GUI.Label(
             new Rect(_windowRect.x, _windowRect.y + Pad * 0.5f, _windowRect.width, BtnH * 0.52f),
-            GetString("MobileGUI_Title"),
+            GetString("MobileGUI.Title"),
             _sTitle
         );
         GUI.Label(
             new Rect(_windowRect.x, _windowRect.y + BtnH * 0.55f + Pad * 0.3f, _windowRect.width, BtnH * 0.34f),
-            GetString("MobileGUI_DragHint"),
+            GetString("MobileGUI.DragHint"),
             _sDragHint
         );
 
@@ -291,7 +286,7 @@ public class MobileControlGUI : MonoBehaviour
         float visibleW = _windowRect.width - Pad * 2f;
         float contentW = visibleW - SbW - 1f;
 
-        GUI.skin.verticalScrollbar.fixedWidth      = SbW;
+        GUI.skin.verticalScrollbar.fixedWidth = SbW;
         GUI.skin.verticalScrollbarThumb.fixedWidth = SbW;
 
         _scroll = GUI.BeginScrollView(
@@ -310,41 +305,43 @@ public class MobileControlGUI : MonoBehaviour
 
     private void DrawButtons(ref float y, float w)
     {
-        bool amHost    = AmongUsClient.Instance && AmongUsClient.Instance.AmHost;
-        bool inGame    = GameStates.IsInGame;
-        bool inLobby   = GameStates.IsLobby;
+        bool amHost = AmongUsClient.Instance && AmongUsClient.Instance.AmHost;
+        bool inGame = GameStates.IsInGame;
+        bool inLobby = GameStates.IsLobby;
         bool inMeeting = GameStates.IsMeeting;
         bool countdown = GameStates.IsCountDown;
         bool notJoined = GameStates.IsNotJoined;
-        bool alive     = PlayerControl.LocalPlayer && PlayerControl.LocalPlayer.IsAlive();
-        bool canMove   = GameStates.IsCanMove;
+        bool alive = PlayerControl.LocalPlayer && PlayerControl.LocalPlayer.IsAlive();
+        bool canMove = GameStates.IsCanMove;
         bool noGameEnd = Options.NoGameEnd.GetBool();
-        bool canZoom   = (GameStates.IsShip || inLobby) && !inMeeting && canMove;
+        bool canZoom = (GameStates.IsShip || inLobby) && !inMeeting && canMove;
         bool canNoClip = canMove && (!AmongUsClient.Instance.IsGameStarted || !GameStates.IsOnlineGame);
-
-        // ── 通用 / General ───────────────────────────────────────────
-        Section(ref y, w, GetString("MobileGUI_Section_General"), ref _secGeneral);
+        
+        Section(ref y, w, GetString("MobileGUI.Section.General"), ref _secGeneral);
         if (_secGeneral)
         {
-            Btn(ref y, w, GetString("MobileGUI_DumpLog"), _sAction, Utils.DumpLog);
-            Btn(ref y, w, GetString("MobileGUI_ReloadLangs"), _sAction, () =>
+            Btn(ref y, w, GetString("MobileGUI.DumpLog"), _sAction, () =>
+            {
+                Utils.DumpLog();
+            });
+            Btn(ref y, w, GetString("MobileGUI.ReloadLangs"), _sAction, () =>
             {
                 Logger.Info("Reload translation via MobileControlGUI", "MobileControlGUI");
                 LoadLangs();
-                Logger.SendInGame(GetString("MobileGUI_ReloadLangs_Done"));
+                Logger.SendInGame(GetString("MobileGUI.ReloadLangs_Done"));
             });
             if (!notJoined)
-                Btn(ref y, w, GetString("MobileGUI_CopySettings"), _sAction, Utils.CopyCurrentSettings);
-            Btn(ref y, w, GetString("MobileGUI_OpenDir"), _sAction, () =>
+                Btn(ref y, w, GetString("MobileGUI.CopySettings"), _sAction, Utils.CopyCurrentSettings);
+            Btn(ref y, w, GetString("MobileGUI.OpenDir"), _sAction, () =>
                 Utils.OpenDirectory(Environment.CurrentDirectory)
             );
             if (inGame || inMeeting)
-                Btn(ref y, w, GetString("MobileGUI_FixBlackscreen"), _sAction, () =>
+                Btn(ref y, w, GetString("MobileGUI.FixBlackscreen"), _sAction, () =>
                     ExileController.Instance?.ReEnableGameplay()
                 );
             if (inGame && (canMove || inMeeting))
                 Btn(ref y, w,
-                    InGameRoleInfoMenu.Showing ? GetString("MobileGUI_HideRoleInfo") : GetString("MobileGUI_ShowRoleInfo"),
+                    InGameRoleInfoMenu.Showing ? GetString("MobileGUI.HideRoleInfo") : GetString("MobileGUI.ShowRoleInfo"),
                     _sAction, () =>
                     {
                         if (InGameRoleInfoMenu.Showing) InGameRoleInfoMenu.Hide();
@@ -357,10 +354,9 @@ public class MobileControlGUI : MonoBehaviour
                     });
         }
 
-        // ── 镜头 / Camera ─────────────────────────────────────────────
         if (canZoom || canNoClip)
         {
-            Section(ref y, w, GetString("MobileGUI_Section_Camera"), ref _secCamera);
+            Section(ref y, w, GetString("MobileGUI.Section_Camera"), ref _secCamera);
             if (_secCamera)
             {
                 if (canZoom)
@@ -368,7 +364,7 @@ public class MobileControlGUI : MonoBehaviour
                     if (_cam) _zoomValue = _cam.orthographicSize;
 
                     GUI.Label(new Rect(0, y, w, BtnH * 0.42f),
-                        $"{GetString("MobileGUI_Zoom")}  {_zoomValue:F1}×", _sSection);
+                        $"{GetString("MobileGUI.Zoom")}  {_zoomValue:F1}×", _sSection);
                     y += BtnH * 0.44f;
 
                     float newZoom = GUI.HorizontalSlider(new Rect(0, y, w, BtnH * 0.50f), _zoomValue, 3.0f, 18.0f);
@@ -381,7 +377,7 @@ public class MobileControlGUI : MonoBehaviour
                         if (HudManager.InstanceExists) HudManager.Instance.UICamera.orthographicSize = _zoomValue;
                     }
 
-                    Btn(ref y, w, GetString("MobileGUI_ResetZoom"), _sAction, () =>
+                    Btn(ref y, w, GetString("MobileGUI.ResetZoom"), _sAction, () =>
                     {
                         Zoom.SetZoomSize(reset: true);
                         _zoomValue = 3.0f;
@@ -397,7 +393,7 @@ public class MobileControlGUI : MonoBehaviour
                 {
                     bool ncOn = NoClipEnabled;
                     Btn(ref y, w,
-                        ncOn ? GetString("MobileGUI_NoClip_On") : GetString("MobileGUI_NoClip_Off"),
+                        ncOn ? GetString("MobileGUI.NoClip_On") : GetString("MobileGUI.NoClip_Off"),
                         ncOn ? _sHost : _sAction, () =>
                         {
                             NoClipEnabled = !NoClipEnabled;
@@ -413,11 +409,11 @@ public class MobileControlGUI : MonoBehaviour
                     PlayerControl.LocalPlayer.Collider.offset = new Vector2(0f, -0.3636f);
                 }
 
-                bool canHud = Main.IntroDestroyed && !inMeeting && !ExileController.Instance;
+                bool canHud = IntroCutscene.Instance == null && !inMeeting && !ExileController.Instance;
                 if (canHud)
                 {
                     Btn(ref y, w,
-                        HudHidden ? GetString("MobileGUI_ShowHud") : GetString("MobileGUI_HideHud"),
+                        HudHidden ? GetString("MobileGUI.ShowHud") : GetString("MobileGUI.HideHud"),
                         HudHidden ? _sHost : _sAction, () =>
                         {
                             HudHidden = !HudHidden;
@@ -432,15 +428,14 @@ public class MobileControlGUI : MonoBehaviour
                 }
             }
         }
-
-        // ── 大厅 / Lobby ──────────────────────────────────────────────
+        
         if (inLobby)
         {
-            Section(ref y, w, GetString("MobileGUI_Section_Lobby"), ref _secLobby);
+            Section(ref y, w, GetString("MobileGUI.Section_Lobby"), ref _secLobby);
             if (_secLobby)
             {
                 if (amHost && !countdown)
-                    Btn(ref y, w, GetString("MobileGUI_StartGame"), _sHost, () =>
+                    Btn(ref y, w, GetString("MobileGUI.StartGame"), _sHost, () =>
                     {
                         if (GameStartManager.InstanceExists)
                         {
@@ -451,9 +446,9 @@ public class MobileControlGUI : MonoBehaviour
 
                 if (amHost && countdown)
                 {
-                    Btn(ref y, w, GetString("MobileGUI_StartNow"), _sHost, () =>
+                    Btn(ref y, w, GetString("MobileGUI.StartNow"), _sHost, () =>
                         GameStartManager.Instance.countDownTimer = 0);
-                    Btn(ref y, w, GetString("MobileGUI_CancelCountdown"), _sDanger, () =>
+                    Btn(ref y, w, GetString("MobileGUI.CancelCountdown"), _sDanger, () =>
                     {
                         GameStartManager.Instance.ResetStartState();
                         Logger.SendInGame(GetString("CancelStartCountDown"));
@@ -462,19 +457,17 @@ public class MobileControlGUI : MonoBehaviour
 
                 if (amHost)
                 {
-                    Btn(ref y, w, GetString("MobileGUI_ShowSettings"), _sHost, () =>
+                    Btn(ref y, w, GetString("MobileGUI.ShowSettings"), _sHost, () =>
                     {
-                        Main.IsChatCommand = true;
                         Utils.ShowActiveSettings();
                     });
-                    Btn(ref y, w, GetString("MobileGUI_ShowSettingsHelp"), _sHost, () =>
+                    Btn(ref y, w, GetString("MobileGUI.ShowSettingsHelp"), _sHost, () =>
                     {
-                        Main.IsChatCommand = true;
                         Utils.ShowActiveSettingsHelp();
                     });
-                    Btn(ref y, w, GetString("MobileGUI_SaveOptions"), _sHost, OptionSerializer.SaveToClipboard);
-                    Btn(ref y, w, GetString("MobileGUI_LoadOptions"), _sHost, OptionSerializer.LoadFromClipboard);
-                    Btn(ref y, w, GetString("MobileGUI_ResetOptions"), _sDanger, () =>
+                    Btn(ref y, w, GetString("MobileGUI.SaveOptions"), _sHost, OptionSerializer.SaveToClipboard);
+                    Btn(ref y, w, GetString("MobileGUI.LoadOptions"), _sHost, OptionSerializer.LoadFromClipboard);
+                    Btn(ref y, w, GetString("MobileGUI.ResetOptions"), _sDanger, () =>
                     {
                         OptionItem.AllOptions.ToArray()
                             .Where(x => x.Id > 0)
@@ -484,15 +477,14 @@ public class MobileControlGUI : MonoBehaviour
                 }
             }
         }
-
-        // ── 游戏中 / In Game ──────────────────────────────────────────
+        
         if (inGame)
         {
-            Section(ref y, w, GetString("MobileGUI_Section_Game"), ref _secGame);
+            Section(ref y, w, GetString("MobileGUI.Section_Game"), ref _secGame);
             if (_secGame)
             {
                 if (amHost && alive)
-                    Btn(ref y, w, GetString("MobileGUI_KillSelf"), _sDanger, () =>
+                    Btn(ref y, w, GetString("MobileGUI.KillSelf"), _sDanger, () =>
                     {
                         var state = PlayerState.GetByPlayerId(PlayerControl.LocalPlayer.PlayerId);
                         PlayerControl.LocalPlayer.Data.IsDead = true;
@@ -507,25 +499,23 @@ public class MobileControlGUI : MonoBehaviour
                 if (amHost)
                 {
                     if (!inMeeting)
-                        Btn(ref y, w, GetString("MobileGUI_CallMeeting"), _sHost, () =>
+                        Btn(ref y, w, GetString("MobileGUI.CallMeeting"), _sHost, () =>
                             PlayerControl.LocalPlayer.NoCheckStartMeeting(null, true));
                     else
                     {
-                        Btn(ref y, w, GetString("MobileGUI_EndMeeting"), _sHost, () =>
+                        Btn(ref y, w, GetString("MobileGUI.EndMeeting"), _sHost, () =>
                             MeetingHud.Instance.RpcForceEndMeeting());
-                        Btn(ref y, w, GetString("MobileGUI_EndByVotes"), _sHost, () =>
+                        Btn(ref y, w, GetString("MobileGUI.EndByVotes"), _sHost, () =>
                         {
-                            CheckForEndVotingPatch.ShouldSkip = true;
                             MeetingHud.Instance.CheckForEndVoting();
                         });
                     }
 
-                    Btn(ref y, w, GetString("MobileGUI_OpenChat"), _sHost, () =>
+                    Btn(ref y, w, GetString("MobileGUI.OpenChat"), _sHost, () =>
                         HudManager.Instance.Chat.SetVisible(true));
-                    Btn(ref y, w, GetString("MobileGUI_OpenChatAll"), _sHost, Utils.SetChatVisibleForAll);
-
+                    
                     if (noGameEnd)
-                        Btn(ref y, w, GetString("MobileGUI_ForceEnd"), _sDanger, () =>
+                        Btn(ref y, w, GetString("MobileGUI.ForceEnd"), _sDanger, () =>
                         {
                             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Draw);
                             GameManager.Instance.LogicFlow.CheckEndCriteria();
@@ -550,8 +540,7 @@ public class MobileControlGUI : MonoBehaviour
                 expanded = !expanded;
 
             sy += headerH + Pad * 0.5f;
-
-            // 粉色分隔线
+            
             Color prev = GUI.color;
             GUI.color = new Color(PinkDeep.r, PinkDeep.g, PinkDeep.b, 0.55f);
             GUI.DrawTexture(new Rect(0, sy, sw, 1.5f * Scale), Texture2D.whiteTexture);

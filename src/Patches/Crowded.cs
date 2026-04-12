@@ -1,13 +1,8 @@
-// 来源 / Source: https://github.com/Gurge44/EndlessHostRoles
-// 原始来源 / Original: https://github.com/CrowdedMods/CrowdedMod
+// Original: https://github.com/CrowdedMods/CrowdedMod
 // Niko 将 MonoBehaviour patches 改造为适配非 Reactor 模组的形式
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using AmongUs.GameOptions;
-using HarmonyLib;
 using Il2CppInterop.Runtime.Attributes;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using TMPro;
@@ -60,9 +55,9 @@ internal static class Crowded
                     __instance.UpdateMaxPlayersButtons(__instance.GetTargetOptions());
                 }));
 
-                Object.Destroy(firstButtonRenderer);
+                UnityEngine.Object.Destroy(firstButtonRenderer);
 
-                var lastButtonRenderer = __instance.MaxPlayerButtons[^1];
+                var lastButtonRenderer = (SpriteRenderer)__instance.MaxPlayerButtons[^1];
                 lastButtonRenderer.GetComponentInChildren<TextMeshPro>().text = "+";
                 lastButtonRenderer.enabled = false;
                 var lastButtonButton = lastButtonRenderer.GetComponent<PassiveButton>();
@@ -80,7 +75,7 @@ internal static class Crowded
                     __instance.UpdateMaxPlayersButtons(__instance.GetTargetOptions());
                 }));
 
-                Object.Destroy(lastButtonRenderer);
+                UnityEngine.Object.Destroy(lastButtonRenderer);
 
                 for (var i = 1; i < 11; i++)
                 {
@@ -105,9 +100,9 @@ internal static class Crowded
             {
                 ImpostorsOptionButton secondButton = __instance.ImpostorButtons[1];
                 secondButton.SpriteRenderer.enabled = false;
-                Object.Destroy(secondButton.transform.FindChild("ConsoleHighlight").gameObject);
-                Object.Destroy(secondButton.PassiveButton);
-                Object.Destroy(secondButton.BoxCollider);
+                UnityEngine.Object.Destroy(secondButton.transform.FindChild("ConsoleHighlight").gameObject);
+                UnityEngine.Object.Destroy(secondButton.PassiveButton);
+                UnityEngine.Object.Destroy(secondButton.BoxCollider);
                 TextMeshPro secondButtonText = secondButton.TextMesh;
                 secondButtonText.text = __instance.GetTargetOptions().NumImpostors.ToString();
 

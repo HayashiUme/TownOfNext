@@ -13,7 +13,7 @@ public static class RemoteHelper
         string result;
         bool isValid;
 
-        if (url.StartsWith("https://tonx.leever.cn/api") && !url.EndsWith("/api/stats/visitor"))
+        if (url.StartsWith("https://record.tonx.cn/api") && !url.EndsWith("/api/stats/visitor"))
             url += $"?token={ApiTokenProvider.BuildTokenAsync().Result}";
 
         if (url.StartsWith("file:///"))

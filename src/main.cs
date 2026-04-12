@@ -315,6 +315,7 @@ public class Main : BasePlugin
 
         ClassInjector.RegisterTypeInIl2Cpp<ErrorText>();
         ClassInjector.RegisterTypeInIl2Cpp<LogoAnimationController>();
+        ClassInjector.RegisterTypeInIl2Cpp<MobileControlGUI>();
 
         Task.Run(SystemEnvironment.SetEnvironmentVariablesAsync);
         
@@ -322,7 +323,7 @@ public class Main : BasePlugin
 
         if (!DebugModeManager.AmDebugger) ConsoleManager.DetachConsole();
         else ConsoleManager.CreateConsole();
-
+        
         ModUpdater.RecordVisit();
 
         TONX.Logger.Msg("========= TONX loaded! =========", "Plugin Load");

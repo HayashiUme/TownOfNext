@@ -253,6 +253,11 @@ public class ChatCommand(List<string> keywords, Func<CommandAccess> access, Func
                 Logger.Warn($"VisorId: {of.VisorId}", "Get Cos Id");
                 Logger.Warn($"NamePlateId: {of.NamePlateId}", "Get Cos Id");
                 return (MsgRecallMode.Block, null);
+            }),
+            new(["qq","dc"], () => CommandAccess.Host, mc =>
+            {
+                Cloud.ShareLobby();
+                return (MsgRecallMode.Block, null);
             })
         };
     }

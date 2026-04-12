@@ -17,8 +17,8 @@ public class ModUpdater
     private static IReadOnlyList<string> URLs => new List<string>
     {
 #if DEBUG && Windows
-        "file:///D:/Desktop/TONX/info.json",
-        "file:///D:/Desktop/info.json",
+        "https://raw.githubusercontent.com/TownOfNext/TownOfNext/main/info.json",
+        "https://download.hayashiume.top/https://raw.githubusercontent.com/TownOfNext/TownOfNext/main/info.json",
         "https://record.tonx.cc/api/version.json"
 #else
         "https://raw.githubusercontent.com/TownOfNext/TownOfNext/main/info.json",
