@@ -315,14 +315,11 @@ public class Main : BasePlugin
 
         ClassInjector.RegisterTypeInIl2Cpp<ErrorText>();
         ClassInjector.RegisterTypeInIl2Cpp<LogoAnimationController>();
-        ClassInjector.RegisterTypeInIl2Cpp<MobileControlGUI>();
-        
-        if (MobileControlGUI.Instance == null)
-        {
-            var go = new GameObject("MobileControlGUI");
-            GameObject.DontDestroyOnLoad(go);
-            go.AddComponent<MobileControlGUI>();
-        }
+        //Crowded
+        ClassInjector.RegisterTypeInIl2Cpp<AbstractPagingBehaviour>();
+        ClassInjector.RegisterTypeInIl2Cpp<MeetingHudPagingBehaviour>();
+        ClassInjector.RegisterTypeInIl2Cpp<ShapeShifterPagingBehaviour>();
+        ClassInjector.RegisterTypeInIl2Cpp<VitalsPagingBehaviour>();
 
         Task.Run(SystemEnvironment.SetEnvironmentVariablesAsync);
         

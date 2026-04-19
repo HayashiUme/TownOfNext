@@ -36,6 +36,13 @@ class HudManagerInitializePatch
         RoleInfoButton.selectedSprites.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TONX.Resources.Images.UI.RoleInfoButton-selected.png", 100f);
         RoleInfoButton.gameObject.SetActive(true);
     }
+    /*
+    public static void CreateMobileGUIButton(HudManager hudManager)
+    {
+        var template = HudManager.Instance.MapButton;
+        var mobileButton = UnityEngine.Object.Instantiate(template, template.transform.parent);
+        mobileButton.name = "MobileGUIButton";
+    }*/
 }
 
 [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
@@ -52,6 +59,7 @@ class HudManagerPatch
     public static void Postfix(HudManager __instance)
     {
         if (!GameStates.IsModHost) return;
+        //HudManagerInitializePatch.CreateMobileGUIButton(__instance);
         if (HudManagerInitializePatch.RoleInfoButton != null)
         {
             var template = HudManager.Instance.MapButton;
