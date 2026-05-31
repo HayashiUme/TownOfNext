@@ -10,7 +10,7 @@
 - Base on TOH v5.1.14
 
 ## Warning
-- Innersloth was currently enhancing the server anti-cheat.
+- Innersloth was currently enhancing the server anticheat.
 - As a result, we no longer recommend playing TONX on the vanilla regions! The developers will not be spending time adapting the game for the vanilla regions.
 - Please play on Modded, Niko, and other regions that allow +25 Mode.
 
