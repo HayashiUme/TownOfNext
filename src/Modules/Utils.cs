@@ -1222,7 +1222,7 @@ public static class Utils
     }
     public static DirectoryInfo GetLogFolder(bool auto = false)
     {
-        var folder = Directory.CreateDirectory($"{Application.persistentDataPath}/TownOfHost/Logs");
+        var folder = Directory.CreateDirectory($"{Application.persistentDataPath}/TONX/Logs");
         if (auto)
         {
             folder = Directory.CreateDirectory($"{folder.FullName}/AutoLogs");
@@ -1231,7 +1231,11 @@ public static class Utils
     }
     public static void DumpLog(bool popup = false)
     {
+#if Windows
         string f = $"{Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)}/TONX-logs/";
+#elif Android
+        string f = $"{Application.persistentDataPath}/TONX-logs/";
+#endif
         string t = DateTime.Now.ToString("yyyy-MM-dd_HH.mm.ss");
         string filename = $"{f}TONX-v{Main.PluginVersion}-{t}.log";
         if (!Directory.Exists(f)) Directory.CreateDirectory(f);

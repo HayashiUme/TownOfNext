@@ -9,9 +9,9 @@ public static class OptionSerializer
     private static LogHandler logger = Logger.Handler(nameof(OptionSerializer));
     private const string Header = "%TOHOptions%", Footer = "%End%";
 #if Android
-    private static readonly DirectoryInfo exportDir = new($"{Application.persistentDataPath}/TOH_DATA/OptionOutputs");
+    private static readonly DirectoryInfo exportDir = new($"{Application.persistentDataPath}/TONX_DATA/OptionOutputs");
 #elif Windows
-    private static readonly DirectoryInfo exportDir = new("./TOH_DATA/OptionOutputs");
+    private static readonly DirectoryInfo exportDir = new("./TONX_DATA/OptionOutputs");
 #endif
     public static void SaveToClipboard()
     {

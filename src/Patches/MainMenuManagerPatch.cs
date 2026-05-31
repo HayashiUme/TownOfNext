@@ -126,12 +126,12 @@ public class MainMenuManagerPatch
         string websiteLinkUrl = Main.WebsiteUrl;
         bool websiteLinkEnabled = Main.ShowWebsiteButton;
         
-        // if (IsChineseUser ? Main.ShowQQButton : Main.ShowDiscordButton)
-        // {
-        //     extraLinkName = IsChineseUser ? "QQ群" : "Discord";
-        //     extraLinkUrl = IsChineseUser ? Main.QQInviteUrl : Main.DiscordInviteUrl;
-        //     extraLinkEnabled = true;
-        // }
+         if (IsChineseUser ? Main.ShowQQButton : Main.ShowDiscordButton)
+         {
+             extraLinkName = IsChineseUser ? "QQ群" : "Discord";
+             extraLinkUrl = IsChineseUser ? Main.QQInviteUrl : Main.DiscordInviteUrl;
+             extraLinkEnabled = true;
+         }
 
         if (InviteButton == null) InviteButton = CreatButton(extraLinkName, () => { OpenUrl(extraLinkUrl); });
         InviteButton.gameObject.SetActive(extraLinkEnabled);

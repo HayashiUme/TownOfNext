@@ -32,19 +32,19 @@ public class Main : BasePlugin
     public const string DebugKeySalt = "59687b";
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
     // == 版本相关设定 / Version Config ==
-    public const string LowestSupportedVersion = "2025.11.18"; // 17.1.0
+    public const string LowestSupportedVersion = "2026.3.31"; // 17.3.1
     public static readonly bool IsPublicAvailableOnThisVersion = true;
-    public const string PluginVersion = "4.0.0";
+    public const string PluginVersion = "4.0.1";
     public const int PluginCreation = 1;
     public const VersionType VerType = VersionType.Release;
     public static readonly bool AllowHtmlTagMsgOnOfficialServer = false;
     // == 链接相关设定 / Link Config ==
     public static readonly bool ShowWebsiteButton = true;
-    public static readonly string WebsiteUrl = IsChineseLanguageUser ? "https://tonx.cc/zh" : "https://tonx.cc";
-    public static readonly bool ShowQQButton = false;
-    public static readonly string QQInviteUrl = "https://jq.qq.com/?_wv=1027&k=2RpigaN6";
-    public static readonly bool ShowDiscordButton = false;
-    public static readonly string DiscordInviteUrl = "https://discord.gg/hkk2p9ggv4";
+    public static readonly string WebsiteUrl = IsChineseLanguageUser ? "https://tonx.cc/" : "https://tonx.cc/en/";
+    public static readonly bool ShowQQButton = true;
+    public static readonly string QQInviteUrl = "https://qm.qq.com/q/r50rI1beeI";
+    public static readonly bool ShowDiscordButton = true;
+    public static readonly string DiscordInviteUrl = "https://dsc.gg/tonext";
     public static readonly bool ShowGithubUrl = true;
     public static readonly string GithubRepoUrl = "https://github.com/TownOfNext/TownOfNext";
     // ==========
