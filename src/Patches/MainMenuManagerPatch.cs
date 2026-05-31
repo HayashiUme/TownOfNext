@@ -84,14 +84,6 @@ public class MainMenuManagerPatch
         SimpleButton.SetBase(__instance.quitButton);
 
         int row = 1; int col = 0;
-        void OpenUrl(string url)
-        {
-#if Android
-            OpenURLAndroid(url);
-#elif Windows
-            Application.OpenURL(url);
-#endif
-        }
 
         GameObject CreatButton(string text, Action action)
         {
@@ -133,13 +125,33 @@ public class MainMenuManagerPatch
              extraLinkEnabled = true;
          }
 
-        if (InviteButton == null) InviteButton = CreatButton(extraLinkName, () => { OpenUrl(extraLinkUrl); });
+        if (InviteButton == null) InviteButton = CreatButton(extraLinkName, () =>
+        {
+#if Android
+            OpenURLAndroid(extraLinkUrl);
+#elif Windows
+            Application.OpenURL(extraLinkUrl);
+#endif
+        });
         InviteButton.gameObject.SetActive(extraLinkEnabled);
         InviteButton.name = "TONX Extra Link Button";
 
-        if (WebsiteButton == null) WebsiteButton = CreatButton(websiteLinkName, () => OpenUrl(websiteLinkUrl));
+        if (WebsiteButton == null) WebsiteButton = CreatButton(websiteLinkName, () =>
+        {
+#if Android
+            OpenURLAndroid(websiteLinkUrl);
+#elif Windows
+            Application.OpenURL(websiteLinkUrl);
+#endif
+        });
         WebsiteButton.gameObject.SetActive(websiteLinkEnabled);
         WebsiteButton.name = "TONX Website Button";
+        
+#if Android
+        // 對Android端按鈕重叠問題的容錯
+        // 此段代碼必須在所有創建按鈕代碼後
+        __instance.quitButton.gameObject.SetActive(false); // 因會和按鈕重叠，故隱藏 
+#endif
 #if Windows
         if (UpdateButton == null)
         {
@@ -167,30 +179,7 @@ public class MainMenuManagerPatch
 #if Android
     private static void OpenURLAndroid(string url)
     {
-        try
-        {
-            AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-            AndroidJavaObject currentActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
-            AndroidJavaClass intentClass = new AndroidJavaClass("android.content.Intent");
-            AndroidJavaObject intentObject =
-                new AndroidJavaObject("android.content.Intent", "android.intent.action.VIEW");
-            AndroidJavaClass uriClass = new AndroidJavaClass("android.net.Uri");
-            AndroidJavaObject uriObject = uriClass.CallStatic<AndroidJavaObject>("parse", url);
-            intentObject.Call<AndroidJavaObject>("setData", uriObject);
-            var FLAG_ACTIVITY_NEW_TASK = 0x10000000;
-            intentObject.Call<AndroidJavaObject>("setFlags", FLAG_ACTIVITY_NEW_TASK);
-            currentActivity.Call("startActivity", intentObject);
-            unityPlayer.Dispose();
-            currentActivity.Dispose();
-            intentClass.Dispose();
-            intentObject.Dispose();
-            uriClass.Dispose();
-            uriObject.Dispose();
-        }
-        catch
-        {
-            Application.OpenURL(url);
-        }
+        Constants.OpenURL(url);
     }
 #endif
 }
