@@ -32,7 +32,8 @@
 - Migrated legacy TownOfHost folder names to TONX (Logs, Data, OptionOutputs)
 - Android now uses Constants.OpenURL for opening external links
 - Android now fetches announcement data from server on launch
+- TONX Chan now requires verification; unverified players must use /sign on Discord before sharing lobby codes
 
 ## Restoration
 - Restored the Discord server invite link button in MainMenu
-- Restored the TONX Chan(Lobby Sharer); you can now use /dc to send lobby infos after verifying with /sign
+- Restored TONX Chan (Lobby Sharer); use /dc in the lobby to share room code to Discord
