@@ -1,0 +1,37 @@
+#Number:100053
+#Title:TownOfNext v4.0.1
+#SubTitle:★★★★TO The Starlight★★★★
+#ShortTitle:★TONX v4.0.1
+#Date:2026-05-31T00:00:00Z
+#-----------------------------
+
+## Base
+- Base on AmongUs v17.3.1
+- Base on TOH v5.1.14
+
+## Warning
+- Innersloth was currently enhancing the server anti-cheat.
+- As a result, we no longer recommend playing TONX on the vanilla regions! The developers will not be spending time adapting the game for the vanilla regions.
+- Please play on Modded, Niko, and other regions that allow +25 Mode.
+
+## What You Need to Know
+- We have refactored the code related to game modes.
+- Upcoming versions of TONX may contain numerous bugs. Please report any bugs you encounter promptly and include logs if possible.
+
+## Fix
+- Fixed a crash caused by Registry.CurrentUser returning null on certain Windows/IL2CPP environments
+- Fixed a crash caused by [DllImport("winmm.dll")] being unconditionally resolved on Android IL2CPP
+- Fixed Environment.SetEnvironmentVariable using Windows-only EnvironmentVariableTarget.User on Android
+- Fixed Environment.SpecialFolder.DesktopDirectory being used unconditionally on Android
+- Fixed Android CheckForUpdate showing empty announcement popup
+- Fixed Android MainMenu custom buttons overlapping with the exit button
+- Fixed Android OpenURL failing to launch browser
+- Fixed the Website button in MainMenu appeared in the opposite order on Chinese and English pages
+
+## Changing
+- Migrated legacy TownOfHost folder names to TONX (Logs, Data, OptionOutputs)
+- Android now uses Constants.OpenURL for opening external links
+- Android now fetches announcement data from server on launch
+
+## Restoration
+- Restored the Discord server invite link button in MainMenu
