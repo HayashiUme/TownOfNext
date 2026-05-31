@@ -35,3 +35,4 @@
 
 ## Restoration
 - Restored the Discord server invite link button in MainMenu
+- Restored the TONX Chan(Lobby Sharer); you can now use /dc to send lobby infos after verifying with /sign
