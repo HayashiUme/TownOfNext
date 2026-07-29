@@ -789,18 +789,16 @@ class CoEnterVentPatch
 
         var user = playerPhysics.myPlayer;
 
-        // 保安封锁的管道检测（优先，独立判断）
+        // 保安封锁的管道检测
         if (Roles.Crewmate.SecurityGuard.IsVentLocked(id))
         {
-            // 延迟弹人：此时 user.inVent 尚为 false（MoveNext 尚未执行），需要等状态同步后再弹出
             _ = new LateTask(() =>
             {
                 if (!GameStates.IsMeeting)
                     playerPhysics.RpcBootFromVent(id);
                 if (user.AmOwner) user.walkingToVent = false;
-                user.Notify(Translator.GetString("SecurityGuardVentLockedBooted"));
+                user.Notify(GetString("SecurityGuardVentLockedBooted"));
             }, 0.3f, "Boot Locked Vent");
-            // 阻止协程继续执行（阻止正式进入管道）
             return false;
         }
 
