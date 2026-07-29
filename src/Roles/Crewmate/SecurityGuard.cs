@@ -15,7 +15,7 @@ public sealed class SecurityGuard : RoleBase
             CustomRoleTypes.Crewmate,
             23500,
             SetupOptionItem,
-            "sg|保安|保安",
+            "sg|保安",
             "#4B6E8C"
         );
 
