@@ -115,9 +115,6 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
 
     public bool IsKiller { get; private set; } = true;
     public bool CanKill { get; private set; } = true;
-
-    /// <summary>暗恋对象死亡通知计时器（秒）</summary>
-    // 尚未测试完整
     private float LoverDeadNotifyTimer;
 
     // ===== 生命周期 =====
@@ -168,9 +165,13 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
             LoverIsDead = true;
             LoverDeadNotifyTimer = 5f;
             ProximityTimers.Clear();
+            // 切换到死亡冷却
+            // 未完全修复
+            Main.AllPlayerKillCooldown[Player.PlayerId] = DeathCooldown;
+            Player.SyncSettings();
             SendRPC_Sync();
             Utils.NotifyRoles(SpecifySeer: Player);
-            Logger.Info($"{Player.GetNameWithRole()}: 暗恋对象 {lover.GetNameWithRole()} 已死亡", "Yandere");
+            Logger.Info($"{Player.GetNameWithRole()}: 暗恋对象 {lover.GetNameWithRole()} 已死亡，冷却变更为 {DeathCooldown}s", "Yandere");
             return;
         }
 
@@ -260,7 +261,6 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
         }
     }
 
-    // ===== IKiller =====
     public bool CanUseKillButton() => true;
     public bool CanUseSabotageButton() => false;
     public bool CanUseImpostorVentButton() => CanVent;
@@ -270,6 +270,15 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
     {
         if (info.IsSuicide) return;
         var (killer, target) = info.AttemptTuple;
+
+        // 禁止击杀暗恋对象
+        if (target.PlayerId == LoverId)
+        {
+            info.CanKill = false;
+            killer.Notify(Utils.ColorString(RoleInfo.RoleColor, GetString("YandereCannotKillLover")));
+            Logger.Info($"{killer.GetNameWithRole()}: 尝试击杀暗恋对象 {target.GetNameWithRole()}，已阻止", "Yandere");
+            return;
+        }
 
         var baseCd = CalculateKillCooldown();
         if (Rivals.Contains(target.PlayerId))
@@ -306,11 +315,14 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
         }
 
         // 如果击杀了暗恋对象
+        // 需要考虑不是自己想击杀的
         if (target.PlayerId == LoverId)
         {
             LoverIsDead = true;
             LoverDeadNotifyTimer = 5f;
-            Logger.Info($"{killer.GetNameWithRole()}: 击杀了自己的暗恋对象！哦~这可太残忍了！", "Yandere");
+            Main.AllPlayerKillCooldown[killer.PlayerId] = DeathCooldown;
+            killer.SyncSettings();
+            Logger.Info($"{killer.GetNameWithRole()}: 击杀了自己的暗恋对象！", "Yandere");
         }
 
         SendRPC_Sync();
@@ -381,19 +393,26 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
 
         var mark = "";
 
-        if (seen.PlayerId == LoverId)
+        if (Is(seen) && !isForMeeting)
         {
-            mark += Utils.ColorString(RoleInfo.RoleColor, "♥");
-            if (ShowLoverArrow && !isForMeeting)
+            if (ShowLoverArrow && Lover != null && Lover.IsAlive())
                 mark += Utils.ColorString(RoleInfo.RoleColor, TargetArrow.GetArrows(seer, LoverId));
+            if (ShowRivalArrow)
+            {
+                foreach (var rivalId in Rivals)
+                {
+                    var rival = Utils.GetPlayerById(rivalId);
+                    if (rival != null && rival.IsAlive())
+                        mark += Utils.ColorString(Color.red, TargetArrow.GetArrows(seer, rivalId));
+                }
+            }
+            return mark;
         }
 
+        if (seen.PlayerId == LoverId)
+            mark += Utils.ColorString(RoleInfo.RoleColor, "♥");
         if (Rivals.Contains(seen.PlayerId))
-        {
             mark += Utils.ColorString(Color.red, "♦");
-            if (ShowRivalArrow && !isForMeeting)
-                mark += Utils.ColorString(Color.red, TargetArrow.GetArrows(seer, seen.PlayerId));
-        }
 
         return mark;
     }

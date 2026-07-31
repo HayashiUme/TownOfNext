@@ -1499,17 +1499,17 @@ DoomsayerKillButtonText: "提示"
 YandereKillButtonText: "击杀"
 
 # 病娇 / Yandere
-YandereDeathCooldown: "暗恋对象死后击杀冷却时间"
+YandereDeathCooldown: "暗恋对象死亡后的击杀冷却时间"
 YandereProximityRange: "玩家成为情敌需要与暗恋对象的最大距离"
 YandereRivalTime: "成为情敌所需时间"
-YandereRivalKillCdReduction: "击杀情敌时减少击杀冷却时间"
-YandereNonRivalKillCdIncrease: "击杀非情敌时增加击杀冷却时间"
+YandereRivalKillCdReduction: "击杀情敌后减少击杀冷却时间"
+YandereNonRivalKillCdIncrease: "击杀非情敌后增加击杀冷却时间"
 YandereShowLoverArrow: "追踪暗恋对象的箭头"
 YandereShowRivalArrow: "追踪情敌的箭头"
 YandereArrowUpdateInterval: "追踪箭头更新时间"
 YandereRivalKilled: "你击杀了一名情敌！击杀冷却缩短。"
 YandereLoverDead: "暗恋对象已死亡"
-YandereLoverDeadText: "暗恋对象已死亡，击杀冷却已固定"
+YandereCannotKillLover: "它可是你的宝宝啊~你怎么能忍心杀它~"
 
 # 作弊 / EAC
 EAC.CheatDetected.HighLevel: "警告：EAC正在抵御炸房外挂"
