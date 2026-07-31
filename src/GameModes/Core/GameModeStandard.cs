@@ -288,6 +288,31 @@ internal static class GameModeStandard
                         .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
                     break;
                 default:
+                    if (CustomRoles.Yandere.IsExist() && nonZeroEntries.Count == 2 &&
+                        nonZeroEntries.Any(e => e.Key is CountTypes.Yandere))
+                    {
+                        var yanderePlayer = Main.AllAlivePlayerControls.FirstOrDefault(p => p.Is(CustomRoles.Yandere));
+                        if (yanderePlayer != null)
+                        {
+                            var yandereRole = yanderePlayer.GetRoleClass() as Yandere;
+                            if (yandereRole != null)
+                            {
+                                var aliveOthers = Main.AllAlivePlayerControls.Where(p =>
+                                    p.PlayerId != yanderePlayer.PlayerId &&
+                                    p.PlayerId != yandereRole.Lover?.PlayerId).ToList();
+                                if (aliveOthers.Count == 0)
+                                {
+                                    reason = GameOverReason.ImpostorsByKill;
+                                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Yandere);
+                                    CustomWinnerHolder.WinnerIds.Add(yanderePlayer.PlayerId);
+                                    var lover = yandereRole.Lover;
+                                    if (lover != null && lover.IsAlive())
+                                        CustomWinnerHolder.WinnerIds.Add(lover.PlayerId);
+                                    return true;
+                                }
+                            }
+                        }
+                    }
                     return false; // 胜利条件未达成
             }
             return true;
