@@ -276,14 +276,14 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
         {
             // 击杀情敌——减少冷却
             var newCd = Mathf.Max(baseCd - RivalKillCdReduce, 2.5f);
-            Main.AllPlayerKillCooldown[killer.PlayerId] = newCd * 2f;
+            Main.AllPlayerKillCooldown[killer.PlayerId] = newCd;
             killer.SyncSettings();
         }
         else if (target.PlayerId != LoverId)
         {
             // 击杀非情敌——增加冷却
             var newCd = Mathf.Max(baseCd + NonRivalKillCdIncrease, 2.5f);
-            Main.AllPlayerKillCooldown[killer.PlayerId] = newCd * 2f;
+            Main.AllPlayerKillCooldown[killer.PlayerId] = newCd;
             killer.SyncSettings();
         }
     }
@@ -385,14 +385,14 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
         {
             mark += Utils.ColorString(RoleInfo.RoleColor, "♥");
             if (ShowLoverArrow && !isForMeeting)
-                mark += TargetArrow.GetArrows(seer, LoverId);
+                mark += Utils.ColorString(RoleInfo.RoleColor, TargetArrow.GetArrows(seer, LoverId));
         }
 
         if (Rivals.Contains(seen.PlayerId))
         {
             mark += Utils.ColorString(Color.red, "♦");
             if (ShowRivalArrow && !isForMeeting)
-                mark += TargetArrow.GetArrows(seer, seen.PlayerId);
+                mark += Utils.ColorString(Color.red, TargetArrow.GetArrows(seer, seen.PlayerId));
         }
 
         return mark;
