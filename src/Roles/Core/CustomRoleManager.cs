@@ -680,6 +680,7 @@ public enum CustomRoles
     SchrodingerCat,
     Shifter,
     Doomsayer,
+    Yandere,
 
     //SoloKombat
     KB_Normal = 400,
