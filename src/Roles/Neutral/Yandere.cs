@@ -116,7 +116,7 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
     public bool IsKiller { get; private set; } = true;
     public bool CanKill { get; private set; } = true;
 
-    /// <summary>爱慕对象死亡通知计时器（秒）</summary>
+    /// <summary>暗恋对象死亡通知计时器（秒）</summary>
     // 尚未测试完整
     private float LoverDeadNotifyTimer;
 
@@ -125,8 +125,8 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        // 随机选择一个非病娇玩家作为爱慕对象
-        // 可能需要考虑排除的爱慕对象
+        // 随机选择一个非病娇玩家作为暗恋对象
+        // 可能需要考虑排除的暗恋对象
         var candidates = Main.AllPlayerControls
             .Where(p => p.PlayerId != Player.PlayerId && p.IsAlive())
             .ToList();
@@ -135,7 +135,7 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
         {
             var lover = candidates[IRandom.Instance.Next(candidates.Count)];
             LoverId = lover.PlayerId;
-            Logger.Info($"{Player.GetNameWithRole()} 的爱慕对象是 {lover.GetNameWithRole()}", "Yandere");
+            Logger.Info($"{Player.GetNameWithRole()} 的暗恋对象是 {lover.GetNameWithRole()}", "Yandere");
         }
 
         SendRPC_Sync();
@@ -162,7 +162,7 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
         var lover = Lover;
         if (lover == null) return;
 
-        // 检测爱慕对象是否死亡
+        // 检测暗恋对象是否死亡
         if (!lover.IsAlive() && !LoverIsDead)
         {
             LoverIsDead = true;
@@ -170,7 +170,7 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
             ProximityTimers.Clear();
             SendRPC_Sync();
             Utils.NotifyRoles(SpecifySeer: Player);
-            Logger.Info($"{Player.GetNameWithRole()}: 爱慕对象 {lover.GetNameWithRole()} 已死亡", "Yandere");
+            Logger.Info($"{Player.GetNameWithRole()}: 暗恋对象 {lover.GetNameWithRole()} 已死亡", "Yandere");
             return;
         }
 
@@ -305,12 +305,12 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
             Logger.Info($"{killer.GetNameWithRole()}: 击杀非情敌 {target.GetNameWithRole()}，冷却增加 {NonRivalKillCdIncrease}s", "Yandere");
         }
 
-        // 如果击杀了爱慕对象
+        // 如果击杀了暗恋对象
         if (target.PlayerId == LoverId)
         {
             LoverIsDead = true;
             LoverDeadNotifyTimer = 5f;
-            Logger.Info($"{killer.GetNameWithRole()}: 击杀了自己的爱慕对象！哦~这可太残忍了！", "Yandere");
+            Logger.Info($"{killer.GetNameWithRole()}: 击杀了自己的暗恋对象！哦~这可太残忍了！", "Yandere");
         }
 
         SendRPC_Sync();
@@ -328,7 +328,7 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
     {
         if (!Player.IsAlive()) return;
 
-        // 检查是否只有病娇和爱慕对象存活
+        // 检查是否只有病娇和暗恋对象存活
         var alivePlayers = Main.AllAlivePlayerControls;
         var aliveOthers = alivePlayers.Where(p =>
             p.PlayerId != Player.PlayerId && p.PlayerId != LoverId).ToList();
@@ -352,7 +352,7 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
 
         TargetArrow.RemoveAllTarget(Player.PlayerId);
 
-        // 爱慕对象箭头
+        // 暗恋对象箭头
         if (ShowLoverArrow && Lover != null && Lover.IsAlive())
         {
             TargetArrow.Add(Player.PlayerId, Lover.PlayerId);
