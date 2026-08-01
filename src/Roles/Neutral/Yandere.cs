@@ -31,22 +31,16 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
     )
     {
         KillCooldown = OptionKillCooldown.GetFloat();
-        DeathCooldown = OptionDeathCooldown.GetFloat();
         ProximityRange = OptionProximityRange.GetFloat();
         RivalTime = OptionRivalTime.GetFloat();
         RivalKillCdReduce = OptionRivalKillCdReduce.GetFloat();
         NonRivalKillCdIncrease = OptionNonRivalKillCdIncrease.GetFloat();
-        ShowLoverArrow = OptionShowLoverArrow.GetBool();
-        ShowRivalArrow = OptionShowRivalArrow.GetBool();
-        ArrowUpdateInterval = OptionArrowUpdateInterval.GetFloat();
-        CanVent = OptionCanVent.GetBool();
         HasImpostorVision = OptionHasImpostorVision.GetBool();
 
         LoverId = byte.MaxValue;
         Rivals = new();
         ProximityTimers = new();
         LoverIsDead = false;
-        ArrowUpdateTimer = 0f;
     }
 
     private static OptionItem OptionKillCooldown;
@@ -57,7 +51,6 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
     private static OptionItem OptionNonRivalKillCdIncrease;
     private static OptionItem OptionShowLoverArrow;
     private static OptionItem OptionShowRivalArrow;
-    private static OptionItem OptionArrowUpdateInterval;
     private static OptionItem OptionCanVent;
     private static OptionItem OptionHasImpostorVision;
 
@@ -70,19 +63,13 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
         YandereNonRivalKillCdIncrease,
         YandereShowLoverArrow,
         YandereShowRivalArrow,
-        YandereArrowUpdateInterval,
     }
 
     private static float KillCooldown;
-    private static float DeathCooldown;
     private static float ProximityRange;
     private static float RivalTime;
     private static float RivalKillCdReduce;
     private static float NonRivalKillCdIncrease;
-    private static bool ShowLoverArrow;
-    private static bool ShowRivalArrow;
-    private static float ArrowUpdateInterval;
-    private static bool CanVent;
     private static bool HasImpostorVision;
 
     private static void SetupOptionItem()
@@ -100,10 +87,8 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
             .SetValueFormat(OptionFormat.Seconds);
         OptionShowLoverArrow = BooleanOptionItem.Create(RoleInfo, 16, OptionName.YandereShowLoverArrow, true, false);
         OptionShowRivalArrow = BooleanOptionItem.Create(RoleInfo, 17, OptionName.YandereShowRivalArrow, true, false);
-        OptionArrowUpdateInterval = FloatOptionItem.Create(RoleInfo, 18, OptionName.YandereArrowUpdateInterval, new(0f, 30f, 2.5f), 10f, false)
-            .SetValueFormat(OptionFormat.Seconds);
-        OptionCanVent = BooleanOptionItem.Create(RoleInfo, 19, GeneralOption.CanVent, false, false);
-        OptionHasImpostorVision = BooleanOptionItem.Create(RoleInfo, 20, GeneralOption.ImpostorVision, false, false);
+        OptionCanVent = BooleanOptionItem.Create(RoleInfo, 18, GeneralOption.CanVent, true, false);
+        OptionHasImpostorVision = BooleanOptionItem.Create(RoleInfo, 19, GeneralOption.ImpostorVision, false, false);
     }
 
     public byte LoverId;
@@ -111,19 +96,17 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
     public HashSet<byte> Rivals;
     public Dictionary<byte, float> ProximityTimers;
     public bool LoverIsDead;
-    private float ArrowUpdateTimer;
+    private float LoverDeadNotifyTimer;
 
     public bool IsKiller { get; private set; } = true;
     public bool CanKill { get; private set; } = true;
-    private float LoverDeadNotifyTimer;
 
-    // ===== 生命周期 =====
     public override void Add()
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
         // 随机选择一个非病娇玩家作为暗恋对象
-        // 可能需要考虑排除的暗恋对象
+        // 可能需要考虑排除特定 职业/附加职业 的暗恋对象
         var candidates = Main.AllPlayerControls
             .Where(p => p.PlayerId != Player.PlayerId && p.IsAlive())
             .ToList();
@@ -140,16 +123,13 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
 
     public override void OnGameStart()
     {
-        ArrowUpdateTimer = 0f;
         LoverDeadNotifyTimer = 0f;
-        if (AmongUsClient.Instance.AmHost)
-            SendRPC_Sync();
+        if (LoverId == byte.MaxValue) return;
+        RefreshArrows();
     }
 
     public override void OnFixedUpdate(PlayerControl player)
     {
-        UpdateArrows();
-
         if (LoverDeadNotifyTimer > 0f)
             LoverDeadNotifyTimer -= Time.fixedDeltaTime;
 
@@ -165,13 +145,13 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
             LoverIsDead = true;
             LoverDeadNotifyTimer = 5f;
             ProximityTimers.Clear();
-            // 切换到死亡冷却
-            // 未完全修复
-            Main.AllPlayerKillCooldown[Player.PlayerId] = DeathCooldown;
+            // 暗恋对象死后，切换到死亡击杀冷却
+            var deathCd = OptionDeathCooldown.GetFloat();
+            Main.AllPlayerKillCooldown[Player.PlayerId] = deathCd;
             Player.SyncSettings();
             SendRPC_Sync();
             Utils.NotifyRoles(SpecifySeer: Player);
-            Logger.Info($"{Player.GetNameWithRole()}: 暗恋对象 {lover.GetNameWithRole()} 已死亡，冷却变更为 {DeathCooldown}s", "Yandere");
+            Logger.Info($"{Player.GetNameWithRole()}: 暗恋对象 {lover.GetNameWithRole()} 已死亡，冷却变更为 {deathCd}s", "Yandere");
             return;
         }
 
@@ -257,14 +237,30 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
             for (int i = 0; i < timerCount; i++)
                 ProximityTimers[reader.ReadByte()] = reader.ReadSingle();
 
-            ArrowUpdateTimer = 0f;
+            // 状态同步时注册箭头
+            if (LoverId != byte.MaxValue)
+            {
+                var lover = Utils.GetPlayerById(LoverId);
+                if (lover != null && lover.IsAlive() && OptionShowLoverArrow.GetBool())
+                    TargetArrow.Add(Player.PlayerId, LoverId);
+            }
+
+            if (OptionShowRivalArrow.GetBool())
+            {
+                foreach (var rivalId in Rivals)
+                {
+                    var rival = Utils.GetPlayerById(rivalId);
+                    if (rival != null && rival.IsAlive())
+                        TargetArrow.Add(Player.PlayerId, rivalId);
+                }
+            }
         }
     }
 
     public bool CanUseKillButton() => true;
     public bool CanUseSabotageButton() => false;
-    public bool CanUseImpostorVentButton() => CanVent;
-    public float CalculateKillCooldown() => LoverIsDead ? DeathCooldown : KillCooldown;
+    public bool CanUseImpostorVentButton() => OptionCanVent.GetBool();
+    public float CalculateKillCooldown() => LoverIsDead ? OptionDeathCooldown.GetFloat() : KillCooldown;
 
     public void BeforeMurderPlayerAsKiller(MurderInfo info)
     {
@@ -281,6 +277,15 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
         }
 
         var baseCd = CalculateKillCooldown();
+
+        // 暗恋对象死后，击杀冷却保持恒定值，不再根据击杀目标调整
+        if (LoverIsDead)
+        {
+            Main.AllPlayerKillCooldown[killer.PlayerId] = baseCd;
+            killer.SyncSettings();
+            return;
+        }
+
         if (Rivals.Contains(target.PlayerId))
         {
             // 击杀情敌——减少冷却
@@ -304,7 +309,7 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
 
         if (Rivals.Contains(target.PlayerId))
         {
-            // 击杀情敌——移除情敌名单
+            // 击杀情敌—后移除情敌名单
             Rivals.Remove(target.PlayerId);
             killer.Notify(GetString("YandereRivalKilled"));
             Logger.Info($"{killer.GetNameWithRole()}: 击杀情敌 {target.GetNameWithRole()}，冷却减少 {RivalKillCdReduce}s", "Yandere");
@@ -315,12 +320,12 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
         }
 
         // 如果击杀了暗恋对象
-        // 需要考虑不是自己想击杀的
+        // 需要考虑不是病娇想击杀的
         if (target.PlayerId == LoverId)
         {
             LoverIsDead = true;
             LoverDeadNotifyTimer = 5f;
-            Main.AllPlayerKillCooldown[killer.PlayerId] = DeathCooldown;
+            Main.AllPlayerKillCooldown[killer.PlayerId] = OptionDeathCooldown.GetFloat();
             killer.SyncSettings();
             Logger.Info($"{killer.GetNameWithRole()}: 击杀了自己的暗恋对象！", "Yandere");
         }
@@ -354,32 +359,18 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
         }
     }
 
-    private void UpdateArrows()
+    private void RefreshArrows()
     {
-        if (!Player.AmOwner) return;
-
-        ArrowUpdateTimer -= Time.fixedDeltaTime;
-        if (ArrowUpdateTimer > 0) return;
-        ArrowUpdateTimer = ArrowUpdateInterval;
-
-        TargetArrow.RemoveAllTarget(Player.PlayerId);
-
-        // 暗恋对象箭头
-        if (ShowLoverArrow && Lover != null && Lover.IsAlive())
-        {
+        if (OptionShowLoverArrow.GetBool() && Lover != null && Lover.IsAlive())
             TargetArrow.Add(Player.PlayerId, Lover.PlayerId);
-        }
 
-        // 情敌箭头
-        if (ShowRivalArrow)
+        if (OptionShowRivalArrow.GetBool())
         {
             foreach (var rivalId in Rivals)
             {
                 var rival = Utils.GetPlayerById(rivalId);
                 if (rival != null && rival.IsAlive())
-                {
                     TargetArrow.Add(Player.PlayerId, rivalId);
-                }
             }
         }
     }
@@ -395,9 +386,11 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
 
         if (Is(seen) && !isForMeeting)
         {
-            if (ShowLoverArrow && Lover != null && Lover.IsAlive())
+            RefreshArrows();
+
+            if (OptionShowLoverArrow.GetBool() && Lover != null && Lover.IsAlive())
                 mark += Utils.ColorString(RoleInfo.RoleColor, TargetArrow.GetArrows(seer, LoverId));
-            if (ShowRivalArrow)
+            if (OptionShowRivalArrow.GetBool())
             {
                 foreach (var rivalId in Rivals)
                 {
