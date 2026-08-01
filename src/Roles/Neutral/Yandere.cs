@@ -329,13 +329,21 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
     {
         if (!Player.IsAlive()) return;
 
-        // 检查是否只有病娇和暗恋对象存活
-        if (Main.AllAlivePlayerControls.All(p =>
-            p.PlayerId == Player.PlayerId || p.PlayerId == LoverId))
+        // 统计除了病娇以外的存活玩家
+        var otherAlive = Main.AllAlivePlayerControls
+            .Where(p => p.PlayerId != Player.PlayerId)
+            .ToList();
+
+        var loverIsAlive = Lover != null && Lover.IsAlive();
+
+        // 胜利条件：除病娇外没有其他存活玩家（暗恋对象存活/死亡均可）
+        // 如果暗恋对象存活，两人共同胜利
+        if (otherAlive.Count == 0
+            || (otherAlive.Count == 1 && loverIsAlive && otherAlive[0].PlayerId == LoverId))
         {
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Yandere);
             CustomWinnerHolder.WinnerIds.Add(Player.PlayerId);
-            if (Lover != null && Lover.IsAlive())
+            if (loverIsAlive)
                 CustomWinnerHolder.WinnerIds.Add(LoverId);
         }
     }
