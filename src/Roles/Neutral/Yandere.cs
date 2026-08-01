@@ -237,23 +237,8 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
             for (int i = 0; i < timerCount; i++)
                 ProximityTimers[reader.ReadByte()] = reader.ReadSingle();
 
-            // 状态同步时注册箭头
-            if (LoverId != byte.MaxValue)
-            {
-                var lover = Utils.GetPlayerById(LoverId);
-                if (lover != null && lover.IsAlive() && OptionShowLoverArrow.GetBool())
-                    TargetArrow.Add(Player.PlayerId, LoverId);
-            }
-
-            if (OptionShowRivalArrow.GetBool())
-            {
-                foreach (var rivalId in Rivals)
-                {
-                    var rival = Utils.GetPlayerById(rivalId);
-                    if (rival != null && rival.IsAlive())
-                        TargetArrow.Add(Player.PlayerId, rivalId);
-                }
-            }
+            // 状态同步时注册箭头（与 OnGameStart 共用同一逻辑）
+            RefreshArrows();
         }
     }
 
@@ -293,7 +278,7 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
             Main.AllPlayerKillCooldown[killer.PlayerId] = newCd;
             killer.SyncSettings();
         }
-        else if (target.PlayerId != LoverId)
+        else
         {
             // 击杀非情敌——增加冷却
             var newCd = Mathf.Max(baseCd + NonRivalKillCdIncrease, 2.5f);
@@ -307,10 +292,9 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
         if (info.IsSuicide) return;
         var (killer, target) = info.AttemptTuple;
 
-        if (Rivals.Contains(target.PlayerId))
+        if (Rivals.Remove(target.PlayerId))
         {
-            // 击杀情敌—后移除情敌名单
-            Rivals.Remove(target.PlayerId);
+            // 击杀情敌后从名单中移除
             killer.Notify(GetString("YandereRivalKilled"));
             Logger.Info($"{killer.GetNameWithRole()}: 击杀情敌 {target.GetNameWithRole()}，冷却减少 {RivalKillCdReduce}s", "Yandere");
         }
@@ -346,11 +330,8 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
         if (!Player.IsAlive()) return;
 
         // 检查是否只有病娇和暗恋对象存活
-        var alivePlayers = Main.AllAlivePlayerControls;
-        var aliveOthers = alivePlayers.Where(p =>
-            p.PlayerId != Player.PlayerId && p.PlayerId != LoverId).ToList();
-
-        if (aliveOthers.Count == 0)
+        if (Main.AllAlivePlayerControls.All(p =>
+            p.PlayerId == Player.PlayerId || p.PlayerId == LoverId))
         {
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Yandere);
             CustomWinnerHolder.WinnerIds.Add(Player.PlayerId);
