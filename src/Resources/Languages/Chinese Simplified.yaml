@@ -344,7 +344,7 @@ PlagueDoctorInfo: "你看着病得不轻啊"
 SunnyboyInfo: "这个角色的建立究竟有什么意义"
 ShifterInfo: "职业没喽，职业回来喽"
 DoomsayerInfo: "猜测其他玩家的职业"
-YandereInfo: "你永远是我的宝宝~❤"
+YandereInfo: "你永远是我的宝宝~"
 
 ## 附加职业 / Add-ons Blurbs
 LoversInfo: "最重要的是，记得照顾好您的另一半"
@@ -1309,6 +1309,16 @@ JusticeMeetingStart: "审判开始！所有玩家只能在【{0}】和【{1}】�
 JusticeMeetingInvalidVote: "特殊会议期间只能投票给被选中的玩家"
 JusticeMeetingForceExile: "玩家【{0}】已死亡，别无选择了，决定驱逐【{1}】"
 JusticeMeetingBanAbility: "正在进行特殊会议，只能对会议上被选中的玩家发动技能"
+YandereDeathCooldown: "暗恋对象死亡后的击杀冷却时间"
+YandereProximityRange: "玩家成为情敌需要与暗恋对象的最大距离"
+YandereRivalTime: "成为情敌所需时间"
+YandereRivalKillCdReduction: "击杀情敌后减少击杀冷却时间"
+YandereNonRivalKillCdIncrease: "击杀非情敌后增加击杀冷却时间"
+YandereShowLoverArrow: "显示指向暗恋对象的箭头"
+YandereShowRivalArrow: "显示指向情敌的箭头"
+YandereRivalKilled: "你击杀了一名情敌！击杀冷却缩短。"
+YandereLoverDead: "暗恋对象已死亡"
+YandereCannotKillLover: "它可是你的宝宝啊~你怎么能忍心杀它~"
 
 # 信息 / Messages
 Message.SetToSeconds: "信息发送冷却时间为【{0}】秒"
@@ -1496,20 +1506,6 @@ PenguinKillButtonText: "拖拽"
 ShifterKillButtonText: "交换"
 CollatorButtonText: "提取"
 DoomsayerKillButtonText: "提示"
-YandereKillButtonText: "击杀"
-
-# 病娇 / Yandere
-YandereDeathCooldown: "暗恋对象死亡后的击杀冷却时间"
-YandereProximityRange: "玩家成为情敌需要与暗恋对象的最大距离"
-YandereRivalTime: "成为情敌所需时间"
-YandereRivalKillCdReduction: "击杀情敌后减少击杀冷却时间"
-YandereNonRivalKillCdIncrease: "击杀非情敌后增加击杀冷却时间"
-YandereShowLoverArrow: "追踪暗恋对象的箭头"
-YandereShowRivalArrow: "追踪情敌的箭头"
-YandereArrowUpdateInterval: "追踪箭头更新时间"
-YandereRivalKilled: "你击杀了一名情敌！击杀冷却缩短。"
-YandereLoverDead: "暗恋对象已死亡"
-YandereCannotKillLover: "它可是你的宝宝啊~你怎么能忍心杀它~"
 
 # 作弊 / EAC
 EAC.CheatDetected.HighLevel: "警告：EAC正在抵御炸房外挂"
