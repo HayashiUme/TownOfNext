@@ -336,7 +336,7 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
 
         var loverIsAlive = Lover != null && Lover.IsAlive();
 
-        // 胜利条件：除病娇外没有其他存活玩家（暗恋对象存活/死亡均可）
+        // 胜利条件：除病娇外没有其他存活玩家
         // 如果暗恋对象存活，两人共同胜利
         if (otherAlive.Count == 0
             || (otherAlive.Count == 1 && loverIsAlive && otherAlive[0].PlayerId == LoverId))
