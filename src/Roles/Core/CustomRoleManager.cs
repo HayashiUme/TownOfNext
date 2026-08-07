@@ -652,6 +652,7 @@ public enum CustomRoles
     Swapper,
     Criminologist,
     Justice,
+    SecurityGuard,
     //Neutral
     Arsonist,
     Jester,

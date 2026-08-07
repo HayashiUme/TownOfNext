@@ -756,6 +756,19 @@ class EnterVentPatch
         Main.LastEnteredVent.Add(pc.PlayerId, __instance);
         Main.LastEnteredVentLocation.Remove(pc.PlayerId);
         Main.LastEnteredVentLocation.Add(pc.PlayerId, pc.GetTruePosition());
+
+        // 保安封锁的管道
+        if (AmongUsClient.Instance.AmHost &&
+            Roles.Crewmate.SecurityGuard.IsVentLocked(__instance.Id))
+        {
+            _ = new LateTask(() =>
+            {
+                if (!GameStates.IsMeeting)
+                    pc.MyPhysics.RpcBootFromVent(__instance.Id);
+                if (pc.AmOwner) pc.walkingToVent = false;
+                pc.Notify(GetString("SecurityGuardVentLockedBooted"));
+            }, 0.3f, "Boot Locked Vent");
+        }
     }
 }
 [HarmonyPatch(typeof(PlayerPhysics._CoEnterVent_d__47), nameof(PlayerPhysics._CoEnterVent_d__47.MoveNext))]
@@ -775,6 +788,19 @@ class CoEnterVentPatch
         Logger.Info($"{playerPhysics.myPlayer.GetNameWithRole()} CoEnterVent: {id}", "CoEnterVent");
 
         var user = playerPhysics.myPlayer;
+
+        // 保安封锁的管道检测
+        if (Roles.Crewmate.SecurityGuard.IsVentLocked(id))
+        {
+            _ = new LateTask(() =>
+            {
+                if (!GameStates.IsMeeting)
+                    playerPhysics.RpcBootFromVent(id);
+                if (user.AmOwner) user.walkingToVent = false;
+                user.Notify(GetString("SecurityGuardVentLockedBooted"));
+            }, 0.3f, "Boot Locked Vent");
+            return false;
+        }
 
         if ((!user.GetRoleClass()?.OnEnterVent(playerPhysics, id) ?? false) ||
             (user.Data.Role.Role != RoleTypes.Engineer && // 非工程师
