@@ -193,4 +193,5 @@ public enum CountTypes
     Demon = CustomWinner.Demon,
     BloodKnight = CustomWinner.BloodKnight,
     Succubus = CustomWinner.Succubus,
+    Yandere = CustomWinner.Yandere,
 }
