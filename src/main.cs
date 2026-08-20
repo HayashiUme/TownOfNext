@@ -239,6 +239,7 @@ public class Main : BasePlugin
                 {CustomRoles.Noisemaker, "#8cffff"},
                 {CustomRoles.Tracker, "#8cffff"},
                 {CustomRoles.Detective, "#8cffff"},
+                {CustomRoles.Judge, "#8cffff"},
                 {CustomRoles.Impostor, "#ff1919"},
                 {CustomRoles.Shapeshifter, "#ff1919"},
                 {CustomRoles.Phantom, "#ff1919"},
@@ -269,6 +270,7 @@ public class Main : BasePlugin
                 {CustomRoles.Charmed, "#ff00ff"},
                 {CustomRoles.Bait, "#00f7ff"},
                 {CustomRoles.Beartrap, "#5a8fd0"},
+                {CustomRoles.Colorblind, "#8c8c8c"},
             };
             var type = typeof(RoleBase);
             var roleClassArray =

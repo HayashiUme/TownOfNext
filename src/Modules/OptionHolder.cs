@@ -654,6 +654,7 @@ public static class Options
         Bait.SetupCustomOption();
         Beartrap.SetupCustomOption();
         Workhorse.SetupCustomOption();
+        Colorblind.SetupCustomOption();
 
         // 船员专属附加
         TextOptionItem.Create(5_100_002, "MenuTitle.Addon.Crew", TabGroup.Addons)

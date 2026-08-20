@@ -391,6 +391,9 @@ public static class CustomRoleManager
                 case CustomRoles.TicketsStealer:
                     TicketsStealer.Add(pc.PlayerId);
                     break;
+                case CustomRoles.Colorblind:
+                    Colorblind.Add(pc.PlayerId);
+                    break;
             }
         }
     }
@@ -617,6 +620,7 @@ public enum CustomRoles
     Noisemaker,
     Tracker,
     Detective,
+    Judge,
     //Crewmate
     Luckey,
     LazyGuy,
@@ -643,14 +647,13 @@ public enum CustomRoles
     Medic,
     FortuneTeller,
     Glitch,
-    Judge,
+    JudgeTONX,
     Mortician,
     Medium,
     Observer,
     DoveOfPeace,
     Collator,
     Swapper,
-    Criminologist,
     Justice,
     //Neutral
     Arsonist,
@@ -715,6 +718,7 @@ public enum CustomRoles
     Charmed,
     Bait,
     Beartrap,
+    Colorblind,
 }
 public enum CustomRoleTypes
 {

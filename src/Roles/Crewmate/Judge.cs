@@ -1,16 +1,16 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using TONX.Modules;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
 namespace TONX.Roles.Crewmate;
-public sealed class Judge : RoleBase, IMeetingButton
+public sealed class JudgeTONX : RoleBase, IMeetingButton
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
-            typeof(Judge),
-            player => new Judge(player),
-            CustomRoles.Judge,
+            typeof(JudgeTONX),
+            player => new JudgeTONX(player),
+            CustomRoles.JudgeTONX,
             () => RoleTypes.Crewmate,
             CustomRoleTypes.Crewmate,
             22300,
@@ -18,7 +18,7 @@ public sealed class Judge : RoleBase, IMeetingButton
             "ju|法官|审判",
             "#f8d85a"
         );
-    public Judge(PlayerControl player)
+    public JudgeTONX(PlayerControl player)
     : base(
         RoleInfo,
         player
@@ -117,7 +117,7 @@ public sealed class Judge : RoleBase, IMeetingButton
             //死者检查
             Utils.NotifyRoles(isForMeeting: true, NoCache: true);
 
-            _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("TrialKill"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Judge), GetString("TrialKillTitle")), false, true, Name); }, 0.6f, "Guess Msg");
+            _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("TrialKill"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.JudgeTONX), GetString("TrialKillTitle")), false, true, Name); }, 0.6f, "Guess Msg");
 
         }, 0.2f, "Trial Kill");
 
@@ -127,7 +127,7 @@ public sealed class Judge : RoleBase, IMeetingButton
     {
         spam = false;
         if (!GameStates.IsInGame || pc == null) return false;
-        if (!pc.Is(CustomRoles.Judge)) return false;
+        if (!pc.Is(CustomRoles.JudgeTONX)) return false;
 
         if (!ChatCommand.OperateRoleCommand(ref msg, "sp|jj|tl|trial|审判|判|审", out int operate)) return false;
 

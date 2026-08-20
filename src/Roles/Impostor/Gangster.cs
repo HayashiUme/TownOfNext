@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using Hazel;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
@@ -119,7 +119,7 @@ public sealed class Gangster : RoleBase, IImpostor
             (pc.Is(CustomRoles.Sheriff) && !OptionSheriffCanBeMadmate.GetBool()) ||
             (pc.Is(CustomRoles.Mayor) && !OptionMayorCanBeMadmate.GetBool()) ||
             (pc.Is(CustomRoles.NiceGuesser) && !OptionNGuesserCanBeMadmate.GetBool()) ||
-            (pc.Is(CustomRoles.Judge) && !OptionJudgeCanBeMadmate.GetBool()) ||
+            (pc.Is(CustomRoles.JudgeTONX) && !OptionJudgeCanBeMadmate.GetBool()) ||
             (pc.Is(CustomRoles.Swapper) && !OptionSwapperCanBeMadmate.GetBool()) ||
             pc.Is(CustomRoles.Snitch) ||
             pc.Is(CustomRoles.LazyGuy) ||

@@ -37,3 +37,13 @@
 ## Restoration
 - Restored the Discord server invite link button in MainMenu
 - Restored TONX Chan (Lobby Sharer); use /dc in the lobby to share room code to Discord
+
+## New Role
+- Addon: Colorblind
+
+## Role Changes
+- Adapted the vanilla Judge role added in AmongUs v18.0
+- Rewrote Justice's Balance Meeting to use the vanilla overrule mechanic (plays the overrule animation and force-exiles the player with more votes)
+
+## Removed
+- Removed the Criminologist role
