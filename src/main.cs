@@ -32,7 +32,7 @@ public class Main : BasePlugin
     public const string DebugKeySalt = "59687b";
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
     // == 版本相关设定 / Version Config ==
-    public const string LowestSupportedVersion = "2026.3.31"; // 17.3.1
+    public const string LowestSupportedVersion = "2026.8.18"; // 18.0
     public static readonly bool IsPublicAvailableOnThisVersion = true;
     public const string PluginVersion = "4.0.1";
     public const int PluginCreation = 1;
