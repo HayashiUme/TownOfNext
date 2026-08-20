@@ -1,11 +1,11 @@
-﻿namespace TONX.Patches;
+namespace TONX.Patches;
 
 [HarmonyPatch(typeof(Constants), nameof(Constants.GetBroadcastVersion))]
 public static class ConstantsGetBroadcastVersionPatch
 {
     public static void Postfix(ref int __result)
     {
-        if (GameStates.IsLocalGame)
+        if (GameStates.IsLocalGame || GameStates.IsFreePlay)
         {
             return;
         }

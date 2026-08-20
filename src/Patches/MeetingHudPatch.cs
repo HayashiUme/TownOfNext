@@ -264,7 +264,15 @@ public static class MeetingHudPatch
         public static bool Prefix() { return GameManager.Instance is not null; }
         public static void Postfix(MeetingHud __instance)
         {
-            if (!AmongUsClient.Instance.AmHost || !GameStates.IsInGame || __instance == null || __instance.IsDestroyedOrNull()) return;
+            if (__instance == null || __instance.IsDestroyedOrNull()) return;
+            // 设置自定义会议标题
+            if (__instance.CurrentState == MeetingHud.MeetingStates.Discussion)
+            {
+                var customTitle = Options.CurrentGameMode.GetModeClass()?.GetMeetingTitleText();
+                if (!string.IsNullOrEmpty(customTitle) && __instance.TitleText.text != customTitle)
+                    __instance.TitleText.text = customTitle;
+            }
+            if (!AmongUsClient.Instance.AmHost || !GameStates.IsInGame) return;
             if (Input.GetMouseButtonUp(1) && Input.GetKey(KeyCode.LeftControl))
             {
                 __instance.playerStates.DoIf(x => x.HighlightedFX.enabled, x =>
@@ -326,31 +334,5 @@ class SetHighlightedPatch
         if (!__instance.HighlightedFX) return false;
         __instance.HighlightedFX.enabled = value;
         return false;
-    }
-}
-
-[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.PopulateButtons))]
-class JusticeMeetingHudPopulateButtonsPatch
-{
-    public static void Postfix(MeetingHud __instance)
-    {
-        HandleJusticeMeeting(__instance);
-    }
-    public static void HandleJusticeMeeting(MeetingHud __instance)
-    {
-        if (!Justice.IsJusticeMeeting()) return;
-
-        var targets = Justice.GetHostingJustice()?.SelectedPlayers ?? new();
-        var num = -1;
-        foreach (var pva in __instance.playerStates)
-        {
-            if (!targets.Contains(pva.PlayerId))
-            {
-                pva.gameObject.SetActive(false);
-                continue;
-            }
-            pva.transform.localPosition = new Vector3(2f * num, 0f, pva.transform.localPosition.z);
-            num *= -1;
-        }
     }
 }
