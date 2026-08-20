@@ -24,10 +24,7 @@ public static class Colorblind
     }
     public static bool IsEnable => playerIdList.Count > 0;
     public static bool IsThisRole(byte playerId) => playerIdList.Contains(playerId);
-
-    /// <summary>
-    /// 色盲玩家看到其他玩家的颜色：所有颜色都偏移一位（红→蓝→绿…），保证与真实颜色不同
-    /// </summary>
+    
     public static string GetPerceivedColorCode(PlayerControl target)
     {
         var colorId = target?.Data?.DefaultOutfit?.ColorId ?? -1;

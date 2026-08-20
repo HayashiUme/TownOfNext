@@ -12,6 +12,13 @@ public static class NameColorManager
     {
         if (!AmongUsClient.Instance.IsGameStarted) return name;
 
+        // 色盲：看到其他玩家的颜色与真实颜色不同
+        if (Colorblind.IsThisRole(seer.PlayerId) && seer.PlayerId != target.PlayerId)
+        {
+            var perceivedColor = Colorblind.GetPerceivedColorCode(target);
+            if (perceivedColor != "") return $"<color=#{perceivedColor}>{name}</color>";
+        }
+
         if (!TryGetData(seer, target, out var colorCode))
         {
             if (KnowTargetRoleColor(seer, target, isMeeting, out var color))
