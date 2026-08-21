@@ -414,11 +414,17 @@ public static class CustomRoleManager
     /// 无论 voter,voted 是否持有职业，职业都会触发的 Vote 判断事件
     /// 会默认为全体职业注册
     /// </summary>
-    /// <param name="voter">看到的人</param>
-    /// <param name="voted">被看到的人</param>
+    /// <param name="voter">投票者</param>
+    /// <param name="voted">被投票者</param>
     /// <returns>是否清除投票</returns>
     public static bool CheckVoteOthers(PlayerControl voter, PlayerControl voted)
     {
+        if (SpecialMeetingManager.GetActiveSpecialMeeting() is { } specialMeeting &&
+            specialMeeting.IsSpecialMeetingActive)
+        {
+            if (voted.PlayerId == MeetingVoteManager.Skip && !specialMeeting.AllowSkip) return false;
+            return specialMeeting.CheckSpecialMeetingVote(voter, voted);
+        }
         foreach (var vote in CheckVote)
         {
             if (!vote(voter, voted))

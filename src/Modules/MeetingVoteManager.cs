@@ -164,6 +164,9 @@ public class MeetingVoteManager
         var logName = result.Exiled == null ? (result.IsTie ? "平票" : "跳过") : result.Exiled.Object.GetNameWithRole();
         logger.Info($"会议结束，结果：{logName}");
         CustomRoleManager.AllActiveRoles.Values.ToList().Do(role => role?.OnVotingComplete(result));
+        
+        var specialMeeting = SpecialMeetingManager.GetActiveSpecialMeeting();
+        bool specialMeetingHandled = specialMeeting != null && specialMeeting.OnSpecialMeetingVotingComplete(result);
 
         var states = new List<MeetingHud.VoterState>();
         foreach (var voteArea in meetingHud.playerStates)
@@ -184,27 +187,43 @@ public class MeetingVoteManager
             }
         }
 
+        NetworkedPlayerInfo exiled = result.Exiled;
+        bool isTie = result.IsTie;
+        bool wasOverruled = false;
+        if (!specialMeetingHandled)
+        {
+            foreach (var role in CustomRoleManager.AllActiveRoles.Values.ToList())
+            {
+                var overrideTarget = role?.GetVoteOverride(result);
+                if (overrideTarget == null) continue;
+                exiled = overrideTarget;
+                isTie = false;
+                wasOverruled = true;
+                break;
+            }
+        }
+
         if (AntiBlackout.OverrideExiledPlayer)
         {
             meetingHud.RpcVotingComplete(states.ToArray(), null, true, false, byte.MaxValue);
-            ExileControllerWrapUpPatch.AntiBlackout_LastExiled = result.Exiled;
+            ExileControllerWrapUpPatch.AntiBlackout_LastExiled = exiled;
         }
         else
         {
-            meetingHud.RpcVotingComplete(states.ToArray(), result.Exiled, result.IsTie, false, byte.MaxValue);
+            meetingHud.RpcVotingComplete(states.ToArray(), exiled, isTie, wasOverruled, byte.MaxValue);
         }
-        if (result.Exiled != null)
+        if (!specialMeetingHandled && exiled != null)
         {
-            MeetingHudPatch.CheckForDeathOnExile(CustomDeathReason.Vote, result.Exiled.PlayerId);
+            MeetingHudPatch.CheckForDeathOnExile(CustomDeathReason.Vote, exiled.PlayerId);
 
             bool DecidedWinner = false;
             List<string> WinDescriptionText = new();
             foreach (var roleClass in CustomRoleManager.AllActiveRoles.Values.ToList())
             {
-                var action = roleClass.CheckExile(result.Exiled, ref DecidedWinner, ref WinDescriptionText);
+                var action = roleClass.CheckExile(exiled, ref DecidedWinner, ref WinDescriptionText);
                 if (action != null) ExileControllerWrapUpPatch.ActionsOnWrapUp.Add(action);
             }
-            ConfirmEjections.Apply(result.Exiled, DecidedWinner, WinDescriptionText);
+            ConfirmEjections.Apply(exiled, DecidedWinner, WinDescriptionText);
         }
         Destroy();
     }

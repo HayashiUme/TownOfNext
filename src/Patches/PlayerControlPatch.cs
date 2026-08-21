@@ -1012,3 +1012,20 @@ class CheckAppearPatch
         return true;
     }
 }
+[HarmonyPatch(typeof(PlayerVoteArea), nameof(PlayerVoteArea.JudgeOverruleVote))]
+class JudgeOverruleVotePatch
+{
+    public static bool Prefix(PlayerVoteArea __instance)
+    {
+        if (!AmongUsClient.Instance.AmHost) return true;
+
+        var judge = PlayerControl.LocalPlayer;
+        var target = Utils.GetPlayerById(__instance.PlayerId);
+        if (judge == null || target == null) return true;
+
+        if (judge.GetRoleClass()?.OnCheckOverrule(target) == false)
+            return false;
+
+        return true;
+    }
+}
