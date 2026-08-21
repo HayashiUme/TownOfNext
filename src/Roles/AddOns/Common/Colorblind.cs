@@ -25,11 +25,51 @@ public static class Colorblind
     public static bool IsEnable => playerIdList.Count > 0;
     public static bool IsThisRole(byte playerId) => playerIdList.Contains(playerId);
     
-    public static string GetPerceivedColorCode(PlayerControl target)
+    public static void RpcSetSkin(PlayerControl seer)
     {
-        var colorId = target?.Data?.DefaultOutfit?.ColorId ?? -1;
-        if (colorId < 0 || colorId >= Palette.PlayerColors.Length) return "";
-        var wrongColor = Palette.PlayerColors[(colorId + 1) % Palette.PlayerColors.Length];
-        return ColorUtility.ToHtmlStringRGB(wrongColor);
+        if (!AmongUsClient.Instance.AmHost || seer == null) return;
+        int colorblindClientId = seer.GetClientId();
+        if (colorblindClientId < 0) return;
+
+        foreach (var pc in Main.AllPlayerControls)
+        {
+            if (pc.PlayerId == seer.PlayerId || pc.Data == null || pc.NetId == 0) continue;
+            var outfit = pc.Data.DefaultOutfit;
+            if (outfit == null) continue;
+
+            int wrongColor = (outfit.ColorId + 1) % Palette.PlayerColors.Length;
+            if (wrongColor < 0 || wrongColor >= Palette.PlayerColors.Length) continue;
+
+            var sender = CustomRpcSender.Create(name: $"Colorblind.RpcSetSkin({seer.Data.PlayerName}→{pc.Data.PlayerName})");
+
+            sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetColor, colorblindClientId)
+                .Write(pc.Data.NetId)
+                .Write(wrongColor)
+                .EndRpc();
+
+            sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetHatStr, colorblindClientId)
+                .Write(outfit.HatId)
+                .Write(pc.GetNextRpcSequenceId(RpcCalls.SetHatStr))
+                .EndRpc();
+
+            sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetSkinStr, colorblindClientId)
+                .Write(outfit.SkinId)
+                .Write(pc.GetNextRpcSequenceId(RpcCalls.SetSkinStr))
+                .EndRpc();
+
+            sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetVisorStr, colorblindClientId)
+                .Write(outfit.VisorId)
+                .Write(pc.GetNextRpcSequenceId(RpcCalls.SetVisorStr))
+                .EndRpc();
+
+            sender.SendMessage();
+        }
+    }
+    
+    public static void RpcSetSkinAll()
+    {
+        foreach (var pc in Main.AllPlayerControls)
+            if (IsThisRole(pc.PlayerId))
+                RpcSetSkin(pc);
     }
 }

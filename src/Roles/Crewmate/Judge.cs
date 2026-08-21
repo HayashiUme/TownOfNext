@@ -71,10 +71,8 @@ public sealed class JudgeTONX : RoleBase, IMeetingButton
     {
         if (!Trial(target, out var reason))
         {
-            Utils.SendMessage(reason, target.PlayerId);
-            return false;
+            Utils.SendMessage(reason, Player.PlayerId);
         }
-
         return false;
     }
 

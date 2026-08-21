@@ -24,6 +24,13 @@ public static class SpecialMeetingManager
     [HarmonyPostfix]
     public static void Postfix(MeetingHud __instance)
     {
-        GetActiveSpecialMeeting()?.HandleSpecialMeeting(__instance);
+        foreach (var role in CustomRoleManager.AllActiveRoles.Values)
+        {
+            if (role is ISpecialMeeting debugSm)
+                Logger.Info($"SpecialMeeting.Postfix: role={role.Player?.GetNameWithRole()} active={debugSm.IsSpecialMeetingActive} players=[{(debugSm.SpecialMeetingPlayers != null ? string.Join(",", debugSm.SpecialMeetingPlayers) : "null")}]", "SpecialMeeting");
+        }
+        var active = GetActiveSpecialMeeting();
+        Logger.Info($"SpecialMeeting.Postfix: active={(active == null ? "NULL" : active.GetType().Name)}", "SpecialMeeting");
+        active?.HandleSpecialMeeting(__instance);
     }
 }

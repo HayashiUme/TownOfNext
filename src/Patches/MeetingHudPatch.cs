@@ -129,6 +129,8 @@ public static class MeetingHudPatch
 
             SoundManager.Instance.ChangeAmbienceVolume(0f);
             if (!GameStates.IsModHost) return;
+            // 会议开始重新给色盲客户端发送偏移外观（抵消 GameData 同步造成的覆盖）
+            TONX.Roles.AddOns.Common.Colorblind.RpcSetSkinAll();
             var myRole = PlayerControl.LocalPlayer.GetRoleClass();
             foreach (var pva in __instance.playerStates)
             {
@@ -337,5 +339,32 @@ class SetHighlightedPatch
         if (!__instance.HighlightedFX) return false;
         __instance.HighlightedFX.enabled = value;
         return false;
+    }
+}
+
+[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.SetJudgeOverrule))]
+class JudgeSetJudgeOverrulePatch
+{
+    public static bool Prefix(MeetingHud __instance, [HarmonyArgument(0)] PlayerId judgePlayerId, [HarmonyArgument(1)] PlayerId targetPlayerId)
+    {
+        if (!AmongUsClient.Instance.AmHost) return true;
+
+        var judge = Utils.GetPlayerById(judgePlayerId);
+        var target = Utils.GetPlayerById(targetPlayerId);
+        if (judge == null || target == null) return true;
+
+        if (judge.GetRoleClass()?.OnCheckOverrule(target) == false)
+        {
+            Logger.Info($"{judge.GetNameWithRole()} 的否决被 {judge.GetRoleClass()?.GetType().Name} 阻止 => {target.GetNameWithRole()}", "JudgeOverrule");
+            var pva = __instance.playerStates.FirstOrDefault(x => (byte)x.PlayerId == (byte)judgePlayerId);
+            if (pva != null)
+            {
+                pva.UnsetVote();
+                __instance.RpcClearVote(pva.PlayerId);
+            }
+            __instance.UpdateForeground();
+            return false;
+        }
+        return true;
     }
 }

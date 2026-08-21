@@ -183,6 +183,7 @@ Prefix.Mimic: "Mimic "
 Prefix.Reach: "Reach "
 Prefix.Bait: "Bait "
 Prefix.Beartrap: "Beartrap "
+Prefix.Colorblind: "Colorblind "
 ## 胜利界面职业名 / Role Name for End Screen
 WinnerRoleText.Impostor: "Impostors"
 WinnerRoleText.Crewmate: "Crewmates"

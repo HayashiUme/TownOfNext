@@ -197,6 +197,7 @@ Prefix.Mimic: "宝箱怪"
 Prefix.Reach: "持枪"
 Prefix.Bait: "诱饵"
 Prefix.Beartrap: "陷阱"
+Prefix.Colorblind: "色盲"
 
 ## 胜利界面职业名 / Role Name for End Screen
 WinnerRoleText.Impostor: "内鬼"

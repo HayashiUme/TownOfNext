@@ -197,6 +197,7 @@ Prefix.Mimic: "保險箱"
 Prefix.Reach: "長槍"
 Prefix.Bait: "誘餌"
 Prefix.Beartrap: "設陷"
+Prefix.ColorBlind: "色盲"
 
 ## 胜利界面职业名 / Role Name for End Screen
 WinnerRoleText.Impostor: "偽裝者"

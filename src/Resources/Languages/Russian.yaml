@@ -183,6 +183,7 @@ Prefix.Mimic: "Мимикующий "
 Prefix.Reach: "Длиннолап "
 Prefix.Bait: "Байт "
 Prefix.Beartrap: "Капкан "
+Prefix.Colorblind: "Дальтоник "
 ## 胜利界面职业名 / Role Name for End Screen
 WinnerRoleText.Impostor: "Предатели"
 WinnerRoleText.Crewmate: "Члены Экипажа"

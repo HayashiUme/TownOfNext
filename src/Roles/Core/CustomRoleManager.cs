@@ -393,6 +393,7 @@ public static class CustomRoleManager
                     break;
                 case CustomRoles.Colorblind:
                     Colorblind.Add(pc.PlayerId);
+                    _ = new LateTask(() => Colorblind.RpcSetSkin(pc), 1f, "Colorblind.RpcSetSkin");
                     break;
             }
         }
@@ -419,10 +420,12 @@ public static class CustomRoleManager
     /// <returns>是否清除投票</returns>
     public static bool CheckVoteOthers(PlayerControl voter, PlayerControl voted)
     {
-        if (SpecialMeetingManager.GetActiveSpecialMeeting() is { } specialMeeting &&
+        var activeSm = SpecialMeetingManager.GetActiveSpecialMeeting();
+        Logger.Info($"CheckVoteOthers: activeSm={(activeSm == null ? "NULL" : activeSm.GetType().Name)}, voter={(voter != null ? voter.GetNameWithRole() : "null")}, voted={(voted != null ? voted.GetNameWithRole() : "null")}", "SpecialMeeting");
+        if (activeSm is { } specialMeeting &&
             specialMeeting.IsSpecialMeetingActive)
         {
-            if (voted.PlayerId == MeetingVoteManager.Skip && !specialMeeting.AllowSkip) return false;
+            if (voted == null && !specialMeeting.AllowSkip) return false;
             return specialMeeting.CheckSpecialMeetingVote(voter, voted);
         }
         foreach (var vote in CheckVote)

@@ -183,6 +183,7 @@ Prefix.Mimic: "Mímico "
 Prefix.Reach: "Armador "
 Prefix.Bait: "Armador "
 Prefix.Beartrap: "Imobilizador "
+Prefix.Colorblind: "Daltônico "
 ## 胜利界面职业名 / Role Name for End Screen
 WinnerRoleText.Impostor: "Vitória dos Impostores!"
 WinnerRoleText.Crewmate: "Vitória dos Tripulantes"
