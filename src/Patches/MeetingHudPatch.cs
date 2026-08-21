@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Text;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
+using InnerNet;
 using TONX.Modules;
 using TONX.Roles.AddOns.Common;
 using TONX.Roles.Crewmate;
@@ -56,19 +57,21 @@ public static class MeetingHudPatch
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.CastVote))]
     public static class CastVotePatch
     {
-        public static bool Prefix(MeetingHud __instance, [HarmonyArgument(0)] byte srcPlayerId /* 投票者 */ , [HarmonyArgument(1)] byte suspectPlayerId /* 被票者 */ )
+        public static bool Prefix(MeetingHud __instance, [HarmonyArgument(0)] PlayerId srcPlayerId /* 投票者 */ , [HarmonyArgument(1)] PlayerId suspectPlayerId /* 被票者 */ )
         {
             if (!AmongUsClient.Instance.AmHost) return true;
 
-            var voter = Utils.GetPlayerById(srcPlayerId);
-            var voted = Utils.GetPlayerById(suspectPlayerId);
+            byte srcId = srcPlayerId;
+            byte suspectId = suspectPlayerId;
+            var voter = Utils.GetPlayerById(srcId);
+            var voted = Utils.GetPlayerById(suspectId);
 
             if (voter != null)
             {
                 //主动叛变模式
-                if (CustomRoles.Madmate.IsEnable() && Options.MadmateSpawnMode.GetInt() == 2 && srcPlayerId == suspectPlayerId)
+                if (CustomRoles.Madmate.IsEnable() && Options.MadmateSpawnMode.GetInt() == 2 && srcId == suspectId)
                 {
-                    if (FirstCastVote[srcPlayerId])
+                    if (FirstCastVote[srcId])
                     {
                         if (Main.AllPlayerControls.Count(p => p.Is(CustomRoles.Madmate)) < CustomRoles.Madmate.GetCount() && voter.CanBeMadmate())
                         {
@@ -84,7 +87,7 @@ public static class MeetingHudPatch
                         }
                         __instance.RpcClearVote(voter.PlayerId);
                         Logger.Info($"{voter.GetNameWithRole()} 的投票被清除", nameof(CastVotePatch));
-                        FirstCastVote[srcPlayerId] = false;
+                        FirstCastVote[srcId] = false;
                         return false;
                     }
                 }
@@ -103,7 +106,7 @@ public static class MeetingHudPatch
                 }
             }
 
-            MeetingVoteManager.Instance?.SetVote(srcPlayerId, suspectPlayerId);
+            MeetingVoteManager.Instance?.SetVote(srcId, suspectId);
             return true;
         }
     }
