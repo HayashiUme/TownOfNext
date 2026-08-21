@@ -300,6 +300,7 @@ public class ChatCommand(List<string> keywords, Func<CommandAccess> access, Func
         RoleCommands.Add(CustomRoles.Reach, new() { "re", "持槍", "手长" });
         RoleCommands.Add(CustomRoles.Seer, new() { "se", "靈媒" });
         RoleCommands.Add(CustomRoles.Beartrap, new() { "tra", "陷阱師", "陷阱", "小奖" });
+        RoleCommands.Add(CustomRoles.Colorblind, new() { "bl", "色盲", "瞎子", "盲人" });
         RoleCommands.Add(CustomRoles.YouTuber, new() { "yt", "up" });
         RoleCommands.Add(CustomRoles.Mimic, new() { "mi", "寶箱怪", "宝箱" });
         RoleCommands.Add(CustomRoles.TicketsStealer, new() { "ts", "竊票者", "偷票", "偷票者", "窃票师", "窃票" });
