@@ -16,8 +16,8 @@ public static class SpecialMeetingManager
             if (role is ISpecialMeeting specialMeeting && specialMeeting.IsSpecialMeetingActive)
                 return specialMeeting;
         }
-        if (Options.CurrentGameMode.GetModeClass() is ISpecialMeeting modeSpecialMeeting && modeSpecialMeeting.IsSpecialMeetingActive)
-            return modeSpecialMeeting;
+        // if (Options.CurrentGameMode.GetModeClass() is ISpecialMeeting modeSpecialMeeting && modeSpecialMeeting.IsSpecialMeetingActive)
+            // return modeSpecialMeeting;
         return null;
     }
 

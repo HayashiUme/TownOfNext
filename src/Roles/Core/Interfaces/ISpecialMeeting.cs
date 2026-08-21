@@ -60,9 +60,9 @@ public interface ISpecialMeeting
 
     /// <summary>
     /// 特殊会议投票结束时的自定义处理。<br/>
-    /// 返回 true 表示已接管放逐逻辑，跳过正常的投票放逐流程。
     /// </summary>
     /// <param name="voteResult">投票统计结果</param>
+    /// <returns>返回 true 表示已接管放逐逻辑，跳过正常的投票放逐流程。</returns>
     bool OnSpecialMeetingVotingComplete(MeetingVoteManager.VoteResult voteResult) => false;
 
     /// <summary>

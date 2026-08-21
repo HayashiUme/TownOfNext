@@ -361,6 +361,10 @@ public class MeetingVoteManager
         /// 是否平票
         /// </summary>
         public readonly bool IsTie;
+        /// <summary>
+        /// 是否无人投票
+        /// </summary>
+        public readonly bool NoVotes;
 
         public VoteResult(Dictionary<byte, int> votedCounts)
         {
@@ -380,9 +384,17 @@ public class MeetingVoteManager
                 Exiled = null;
                 logger.Info($"{string.Join('，', mostVotedPlayers.Select(GetVoteName))} 平票");
             }
+            else if (mostVotedPlayers.Length > 1 && maxVoteNum == 0)
+            {
+                IsTie = true;
+                NoVotes = true;
+                Exiled = null;
+                logger.Info($"{string.Join('，', mostVotedPlayers.Select(GetVoteName))} 票数均为0，无人投票。");
+            }
             else
             {
                 IsTie = false;
+                NoVotes = false;
                 Exiled = GameData.Instance.GetPlayerById(mostVotedPlayers[0]);
                 logger.Info($"得票最多者：{GetVoteName(mostVotedPlayers[0])}");
             }

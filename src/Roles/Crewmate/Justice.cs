@@ -6,13 +6,13 @@ using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Crewmate;
 
-public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable
+public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable, ISpecialMeeting
 {
     public static readonly SimpleRoleInfo RoleInfo = SimpleRoleInfo.Create(
         typeof(Justice),
         player => new Justice(player),
         CustomRoles.Justice,
-        () => RoleTypes.Crewmate,
+        () => RoleTypes.Judge,
         CustomRoleTypes.Crewmate,
         23400,
         SetupOptionItem,
@@ -22,8 +22,7 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable
     
     public Justice(PlayerControl player) : base(RoleInfo, player)
     {
-        SelectedPlayers = new List<byte>(2);
-        CustomRoleManager.CheckVote.Add(CheckVoteOthers);
+        SpecialMeetingPlayers = new List<byte>(2);
     }
 
     private static OptionItem OptionCanUseTimes;
@@ -33,10 +32,12 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable
         JusticeCanUseTimes,
         JusticeMeetingVotingTime
     }
-
-    private bool HostingJusticeMeeting;
+    
     private int SkillLimits;
-    public List<byte> SelectedPlayers { get; set; }
+    public List<byte> SelectedPlayes;
+    public bool IsSpecialMeetingActive { get; set; }
+    public List<byte> SpecialMeetingPlayers { get; set; }
+    public bool AllowSkip => false;
     public bool RevertOnDie => true;
 
     private static void SetupOptionItem()
@@ -46,12 +47,39 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable
         OptionMeetingVotingTime = IntegerOptionItem.Create(RoleInfo, 11, OptionName.JusticeMeetingVotingTime, new(0, 300, 15), 120, false)
             .SetValueFormat(OptionFormat.Seconds);
     }
-
+    public override void ApplyGameOptions(IGameOptions opt)
+    {
+        AURoleOptions.JudgeTaskRequirementPercentage = 0f;
+    }
     public override void Add()
     {
         SkillLimits = OptionCanUseTimes.GetInt();
-        HostingJusticeMeeting = false;
+        IsSpecialMeetingActive = false;
     }
+    public bool CheckSpecialMeetingVote(PlayerControl voter, PlayerControl voted)
+    {
+        if (voted == null) return false;
+        if (SpecialMeetingPlayers.Contains(voted.PlayerId)) return true;
+        Utils.SendMessage(GetString("JusticeMeetingInvalidVote"), voter.PlayerId);
+        return false;
+    }
+    public override NetworkedPlayerInfo GetVoteOverride(MeetingVoteManager.VoteResult result)
+    {
+        if (!IsSpecialMeetingActive || result.IsTie || result.Exiled == null) return null;
+        return result.Exiled;
+    }
+
+    public bool OnSpecialMeetingVotingComplete(MeetingVoteManager.VoteResult voteResult)
+    {
+        // 天平会议中平票 => 双死（不播放放逐动画）
+        if (!voteResult.IsTie || !voteResult.NoVotes) return false;
+        var (target1, target2) = (SpecialMeetingPlayers[0], SpecialMeetingPlayers[1]);
+        MeetingHudPatch.TryAddAfterMeetingDeathPlayers(CustomDeathReason.Vote, target1);
+        MeetingHudPatch.TryAddAfterMeetingDeathPlayers(CustomDeathReason.Vote, target2);
+        Logger.Info($"Double Exile => {Utils.GetPlayerById(target1)?.GetNameWithRole()} & {Utils.GetPlayerById(target2)?.GetNameWithRole()}", "Justice");
+        return true; 
+    }
+    
     public int CalculateMeetingTimeDelta() => OptionMeetingVotingTime.GetInt() - Main.RealOptionsData.GetInt(Int32OptionNames.VotingTime);
 
     public override void NotifyOnMeetingStart(ref List<(string, byte, string)> msgToSend)
@@ -65,9 +93,9 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable
     }
     public override void OnStartMeeting()
     {
-        if (!HostingJusticeMeeting) return;
-        var target1 = Utils.GetPlayerById(SelectedPlayers[0]);
-        var target2 = Utils.GetPlayerById(SelectedPlayers[1]);
+        if (!IsSpecialMeetingActive) return;
+        var target1 = Utils.GetPlayerById(SpecialMeetingPlayers[0]);
+        var target2 = Utils.GetPlayerById(SpecialMeetingPlayers[1]);
         Utils.SendMessage(
             string.Format(GetString("JusticeMeetingStart"), target1.GetRealName(), target2.GetRealName()),
             255,
@@ -75,36 +103,27 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable
         );
         foreach (var player in Main.AllPlayerControls) player.KillFlash();
     }
-    public static bool CheckVoteOthers(PlayerControl voter, PlayerControl voted)
+    public void OnSpecialMeetingEnd()
     {
-        if (!IsJusticeMeeting()) return true;
-        if (voted == null) return false;
-        if (GetHostingJustice()?.SelectedPlayers?.Contains(voted.PlayerId) ?? false) return true;
-        Utils.SendMessage(GetString("JusticeMeetingInvalidVote"), voter.PlayerId);
-        return false;
+        if (!IsSpecialMeetingActive) return;
+        SpecialMeetingPlayers.Clear();
+        IsSpecialMeetingActive = false;
+        SendRPC();
     }
-    public override void OnVotingComplete(MeetingVoteManager.VoteResult voteResult)
-    {
-        if (!HostingJusticeMeeting || !voteResult.IsTie) return;
-        var (target1, target2) = (SelectedPlayers[0], SelectedPlayers[1]);
-        MeetingHudPatch.TryAddAfterMeetingDeathPlayers(CustomDeathReason.Vote, target1);
-        MeetingHudPatch.TryAddAfterMeetingDeathPlayers(CustomDeathReason.Vote, target2);
-        Logger.Info($"Double Exile => {Utils.GetPlayerById(target1)?.GetNameWithRole()} & {Utils.GetPlayerById(target2)?.GetNameWithRole()}", "Justice");
-    }
+
     public override void AfterMeetingTasks()
     {
-        if (HostingJusticeMeeting)
-        {
-            SelectedPlayers.Clear();
-            HostingJusticeMeeting = false;
-        }
-        else if (SelectedPlayers.Count == 2)
+        if (IsSpecialMeetingActive) return;
+        if (SpecialMeetingPlayers.Count == 2)
         {
             SkillLimits--;
-            HostingJusticeMeeting = true;
-            _ = new LateTask(() => { PlayerControl.LocalPlayer.NoCheckStartMeeting(null, true); }, 0.1f, "StartJusticeMeeting");
+            IsSpecialMeetingActive = true;
+            _ = new LateTask(() =>
+            {
+                PlayerControl.LocalPlayer.NoCheckStartMeeting(null, true);
+            }, 0.1f, "StartJusticeMeeting");
         }
-        else SelectedPlayers.Clear();
+        else SpecialMeetingPlayers.Clear();
         SendRPC();
     }
 
@@ -119,16 +138,16 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable
     private void SendRPC()
     {
         using var sender = CreateSender();
-        sender.Writer.Write(HostingJusticeMeeting);
-        sender.Writer.Write(SelectedPlayers.Count);
-        foreach (var playerId in SelectedPlayers) sender.Writer.Write(playerId);
+        sender.Writer.Write(IsSpecialMeetingActive);
+        sender.Writer.Write(SpecialMeetingPlayers.Count);
+        foreach (var smpId in SpecialMeetingPlayers) sender.Writer.Write(smpId);
     }
     public override void ReceiveRPC(MessageReader reader)
     {
-        HostingJusticeMeeting = reader.ReadBoolean();
+        IsSpecialMeetingActive = reader.ReadBoolean();
         var count = reader.ReadInt32();
-        SelectedPlayers = new List<byte>(count);
-        for (var i = 0; i < count; i++) SelectedPlayers.Add(reader.ReadByte());
+        SpecialMeetingPlayers = new List<byte>(count);
+        for (var i = 0; i < count; i++) SpecialMeetingPlayers.Add(reader.ReadByte());
     }
 
     public string ButtonName => "Scale";
@@ -155,7 +174,7 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable
             var btn = pva?.transform?.FindChild("Custom Meeting Button")?.gameObject;
             if (!btn) continue;
 
-            if (SelectedPlayers.Contains(pva.PlayerId))
+            if (SpecialMeetingPlayers.Contains(pva.PlayerId))
                 btn.GetComponent<SpriteRenderer>().color = Color.yellow;
             else
                 btn.GetComponent<SpriteRenderer>().color = Color.white;
@@ -166,11 +185,11 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable
     {
         reason = string.Empty;
 
-        if (SelectedPlayers.Remove(target.PlayerId))
+        if (SpecialMeetingPlayers.Remove(target.PlayerId))
         {
             string Name = target.GetRealName();
 
-            Logger.Info($"{Player.GetNameWithRole()} => Cancel Scale {target.GetNameWithRole()}({SelectedPlayers.Count})", "Justice");
+            Logger.Info($"{Player.GetNameWithRole()} => Cancel Scale {target.GetNameWithRole()}({SpecialMeetingPlayers.Count})", "Justice");
 
             SendRPC();
 
@@ -190,7 +209,7 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable
             reason = GetString("JusticeBalanceMax");
             return false;
         }
-        if (SelectedPlayers.Count == 2)
+        if (SpecialMeetingPlayers.Count == 2)
         {
             reason = GetString("BalanceUsed");
             return false;
@@ -198,8 +217,8 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable
 
         string Name2 = target.GetRealName();
 
-        SelectedPlayers.Add(target.PlayerId);
-        Logger.Info($"{Player.GetNameWithRole()} => Scale {target.GetNameWithRole()}({SelectedPlayers.Count})", "Justice");
+        SpecialMeetingPlayers.Add(target.PlayerId);
+        Logger.Info($"{Player.GetNameWithRole()} => Scale {target.GetNameWithRole()}({SpecialMeetingPlayers.Count})", "Justice");
 
         SendRPC();
 
@@ -211,7 +230,7 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable
                 Utils.ColorString(Utils.GetRoleColor(CustomRoles.Justice), GetString("JusticeBalanceTitle")));
         }, 0.8f, "Balance Skill");
 
-        if (SelectedPlayers.Count == 2) MeetingHud.Instance.RpcForceEndMeeting();
+        if (SpecialMeetingPlayers.Count == 2) MeetingHud.Instance.RpcForceEndMeeting();
 
         return true;
     }
@@ -279,27 +298,27 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable
     {
         Logger.Info($"OnPlayerDeath enter: dyingPlayer={player.GetNameWithRole()}, deathReason={deathReason}, isOnMeeting={isOnMeeting}, MyPlayer={Player.GetNameWithRole()}, HostingJusticeMeeting={HostingJusticeMeeting}, SelectedPlayers=[{string.Join(",", SelectedPlayers)}]", "Justice");
         if (deathReason is CustomDeathReason.Vote || !isOnMeeting || player == null) return;
-        if (!HostingJusticeMeeting)
+        if (!IsSpecialMeetingActive)
         {
-            if (SelectedPlayers.Remove(player.PlayerId)) SendRPC();
+            if (SpecialMeetingPlayers.Remove(player.PlayerId)) SendRPC();
             return;
         }
 
         // Justice 死亡或掉线时清除天平会议状态，让当前会议正常继续
-        if (player.PlayerId == Player.PlayerId)
+        if (player.PlayerId == Player.PlayerId && deathReason == CustomDeathReason.Disconnected)
         {
             Logger.Info($"Justice 死亡或掉线，清除天平会议状态", "Justice");
-            HostingJusticeMeeting = false;
-            SelectedPlayers.Clear();
+            IsSpecialMeetingActive() = false;
+            SpecialMeetingPlayers.Clear();
             SendRPC();
             return;
         }
 
         // 被选中的目标在会议期间死亡 — 将其移除并放逐存活者
-        if (SelectedPlayers.Remove(player.PlayerId)) SendRPC();
-        if (SelectedPlayers.Count == 0 || MeetingVoteManager.Instance == null) return;
+        if (SpecialMeetingPlayers.Remove(player.PlayerId)) SendRPC();
+        if (SpecialMeetingPlayers.Count == 0 || MeetingVoteManager.Instance == null) return;
 
-        var survivorId = SelectedPlayers.Find(x => x != player.PlayerId);
+        var survivorId = SpecialMeetingPlayers.Find(x => x != player.PlayerId);
         if (Utils.GetPlayerById(survivorId) == null) return;
         MeetingVoteManager.Instance.ClearAndExile(player.PlayerId, survivorId);
         Utils.SendMessage(
@@ -316,7 +335,7 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable
         foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Justice)))
         {
             if (pc.GetRoleClass() is not Justice roleClass) continue;
-            if (roleClass.HostingJusticeMeeting) return roleClass;
+            if (roleClass.IsSpecialMeetingActive) return roleClass;
         }
         return null;
     }
