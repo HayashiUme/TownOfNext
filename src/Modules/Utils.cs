@@ -1158,14 +1158,10 @@ public static class Utils
     }
     public static void AfterMeetingTasks()
     {
+        SpecialMeetingManager.GetActiveSpecialMeeting()?.OnSpecialMeetingEnd();
         Options.CurrentGameMode.GetModeClass()?.AfterMeetingTasks();
         foreach (var roleClass in CustomRoleManager.AllActiveRoles.Values.ToList())
-        {
-            if(SpecialMeetingManager.GetActiveSpecialMeeting() is {} specialMeeting && specialMeeting.IsSpecialMeetingActive)
-                specialMeeting.OnSpecialMeetingEnd();
             roleClass.AfterMeetingTasks();
-        }
-            
         if (Options.AirShipVariableElectrical.GetBool())
             AirShipElectricalDoors.Initialize();
         DoorsReset.ResetDoors();
