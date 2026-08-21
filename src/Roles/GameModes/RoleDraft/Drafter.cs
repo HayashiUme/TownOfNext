@@ -1,8 +1,10 @@
 using AmongUs.GameOptions;
+using TONX.Modules;
+using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
 namespace TONX.Roles.Crewmate;
-public sealed class Drafter : RoleBase
+public sealed class Drafter : RoleBase, ISpecialMeeting
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -23,4 +25,8 @@ public sealed class Drafter : RoleBase
         player
     )
     { }
+    
+    public bool IsSpecialMeetingActive => !CustomRoleSelector.RoleAssigned;
+    public List<byte> SpecialMeetingPlayers => new();
+    public bool AllowSkip => false;
 }
