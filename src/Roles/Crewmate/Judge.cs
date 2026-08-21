@@ -11,7 +11,7 @@ public sealed class JudgeTONX : RoleBase, IMeetingButton
             typeof(JudgeTONX),
             player => new JudgeTONX(player),
             CustomRoles.JudgeTONX,
-            () => RoleTypes.Crewmate,
+            () => RoleTypes.Judge,
             CustomRoleTypes.Crewmate,
             22300,
             SetupOptionItem,
