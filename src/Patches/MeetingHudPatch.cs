@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Text;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using InnerNet;
@@ -129,7 +129,6 @@ public static class MeetingHudPatch
 
             SoundManager.Instance.ChangeAmbienceVolume(0f);
             if (!GameStates.IsModHost) return;
-            // 会议开始重新给色盲客户端发送偏移外观（抵消 GameData 同步造成的覆盖）
             TONX.Roles.AddOns.Common.Colorblind.RpcSetSkinAll();
             var myRole = PlayerControl.LocalPlayer.GetRoleClass();
             foreach (var pva in __instance.playerStates)

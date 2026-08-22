@@ -19,31 +19,30 @@
 - TONX接下来的版本可能Bug数量众多，如果可以的话请您及时反馈Bug并附带日志。
 
 ## 修正
-- 修复特定 Windows/IL2CPP 环境下 Registry.CurrentUser 为 null 导致的崩溃
-- 修复 Android IL2CPP 上 [DllImport("winmm.dll")] 无条件解析导致的崩溃
-- 修复 Android 上使用 Windows 专有 EnvironmentVariableTarget.User 的问题
-- 修复 Android 上无条件使用 DesktopDirectory 的问题
+- 修复大神官掉线导致特殊会议崩溃的问题
+- 修复了大神官在特定消息显示为换票师的色彩的问题
 - 修复 Android 端版本公告弹窗内容为空的问题
 - 修复 Android 端主菜单自定义按钮与退出按钮重叠的问题
 - 修复 Android 端打开外部链接无法调起浏览器的问题
 - 修复主页面 Website 按钮中文与英文页面相反的问题
 
 ## 更改
-- 旧版 TownOfHost 文件夹名称迁移为 TONX（日志、数据、选项导出）
-- Android 端现在使用 Constants.OpenURL 打开外部链接
-- Android 端现在启动时从服务器获取公告数据
-- 车队姬宣房新增验证机制，需先在QQ使用 /验证TONX 完成验证后方可宣房
+- 轮抽选角的初始职业改为起草者
+- 旧版 TownOfHost 文件夹名称迁移为 TONX
+- 车队姬宣房新增验证机制
+
+## 新增
+- 添加了愚人节时的Dleks ehT地图
 
 ## 恢复
 - 恢复主菜单界面的 QQ 群按钮
-- 恢复车队姬功能，大厅内输入 /dc 即可将房间号发送至QQ群
+- 恢复车队姬功能，大厅内输入 /qq 即可将房间号发送至QQ群
 
-## 新增职业
-- 附加职业：色盲（看到的玩家颜色与真实颜色不同）
+## 角色新增
+- 船员阵营：保安
+- 中立阵营：病娇
+- 附加职业：色盲
 
-## 职业改动
-- 重写了 大神官 的天平会议逻辑，改用原版否决机制（播放否决动画并放逐票数更多的人）
-- 新增 ISpecialMeeting 与 IMeetingSkill 接口，统一管理拥有会议技能的职业
 
-## 移除
+## 角色移除
 - 移除了犯罪学作家

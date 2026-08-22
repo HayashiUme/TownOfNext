@@ -1,4 +1,4 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using Hazel;
 using UnityEngine;
 using TONX.Modules;
@@ -12,7 +12,7 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable, ISpecial
         typeof(Justice),
         player => new Justice(player),
         CustomRoles.Justice,
-        () => RoleTypes.Judge,
+        () => RoleTypes.Crewmate,
         CustomRoleTypes.Crewmate,
         23400,
         SetupOptionItem,
@@ -47,10 +47,6 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable, ISpecial
         OptionMeetingVotingTime = IntegerOptionItem.Create(RoleInfo, 11, OptionName.JusticeMeetingVotingTime, new(0, 300, 15), 120, false)
             .SetValueFormat(OptionFormat.Seconds);
     }
-    public override void ApplyGameOptions(IGameOptions opt)
-    {
-        AURoleOptions.JudgeTaskRequirementPercentage = 0f;
-    }
     public override void Add()
     {
         SkillLimits = OptionCanUseTimes.GetInt();
@@ -71,7 +67,6 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable, ISpecial
 
     public bool OnSpecialMeetingVotingComplete(MeetingVoteManager.VoteResult voteResult)
     {
-        // 天平会议中平票 => 双死（不播放放逐动画）
         if (!voteResult.IsTie || !voteResult.NoVotes) return false;
         var (target1, target2) = (SpecialMeetingPlayers[0], SpecialMeetingPlayers[1]);
         MeetingHudPatch.TryAddAfterMeetingDeathPlayers(CustomDeathReason.Vote, target1);
@@ -93,6 +88,7 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable, ISpecial
     }
     public override void OnStartMeeting()
     {
+        Logger.Info($"Justice.OnStartMeeting: active={IsSpecialMeetingActive}, players=[{string.Join(",", SpecialMeetingPlayers)}]", "Justice");
         if (!IsSpecialMeetingActive) return;
         var target1 = Utils.GetPlayerById(SpecialMeetingPlayers[0]);
         var target2 = Utils.GetPlayerById(SpecialMeetingPlayers[1]);
@@ -113,11 +109,13 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable, ISpecial
 
     public override void AfterMeetingTasks()
     {
+        Logger.Info($"Justice.AfterMeetingTasks: active={IsSpecialMeetingActive}, players=[{string.Join(",", SpecialMeetingPlayers)}]", "Justice");
         if (IsSpecialMeetingActive) return;
         if (SpecialMeetingPlayers.Count == 2)
         {
             SkillLimits--;
             IsSpecialMeetingActive = true;
+            Logger.Info($"Justice.AfterMeetingTasks: 天平会议已激活, players=[{string.Join(",", SpecialMeetingPlayers)}]", "Justice");
             _ = new LateTask(() =>
             {
                 PlayerControl.LocalPlayer.NoCheckStartMeeting(null, true);
@@ -126,6 +124,7 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable, ISpecial
         else SpecialMeetingPlayers.Clear();
         SendRPC();
     }
+
 
     public override void OverrideNameAsSeer(PlayerControl seen, ref string nameText, bool isForMeeting = false)
     {
@@ -296,7 +295,7 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable, ISpecial
 
     public override void OnPlayerDeath(PlayerControl player, CustomDeathReason deathReason, bool isOnMeeting = false)
     {
-        Logger.Info($"OnPlayerDeath enter: dyingPlayer={player.GetNameWithRole()}, deathReason={deathReason}, isOnMeeting={isOnMeeting}, MyPlayer={Player.GetNameWithRole()}, HostingJusticeMeeting={HostingJusticeMeeting}, SelectedPlayers=[{string.Join(",", SelectedPlayers)}]", "Justice");
+        Logger.Info($"OnPlayerDeath enter: dyingPlayer={player.GetNameWithRole()}, deathReason={deathReason}, isOnMeeting={isOnMeeting}, MyPlayer={Player.GetNameWithRole()}, HostingJusticeMeeting={IsSpecialMeetingActive}, SelectedPlayers=[{string.Join(",", SpecialMeetingPlayers)}]", "Justice");
         if (deathReason is CustomDeathReason.Vote || !isOnMeeting || player == null) return;
         if (!IsSpecialMeetingActive)
         {
@@ -308,7 +307,7 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable, ISpecial
         if (player.PlayerId == Player.PlayerId && deathReason == CustomDeathReason.Disconnected)
         {
             Logger.Info($"Justice 死亡或掉线，清除天平会议状态", "Justice");
-            IsSpecialMeetingActive() = false;
+            IsSpecialMeetingActive = false;
             SpecialMeetingPlayers.Clear();
             SendRPC();
             return;
@@ -328,7 +327,7 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable, ISpecial
         );
     }
 
-    public static bool UnableToBeTargetedInJusticeMeeting(PlayerControl target) => IsJusticeMeeting() && (!GetHostingJustice()?.SelectedPlayers?.Contains(target.PlayerId) ?? true);
+    public static bool UnableToBeTargetedInJusticeMeeting(PlayerControl target) => IsJusticeMeeting() && (!GetHostingJustice()?.SpecialMeetingPlayers?.Contains(target.PlayerId) ?? true);
     public static bool IsJusticeMeeting() => GetHostingJustice() != null;
     public static Justice GetHostingJustice()
     {

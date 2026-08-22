@@ -1,4 +1,4 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using System.Text;
 using System.Text.RegularExpressions;
 using Hazel;
@@ -510,6 +510,8 @@ class FixedUpdatePatch
             NameNotifyManager.OnFixedUpdate(player);
             TargetArrow.OnFixedUpdate(player);
             LocateArrow.OnFixedUpdate(player);
+            // GameDataTo 魅力时刻，不发房主端，要在这里手动补。
+            if (player.AmOwner) TONX.Roles.AddOns.Common.Colorblind.ApplyLocalVisuals();
         }
         CustomGameModeManager.OnFixedUpdate(player);
         CustomRoleManager.OnFixedUpdate(player);

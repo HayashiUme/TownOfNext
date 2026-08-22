@@ -1,4 +1,4 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using TONX.Modules;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
@@ -11,7 +11,7 @@ public sealed class JudgeTONX : RoleBase, IMeetingButton
             typeof(JudgeTONX),
             player => new JudgeTONX(player),
             CustomRoles.JudgeTONX,
-            () => RoleTypes.Judge,
+            () => RoleTypes.Crewmate,
             CustomRoleTypes.Crewmate,
             22300,
             SetupOptionItem,
@@ -52,10 +52,6 @@ public sealed class JudgeTONX : RoleBase, IMeetingButton
         OptionCanTrialNeutralB = BooleanOptionItem.Create(RoleInfo, 15, OptionName.JudgeCanTrialNeutralB, false, false);
         OptionCanTrialNeutralK = BooleanOptionItem.Create(RoleInfo, 16, OptionName.JudgeCanTrialNeutralK, true, false);
     }
-    public override void ApplyGameOptions(IGameOptions opt)
-    {
-        AURoleOptions.JudgeTaskRequirementPercentage = 0f;
-    }
 
     public override void Add() => TrialLimit = OptionTrialLimitPerMeeting.GetInt();
     public override void OnStartMeeting() => TrialLimit = OptionTrialLimitPerMeeting.GetInt();
@@ -65,15 +61,6 @@ public sealed class JudgeTONX : RoleBase, IMeetingButton
         {
             nameText = Utils.ColorString(RoleInfo.RoleColor, seen.PlayerId.ToString()) + " " + nameText;
         }
-    }
-
-    public override bool OnCheckOverrule(PlayerControl target)
-    {
-        if (!Trial(target, out var reason))
-        {
-            Utils.SendMessage(reason, Player.PlayerId);
-        }
-        return false;
     }
 
     public string ButtonName { get; private set; } = "Judge";
