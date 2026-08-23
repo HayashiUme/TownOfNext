@@ -57,7 +57,7 @@ public static class OptionsMenuBehaviourStartPatch
         CreateIfNull(ref EnableCustomButton, "EnableCustomButton", Main.EnableCustomButton, instance);
         CreateIfNull(ref EnableCustomSoundEffect, "EnableCustomSoundEffect", Main.EnableCustomSoundEffect, instance);
         CreateIfNull(ref FastBoot, "FastBoot", Main.FastBoot, instance);
-        CreateIfNull(ref EnableAMCIMode, "EnableAMCIMode", Main.EnableAMCIMode, instance);
+        CreateIfNull(ref EnableAMCIMode, "EnableAmciMode", Main.EnableAMCIMode, instance);
         return;
 
         static void StartGame()
