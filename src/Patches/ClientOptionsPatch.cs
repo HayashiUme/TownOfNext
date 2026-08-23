@@ -20,6 +20,7 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientActionItem DumpLog;
     private static ClientOptionItem<bool> VersionCheat;
     private static ClientOptionItem<bool> GodMode;
+    private static ClientOptionItem<bool> FastBoot;
 
     private static bool reseted;
 
@@ -54,6 +55,7 @@ public static class OptionsMenuBehaviourStartPatch
         CreateIfNull(ref ForceOwnLanguageRoleName, "ForceOwnLanguageRoleName", Main.ForceOwnLanguageRoleName, instance);
         CreateIfNull(ref EnableCustomButton, "EnableCustomButton", Main.EnableCustomButton, instance);
         CreateIfNull(ref EnableCustomSoundEffect, "EnableCustomSoundEffect", Main.EnableCustomSoundEffect, instance);
+        CreateIfNull(ref FastBoot, "FastBoot", Main.FastBoot, instance);
         return;
 
         static void StartGame()
