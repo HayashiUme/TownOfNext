@@ -1110,8 +1110,8 @@ FastBoot: "切換為原版"
 EnableCustomButton: "使用模組按鈕樣式"
 EnableCustomSoundEffect: "開啟模組技能音效"
 
-Value.HorseMode: "愚人节牧马模式"
-Value.LongMode: "愚人节长颈豆模式"
+Value.HorseMode: "愚人節牧馬模式"
+Value.LongMode: "愚人節長頸豆模式"
 Value.NormalMode: "经典豆子模式"
 
 # 头衔管理 / Custom Titles
