@@ -1088,6 +1088,7 @@ FastBoot: "Быстрый запуск"
 SwitchOutfitType: "Тип скинов игроков"
 EnableCustomButton: "Кастомные текстуры кнопок"
 EnableCustomSoundEffect: "Кастомные звуковые эффекты"
+EnableAmciMode: "включить службу поиска партнёров AMCI"
 #头衔管理 / Custom Titles
 NameTagOptions: "Кастомные титулы"
 NewNameTag: "Новый"

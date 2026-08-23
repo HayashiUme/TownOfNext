@@ -1098,6 +1098,7 @@ FastBoot: "Fast Boot"
 SwitchOutfitType: "Switch Outfit Type"
 EnableCustomButton: "Enable Custom Button Images"
 EnableCustomSoundEffect: "Enable Custom Sound Effects"
+EnableAmciMode: "Enable AMCI Matchmaker"
 #头衔管理 / Custom Titles
 NameTagOptions: "Custom Title"
 NewNameTag: "New"

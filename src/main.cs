@@ -14,6 +14,7 @@ using UnityEngine;
 namespace TONX;
 
 [BepInPlugin(PluginGuid, "TONX", PluginVersion)]
+[AmciModGuid("789bf6f3-41e4-439f-82d3-ed6d2d2fb710")]
 [BepInIncompatibility("jp.ykundesu.supernewroles")]
 [BepInProcess("Among Us.exe")]
 public class Main : BasePlugin
@@ -70,9 +71,10 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> ForceOwnLanguageRoleName { get; private set; }
     public static ConfigEntry<bool> EnableCustomButton { get; private set; }
     public static ConfigEntry<bool> EnableCustomSoundEffect { get; private set; }
+    public static ConfigEntry<bool> FastBoot { get; private set; }
+    public static ConfigEntry<bool> EnableAMCIMode { get; private set; }
     public static ConfigEntry<bool> VersionCheat { get; private set; }
-        public static ConfigEntry<bool> GodMode { get; private set; }
-        public static ConfigEntry<bool> FastBoot { get; private set; }
+    public static ConfigEntry<bool> GodMode { get; private set; }
 
 
     public static Dictionary<int, PlayerVersion> playerVersion = new();
@@ -176,6 +178,7 @@ public class Main : BasePlugin
         EnableCustomButton = Config.Bind("Client Options", "EnableCustomButton", true);
         EnableCustomSoundEffect = Config.Bind("Client Options", "EnableCustomSoundEffect", true);
         FastBoot = Config.Bind("Client Options", "FastBoot", false);
+        EnableAMCIMode =  Config.Bind("Client Options", "EnableAMCIMode", false);
         VersionCheat = Config.Bind("Client Options", "VersionCheat", false);
         GodMode = Config.Bind("Client Options", "GodMode", false);
 
