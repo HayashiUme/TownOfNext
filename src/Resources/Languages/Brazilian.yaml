@@ -1720,7 +1720,7 @@ Value.HorseMode: "Modo Cavalo (1º de Abril)"
 Value.LongMode: "Modo Longo (1º de Abril)"
 Value.NormalMode: "Modo Clássico"
 # 模式介绍 / Mode descriptions
-ModeDescribe.SoloKombat: "O modo atual é [Combate Solo]Sem distribuição de funções. Todos têm vida e usam o botão de matar para causar dano. Quem tiver mais abates ao final vence."
+ModeDescribe.SoloKombat: "O modo atual é [Combate Solo]\nSem distribuição de funções. Todos têm vida e usam o botão de matar para causar dano. Quem tiver mais abates ao final vence."
 
 # 模式职业 / Mode Roles 
 Drafter: "Selecionador"
