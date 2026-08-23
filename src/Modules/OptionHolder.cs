@@ -731,7 +731,7 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(0, 223, 162, byte.MaxValue));
 
-        ShareLobby = BooleanOptionItem.Create(2_001_001, "ShareLobby", true, TabGroup.SystemSettings, false)
+        ShareLobby = BooleanOptionItem.Create(2_001_001, "ShareLobby", false, TabGroup.SystemSettings, false)
             .SetHeader(true)
             .SetColor(new Color32(0, 223, 162, byte.MaxValue));
         ShareLobbyMinPlayer = IntegerOptionItem.Create(2_001_002, "ShareLobbyMinPlayer", new(3, 12, 1), 5, TabGroup.SystemSettings, false).SetParent(ShareLobby)
