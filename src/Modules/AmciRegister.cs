@@ -1,13 +1,12 @@
 using BepInEx;
-using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
 using TONX.Attributes;
+using static TONX.Logger;
 
 namespace TONX.Modules;
 
 public static class AmciRegister
 {
-    private static readonly ManualLogSource _logger = BepInEx.Logging.Logger.CreateLogSource("FilterAPI");
     private static readonly Dictionary<string, Guid> _guidByModId = new();
     private static bool _subscribed;
     public static IReadOnlyDictionary<string, Guid> Registered => _guidByModId;
@@ -44,7 +43,7 @@ public static class AmciRegister
         {
             RefreshPrimary();
             Apply();
-            _logger.LogInfo($"AMCI: registered={_guidByModId.Count} primary={Primary} guidString={CurrentModRegistration.ModRegistrationGuidString}");
+            Info($"registered={_guidByModId.Count} primary={Primary} guidString={CurrentModRegistration.ModRegistrationGuidString}","AMCI.Initialize");
         };
     }
 
