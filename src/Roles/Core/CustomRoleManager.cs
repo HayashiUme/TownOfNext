@@ -664,6 +664,7 @@ public enum CustomRoles
     Collator,
     Swapper,
     Justice,
+    SecurityGuard,
     //Neutral
     Arsonist,
     Jester,
@@ -692,6 +693,7 @@ public enum CustomRoles
     SchrodingerCat,
     Shifter,
     Doomsayer,
+    Yandere,
 
     //SoloKombat
     KB_Normal = 400,
