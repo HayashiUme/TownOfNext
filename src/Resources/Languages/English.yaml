@@ -1099,6 +1099,7 @@ SwitchOutfitType: "Switch Outfit Type"
 EnableCustomButton: "Enable Custom Button Images"
 EnableCustomSoundEffect: "Enable Custom Sound Effects"
 EnableAmciMode: "Enable AMCI Matchmaker"
+EnableDarkTheme: "Enable Dark Mode"
 #头衔管理 / Custom Titles
 NameTagOptions: "Custom Title"
 NewNameTag: "New"

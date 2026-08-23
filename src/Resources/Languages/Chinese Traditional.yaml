@@ -1110,6 +1110,7 @@ FastBoot: "快速啓動模式"
 EnableCustomButton: "使用模組按鈕樣式"
 EnableCustomSoundEffect: "開啟模組技能音效"
 EnableAmciMode: "啓用AMCI聯機"
+EnableDarkTheme: "深色主題"
 
 Value.HorseMode: "愚人節牧馬模式"
 Value.LongMode: "愚人節長頸豆模式"

@@ -1089,6 +1089,7 @@ SwitchOutfitType: "Tipo de Traje dos Jogadores"
 EnableCustomButton: "Texturas Personalizadas de Botões"
 EnableCustomSoundEffect: "Efeitos Sonoros Personalizados"
 EnableAmciMode: "ativar o AMCI Matchmaker"
+EnableDarkTheme: "Tema escuro"
 #头衔管理 / Custom Titles
 NameTagOptions: "Títulos Personalizados"
 NewNameTag: "Novo"

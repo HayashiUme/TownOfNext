@@ -75,6 +75,7 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> EnableAMCIMode { get; private set; }
     public static ConfigEntry<bool> VersionCheat { get; private set; }
     public static ConfigEntry<bool> GodMode { get; private set; }
+    public static ConfigEntry<bool> DarkTheme { get; private set; }
 
 
     public static Dictionary<int, PlayerVersion> playerVersion = new();
@@ -181,6 +182,7 @@ public class Main : BasePlugin
         EnableAMCIMode =  Config.Bind("Client Options", "EnableAMCIMode", false);
         VersionCheat = Config.Bind("Client Options", "VersionCheat", false);
         GodMode = Config.Bind("Client Options", "GodMode", false);
+        DarkTheme = Config.Bind("Client Options", "DarkTheme", false);
 
         Logger = BepInEx.Logging.Logger.CreateLogSource("TONX");
         TONX.Logger.Enable();
