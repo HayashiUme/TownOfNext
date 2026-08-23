@@ -29,6 +29,7 @@
 - Fixed Android MainMenu custom buttons overlapping with the exit button.
 - Fixed Android OpenURL failing to launch browser.
 - Fixed the Website button in MainMenu appeared in the opposite order on Chinese and English pages.
+- Fixed an issue where the game would crash when opening a room in HideNSeek mode
 
 ## Changing
 - The Init role turned into Drafter when using Role Draft gamemode.
@@ -40,6 +41,11 @@
 - Added Dleks ehT map for April Fool's Day.
 - The mod clients can see the meeting title text changed related to special meetings.
 - The mod clients can see changes to the meeting title text on special meetings.
+- Added Discord status display
+- Added AMCI matchmaker support
+- Added support for crowded, rooms can now accommodate up to 127 players
+- Added Fastboot Mode for skipping the Splash Performance animation.
+- Added dark mode
 
 ## Restoration
 - Restored the Discord server invite link button in MainMenu.

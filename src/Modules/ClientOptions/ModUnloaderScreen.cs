@@ -52,6 +52,7 @@ public static class ModUnloaderScreen
             _ = new LateTask(() =>
             {
                 Logger.Info("模组将要禁用", nameof(ModUnloaderScreen));
+                Main.EnableAMCIMode.Value = false;
                 Harmony.UnpatchAll();
                 Main.Instance.Unload();
             }, 1f);

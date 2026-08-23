@@ -1109,6 +1109,8 @@ SwitchVanilla: "切换为原版"
 FastBoot: "快速启动模式"
 EnableCustomButton: "使用模组按钮样式"
 EnableCustomSoundEffect: "开启模组技能音效"
+EnableAmciMode: "启用AMCI匹配"
+EnableDarkTheme: "深色模式"
 
 Value.HorseMode: "愚人节牧马模式"
 Value.LongMode: "愚人节长颈豆模式"

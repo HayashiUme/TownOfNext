@@ -211,6 +211,10 @@ public class GameStartManagerPatch
             {
                 return;
             }
+            if (updateTimer % 20 == 0 && GameManager.Instance != null && GameManager.Instance.LogicOptions != null)
+            {
+                Patches.DiscordRPC.UpdateLobbyPresence(__instance.LastPlayerCount, GameManager.Instance.LogicOptions.MaxPlayers, AmongUsClient.Instance.GameId);
+            }
 
             timer = Mathf.Max(0f, timer -= Time.deltaTime);
             int minutes = (int)timer / 60;

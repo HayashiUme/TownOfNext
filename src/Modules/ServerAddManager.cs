@@ -20,6 +20,8 @@ public static class ServerAddManager
         regionInfos.Add(CreateHttp("au-us.niko233.top", "Niko233(NA)", 443, true));
         regionInfos.Add(CreateHttp("au-as.niko233.top", "Niko233(AS)", 443, true));
         regionInfos.Add(CreateHttp("au-eu.niko233.top", "Niko233(EU)", 443, true));
+        regionInfos.Add(CreateHttp("au-cn.niko233.top", "Niko233(CN1)", 443, true));
+        regionInfos.Add(CreateHttp("eu.allofus.dev", "AOU EU", 443, true));
 
         var defaultRegion = serverManager.CurrentRegion;
         regionInfos.Where(x => !serverManager.AvailableRegions.Contains(x)).Do(serverManager.AddOrUpdateRegion);
