@@ -197,10 +197,10 @@ public static class GameOptionsMenuInitializePatch
                     ob.Cast<NumberOption>().ValidRange = new FloatRange(0, 180);
                     break;
                 case StringNames.GameNumImpostors:
-                    if (DebugModeManager.IsDebugMode)
-                    {
-                        ob.Cast<NumberOption>().ValidRange.min = 0;
-                    }
+                    ob.Cast<NumberOption>().ValidRange = new FloatRange(DebugModeManager.IsDebugMode ? 0 : 1, TONX.Patches.CrowdedPatch.MaxImpostors);
+                    break;
+                case StringNames.CapacityLabel:
+                    ob.Cast<NumberOption>().ValidRange = new FloatRange(4, 127);
                     break;
                 default:
                     break;

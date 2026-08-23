@@ -322,6 +322,10 @@ public class Main : BasePlugin
 
         ClassInjector.RegisterTypeInIl2Cpp<ErrorText>();
         ClassInjector.RegisterTypeInIl2Cpp<LogoAnimationController>();
+        ClassInjector.RegisterTypeInIl2Cpp<TONX.Patches.AbstractPagingBehaviour>();
+        ClassInjector.RegisterTypeInIl2Cpp<TONX.Patches.MeetingHudPagingBehaviour>();
+        ClassInjector.RegisterTypeInIl2Cpp<TONX.Patches.ShapeShifterPagingBehaviour>();
+        ClassInjector.RegisterTypeInIl2Cpp<TONX.Patches.VitalsPagingBehaviour>();
 
         Task.Run(SystemEnvironment.SetEnvironmentVariablesAsync);
         
