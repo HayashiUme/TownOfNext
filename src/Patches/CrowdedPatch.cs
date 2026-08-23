@@ -1,4 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using AmongUs.GameOptions;
 using Il2CppInterop.Runtime.Attributes;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
@@ -20,6 +22,35 @@ internal static class CrowdedPatch
     private static GameOptionButton _maxButton = null!;
     private static GameOptionButton _doubleMinusButton = null!;
     private static GameOptionButton _doublePlusButton = null!;
+
+    internal static void ExpandArrays()
+    {
+        try
+        {
+            RuntimeHelpers.RunClassConstructor(typeof(NormalGameOptionsV11).TypeHandle);
+
+            int[] origMaxImp = { 0, 0, 0, 0, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 3 };
+            int[] expandedMaxImp = new int[128];
+            for (int i = 0; i < 128; i++)
+                expandedMaxImp[i] = i < origMaxImp.Length ? origMaxImp[i] : 3;
+
+            int[] origMinPlayers = { 4, 4, 7, 9 };
+            int[] expandedMinPlayers = new int[128];
+            for (int i = 0; i < 128; i++)
+                expandedMinPlayers[i] = i < origMinPlayers.Length ? origMinPlayers[i] : 4;
+
+            var maxImpField = typeof(NormalGameOptionsV11).GetField("MaxImpostors", BindingFlags.NonPublic | BindingFlags.Static);
+            var minPlayersField = typeof(NormalGameOptionsV11).GetField("MinPlayers", BindingFlags.NonPublic | BindingFlags.Static);
+            if (maxImpField != null) maxImpField.SetValue(null, expandedMaxImp);
+            if (minPlayersField != null) minPlayersField.SetValue(null, expandedMinPlayers);
+
+            Logger.Info("Expanded MaxImpostors/MinPlayers arrays to 128 elements", "CrowdedPatch");
+        }
+        catch (Exception ex)
+        {
+            Logger.Exception(ex, "ExpandArrays");
+        }
+    }
 
     [HarmonyPatch(typeof(CreateGameOptions), nameof(CreateGameOptions.Show))]
     public static class CreateGameOptions_Show
@@ -140,101 +171,82 @@ internal static class CrowdedPatch
         }
     }
 
-    [HarmonyPatch(typeof(NormalGameOptionsV11), nameof(NormalGameOptionsV11.TryGetIntArray))]
-    public static class NormalGameOptionsV11_TryGetIntArray
+    [HarmonyPatch(typeof(NumberOption), nameof(NumberOption.SetUpFromData))]
+    public static class NumberOption_SetUpFromData
     {
-        private static readonly int[] ExpandedMaxImpostors;
-        private static readonly int[] ExpandedMinPlayers;
+        private static int _savedMaxPlayers;
+        private static bool _patching;
 
-        static NormalGameOptionsV11_TryGetIntArray()
+        public static void Prefix(BaseGameSetting data)
         {
-            ExpandedMaxImpostors = new int[128];
-            ExpandedMinPlayers = new int[128];
-
-            int[] origMaxImp = { 0, 0, 0, 0, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 3 };
-            for (int i = 0; i < 128; i++)
-                ExpandedMaxImpostors[i] = i < origMaxImp.Length ? origMaxImp[i] : 3;
-
-            int[] origMinPlayers = { 4, 4, 7, 9 };
-            for (int i = 0; i < 128; i++)
-                ExpandedMinPlayers[i] = i < origMinPlayers.Length ? origMinPlayers[i] : 4;
+            if (data?.Title != StringNames.GameNumImpostors) return;
+            try
+            {
+                var opts = GameOptionsManager.Instance.CurrentGameOptions;
+                _savedMaxPlayers = opts.MaxPlayers;
+                if (_savedMaxPlayers > 15)
+                {
+                    _patching = true;
+                    opts.SetInt(Int32OptionNames.MaxPlayers, 15);
+                }
+            }
+            catch { }
         }
 
-        public static bool Prefix(Int32ArrayOptionNames optionName, ref int[] value)
+        public static void Postfix(BaseGameSetting data)
         {
-            if (optionName == Int32ArrayOptionNames.MaxImpostors)
+            if (!_patching) return;
+            _patching = false;
+            try
             {
-                value = ExpandedMaxImpostors;
-                return false;
+                var opts = GameOptionsManager.Instance.CurrentGameOptions;
+                opts.SetInt(Int32OptionNames.MaxPlayers, _savedMaxPlayers);
             }
-            if (optionName == Int32ArrayOptionNames.MinPlayers)
-            {
-                value = ExpandedMinPlayers;
-                return false;
-            }
-            return true;
-        }
-    }
-
-    [HarmonyPatch(typeof(NormalGameOptionsV11), nameof(NormalGameOptionsV11.SetRecommendations), typeof(int), typeof(bool))]
-    public static class NormalGameOptionsV11_SetRecommendations
-    {
-        public static bool Prefix(NormalGameOptionsV11 __instance, int numPlayers, bool isOnline)
-        {
-            int safeIndex = Mathf.Clamp(numPlayers, 0, 127);
-
-            int[] origRecImp = { 0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3 };
-            int[] origRecKill = { 0, 0, 0, 0, 45, 30, 15, 35, 30, 25, 20, 20, 20, 20, 20, 20 };
-
-            if (!isOnline)
-            {
-                __instance.NumImpostors = safeIndex < origRecImp.Length ? origRecImp[safeIndex] : Mathf.Clamp(safeIndex / 4, 1, 3);
-            }
-            __instance.ConfirmImpostor = true;
-            __instance.NumEmergencyMeetings = 1;
-            __instance.EmergencyCooldown = isOnline ? 15 : 0;
-            __instance.DiscussionTime = 15;
-            __instance.VotingTime = 120;
-            __instance.AnonymousVotes = false;
-            __instance.PlayerSpeedMod = 1f;
-            __instance.CrewLightMod = 1f;
-            __instance.ImpostorLightMod = 1.5f;
-            __instance.KillCooldown = safeIndex < origRecKill.Length ? origRecKill[safeIndex] : 20f;
-            __instance.KillDistance = 1;
-            __instance.VisualTasks = true;
-            __instance.TaskBarMode = AmongUs.GameOptions.TaskBarMode.Normal;
-            __instance.NumCommonTasks = 1;
-            __instance.NumLongTasks = 1;
-            __instance.NumShortTasks = 2;
-            return false;
+            catch { }
         }
     }
 
     [HarmonyPatch(typeof(CreateGameOptions), nameof(CreateGameOptions.Confirm))]
     public static class CreateGameOptions_Confirm
     {
-        public static bool Prefix(CreateGameOptions __instance)
+        private static int _savedMaxPlayers;
+        private static bool _patching;
+
+        public static void Prefix()
         {
-            if (!DestroyableSingleton<MatchMaker>.Instance.Connecting<CreateGameOptions>(__instance))
-                return false;
-
-            var opts = GameOptionsManager.Instance.GameHostOptions;
-            int maxPlayers = opts.MaxPlayers;
-
-            var safeIndex = Mathf.Clamp(maxPlayers, 0, 127);
-
-            if (opts.NumImpostors > safeIndex / 2)
+            try
             {
-                opts.SetInt(Int32OptionNames.NumImpostors, Mathf.Max(safeIndex / 2, 1));
-            }
-            if (opts.NumImpostors == 0)
-            {
-                opts.SetInt(Int32OptionNames.NumImpostors, 1);
-            }
-            GameOptionsManager.Instance.GameHostOptions = opts;
+                var opts = GameOptionsManager.Instance.GameHostOptions;
+                int maxPlayers = opts.MaxPlayers;
+                int maxImpostors = maxPlayers / 2;
+                if (maxImpostors < 1) maxImpostors = 1;
+                if (maxImpostors > 3) maxImpostors = 3;
 
-            __instance.CoStartGame();
-            return false;
+                if (opts.NumImpostors > maxImpostors)
+                    opts.SetInt(Int32OptionNames.NumImpostors, maxImpostors);
+
+                _savedMaxPlayers = maxPlayers;
+                if (maxPlayers > 15)
+                {
+                    _patching = true;
+                    opts.SetInt(Int32OptionNames.MaxPlayers, 15);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Exception(ex, "CreateGameOptions_Confirm");
+            }
+        }
+
+        public static void Postfix()
+        {
+            if (!_patching) return;
+            _patching = false;
+            try
+            {
+                GameOptionsManager.Instance.GameHostOptions.SetInt(Int32OptionNames.MaxPlayers, _savedMaxPlayers);
+            }
+            catch { }
         }
     }
 
