@@ -391,6 +391,10 @@ public static class CustomRoleManager
                 case CustomRoles.TicketsStealer:
                     TicketsStealer.Add(pc.PlayerId);
                     break;
+                case CustomRoles.Colorblind:
+                    Colorblind.Add(pc.PlayerId);
+                    _ = new LateTask(() => Colorblind.RpcSetSkin(pc), 1f, "Colorblind.RpcSetSkin");
+                    break;
             }
         }
     }
@@ -411,11 +415,19 @@ public static class CustomRoleManager
     /// 无论 voter,voted 是否持有职业，职业都会触发的 Vote 判断事件
     /// 会默认为全体职业注册
     /// </summary>
-    /// <param name="voter">看到的人</param>
-    /// <param name="voted">被看到的人</param>
+    /// <param name="voter">投票者</param>
+    /// <param name="voted">被投票者</param>
     /// <returns>是否清除投票</returns>
     public static bool CheckVoteOthers(PlayerControl voter, PlayerControl voted)
     {
+        var activeSm = SpecialMeetingManager.GetActiveSpecialMeeting();
+        Logger.Info($"CheckVoteOthers: activeSm={(activeSm == null ? "NULL" : activeSm.GetType().Name)}, voter={(voter != null ? voter.GetNameWithRole() : "null")}, voted={(voted != null ? voted.GetNameWithRole() : "null")}", "SpecialMeeting");
+        if (activeSm is { } specialMeeting &&
+            specialMeeting.IsSpecialMeetingActive)
+        {
+            if (voted == null && !specialMeeting.AllowSkip) return false;
+            return specialMeeting.CheckSpecialMeetingVote(voter, voted);
+        }
         foreach (var vote in CheckVote)
         {
             if (!vote(voter, voted))
@@ -617,6 +629,7 @@ public enum CustomRoles
     Noisemaker,
     Tracker,
     Detective,
+    Judge,
     //Crewmate
     Luckey,
     LazyGuy,
@@ -643,14 +656,13 @@ public enum CustomRoles
     Medic,
     FortuneTeller,
     Glitch,
-    Judge,
+    JudgeTONX,
     Mortician,
     Medium,
     Observer,
     DoveOfPeace,
     Collator,
     Swapper,
-    Criminologist,
     Justice,
     SecurityGuard,
     //Neutral
@@ -686,6 +698,9 @@ public enum CustomRoles
     //SoloKombat
     KB_Normal = 400,
 
+    //RoleDraft
+    Drafter,
+
     //GM
     GM,
 
@@ -714,6 +729,7 @@ public enum CustomRoles
     Charmed,
     Bait,
     Beartrap,
+    Colorblind,
 }
 public enum CustomRoleTypes
 {

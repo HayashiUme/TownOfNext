@@ -1,0 +1,54 @@
+#Number:100053
+#Title:TownOfNext v4.0.1
+#SubTitle:★★★★TO The Starlight★★★★
+#ShortTitle:★TONX v4.0.1
+#Date:2026-05-31T00:00:00Z
+#-----------------------------
+
+## Base
+- Base on AmongUs v18.0
+- Base on TOH v5.1.14
+
+## Warning
+- Innersloth was currently enhancing the server anticheat.
+- As a result, we no longer recommend playing TONX on the vanilla regions! The developers will not be spending time adapting the game for the vanilla regions.
+- Please play on Modded, Niko, and other regions that allow +25 Mode.
+
+## What You Need to Know
+- We have refactored the code related to game modes.
+- Upcoming versions of TONX may contain numerous bugs. Please report any bugs you encounter promptly and include logs if possible.
+
+## Fix
+- Fixed an issue where a Judge disconnecting caused special meetings to crash.
+- Fixed an issue where the Judge was displayed as Swapper in certain messages.
+- Fixed an issue where the game might crash when a player disconnects.
+- Fixed an issue where the Exile coroutine was not functioning properly on the Airship map.
+- Fixed an issue where roles in Role Draft mode might not synchronize.
+- Fixed a series of issues occurring in FreePlay.
+- Fixed Android CheckForUpdate showing empty announcement popup.
+- Fixed Android MainMenu custom buttons overlapping with the exit button.
+- Fixed Android OpenURL failing to launch browser.
+- Fixed the Website button in MainMenu appeared in the opposite order on Chinese and English pages.
+
+## Changing
+- The Init role turned into Drafter when using Role Draft gamemode.
+- Migrated legacy TownOfHost folder names to TONX.
+- TONX Chan now requires verification; unverified players must use /sign on Discord before sharing lobby codes.
+- The Judge animation will be trigger when Justice special meeting exiled a single player. 
+
+## New Feature
+- Added Dleks ehT map for April Fool's Day.
+- The mod clients can see the meeting title text changed related to special meetings.
+- The mod clients can see changes to the meeting title text on special meetings.
+
+## Restoration
+- Restored the Discord server invite link button in MainMenu.
+- Restored TONX Chan (Lobby Sharer); use /dc in the lobby to share room code to Discord.
+
+## New Role
+- Crewmate：Security Guard
+- Neutral：Yandere
+- Addon: Colorblind
+
+## Removed Role
+- Removed the Criminologist.

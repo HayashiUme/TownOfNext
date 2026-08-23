@@ -45,6 +45,7 @@ public static class Options
     public static bool IsActiveSkeld => AddedTheSkeld.GetBool() || Main.NormalOptions.MapId == 0;
     public static bool IsActiveMiraHQ => AddedMiraHQ.GetBool() || Main.NormalOptions.MapId == 1;
     public static bool IsActivePolus => AddedPolus.GetBool() || Main.NormalOptions.MapId == 2;
+    public static bool IsActiveDleks => AddedDleks.GetBool() || Main.NormalOptions.MapId == 3;
     public static bool IsActiveAirship => AddedTheAirShip.GetBool() || Main.NormalOptions.MapId == 4;
     public static bool IsActiveFungle => AddedTheFungle.GetBool() || Main.NormalOptions.MapId == 5;
 
@@ -323,9 +324,9 @@ public static class Options
     public static OptionItem AddedTheSkeld;
     public static OptionItem AddedMiraHQ;
     public static OptionItem AddedPolus;
+    public static OptionItem AddedDleks;
     public static OptionItem AddedTheAirShip;
     public static OptionItem AddedTheFungle;
-    // public static OptionItem AddedDleks;
 
     public static OptionItem LadderDeath;
     public static OptionItem LadderDeathChance;
@@ -653,6 +654,7 @@ public static class Options
         Bait.SetupCustomOption();
         Beartrap.SetupCustomOption();
         Workhorse.SetupCustomOption();
+        Colorblind.SetupCustomOption();
 
         // 船员专属附加
         TextOptionItem.Create(5_100_002, "MenuTitle.Addon.Crew", TabGroup.Addons)
@@ -725,16 +727,16 @@ public static class Options
             .SetColor(new Color32(0, 121, 255, byte.MaxValue));
 
         // 云服务相关设定
-        // TextOptionItem.Create(2_100_002, "MenuTitle.CloudServer", TabGroup.SystemSettings)
-        //     .SetGameMode(CustomGameMode.Standard)
-        //     .SetColor(new Color32(0, 223, 162, byte.MaxValue));
-        //
-        // ShareLobby = BooleanOptionItem.Create(2_001_001, "ShareLobby", true, TabGroup.SystemSettings, false)
-        //     .SetHeader(true)
-        //     .SetColor(new Color32(0, 223, 162, byte.MaxValue));
-        // ShareLobbyMinPlayer = IntegerOptionItem.Create(2_001_002, "ShareLobbyMinPlayer", new(3, 12, 1), 5, TabGroup.SystemSettings, false).SetParent(ShareLobby)
-        //     .SetValueFormat(OptionFormat.Players)
-        //     .SetColor(new Color32(0, 223, 162, byte.MaxValue));
+        TextOptionItem.Create(2_100_002, "MenuTitle.CloudServer", TabGroup.SystemSettings)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(0, 223, 162, byte.MaxValue));
+
+        ShareLobby = BooleanOptionItem.Create(2_001_001, "ShareLobby", true, TabGroup.SystemSettings, false)
+            .SetHeader(true)
+            .SetColor(new Color32(0, 223, 162, byte.MaxValue));
+        ShareLobbyMinPlayer = IntegerOptionItem.Create(2_001_002, "ShareLobbyMinPlayer", new(3, 12, 1), 5, TabGroup.SystemSettings, false).SetParent(ShareLobby)
+            .SetValueFormat(OptionFormat.Players)
+            .SetColor(new Color32(0, 223, 162, byte.MaxValue));
 
         // 游戏信息相关设定
         TextOptionItem.Create(2_100_003, "MenuTitle.GameInfo", TabGroup.SystemSettings)
@@ -972,6 +974,7 @@ public static class Options
         
         // 指令类职业技能消息
         RoleCommandNoNotify = BooleanOptionItem.Create(3_013_008, "RoleCommandNoNotify", false, TabGroup.GameSettings, false)
+            .SetColor(new Color32(147, 241, 240, byte.MaxValue))
             .SetGameMode(CustomGameMode.Standard);
 
         // 投票相关设定
@@ -1073,8 +1076,8 @@ public static class Options
         AddedTheSkeld = BooleanOptionItem.Create(3_040_002, "AddedTheSkeld", false, TabGroup.GameSettings, false).SetParent(RandomMapsMode);
         AddedMiraHQ = BooleanOptionItem.Create(3_040_003, "AddedMIRAHQ", false, TabGroup.GameSettings, false).SetParent(RandomMapsMode);
         AddedPolus = BooleanOptionItem.Create(3_040_004, "AddedPolus", false, TabGroup.GameSettings, false).SetParent(RandomMapsMode);
-        AddedTheAirShip = BooleanOptionItem.Create(3_040_005, "AddedTheAirShip", false, TabGroup.GameSettings, false).SetParent(RandomMapsMode);
-        // MapDleks = CustomOption.Create(3_040_006, Color.white, "AddedDleks", false, RandomMapMode);
+        AddedDleks = BooleanOptionItem.Create(3_040_005, "AddedDleks", false, TabGroup.GameSettings, false).SetParent(RandomMapsMode);
+        AddedTheAirShip = BooleanOptionItem.Create(3_040_006, "AddedTheAirShip", false, TabGroup.GameSettings, false).SetParent(RandomMapsMode);
         AddedTheFungle = BooleanOptionItem.Create(3_040_007, "AddedTheFungle", false, TabGroup.GameSettings, false).SetParent(RandomMapsMode);
 
         // 梯子摔死

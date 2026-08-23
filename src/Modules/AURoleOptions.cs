@@ -111,5 +111,15 @@ namespace TONX
             get => Opt.GetFloat(FloatOptionNames.ViperDissolveTime);
             set => Opt.SetFloat(FloatOptionNames.ViperDissolveTime, value);
         }
+        /// <summary>
+        ///  Innersloth已经没救了，经过测试+扒代码，JudgeTaskRequirementPercentage已经在初始化阶段锁死值，所以ApplyGameOptions无法改值
+        ///  也就是说，想要让这个起作用，要么大改Base要么就特殊声明。反正我是不想破坏Base的完整性。
+        ///  所以呢，嘟嘟噜，这个不删，但是也不要用，迄今为止（2026/8/22）用不了。
+        /// </summary>
+        public static float JudgeTaskRequirementPercentage
+        {
+            get => Opt.GetFloat(FloatOptionNames.JudgeTaskRequirementPercentage);
+            set => Opt.SetFloat(FloatOptionNames.JudgeTaskRequirementPercentage, value);
+        }
     }
 }

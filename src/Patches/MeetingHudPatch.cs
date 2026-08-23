@@ -1,6 +1,7 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Text;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
+using InnerNet;
 using TONX.Modules;
 using TONX.Roles.AddOns.Common;
 using TONX.Roles.Crewmate;
@@ -43,8 +44,8 @@ public static class MeetingHudPatch
             if (!data.ShouldAnimate) continue;
             if ((Utils.GetPlayerById(data.Target1)?.Data?.IsDead ?? true) || (Utils.GetPlayerById(data.Target2)?.Data?.IsDead ?? true)) continue;
 
-            var pva1 = __instance.playerStates.FirstOrDefault(p => p.TargetPlayerId == data.Target1);
-            var pva2 = __instance.playerStates.FirstOrDefault(p => p.TargetPlayerId == data.Target2);
+            var pva1 = __instance.playerStates.FirstOrDefault(p => p.PlayerId == data.Target1);
+            var pva2 = __instance.playerStates.FirstOrDefault(p => p.PlayerId == data.Target2);
             if (pva1 == null || pva2 == null) continue;
 
             var time = 1.5f / swappedPlayers.Select(p => p.ShouldAnimate).Count();
@@ -56,19 +57,21 @@ public static class MeetingHudPatch
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.CastVote))]
     public static class CastVotePatch
     {
-        public static bool Prefix(MeetingHud __instance, [HarmonyArgument(0)] byte srcPlayerId /* 投票者 */ , [HarmonyArgument(1)] byte suspectPlayerId /* 被票者 */ )
+        public static bool Prefix(MeetingHud __instance, [HarmonyArgument(0)] PlayerId srcPlayerId /* 投票者 */ , [HarmonyArgument(1)] PlayerId suspectPlayerId /* 被票者 */ )
         {
             if (!AmongUsClient.Instance.AmHost) return true;
 
-            var voter = Utils.GetPlayerById(srcPlayerId);
-            var voted = Utils.GetPlayerById(suspectPlayerId);
+            byte srcId = srcPlayerId;
+            byte suspectId = suspectPlayerId;
+            var voter = Utils.GetPlayerById(srcId);
+            var voted = Utils.GetPlayerById(suspectId);
 
             if (voter != null)
             {
                 //主动叛变模式
-                if (CustomRoles.Madmate.IsEnable() && Options.MadmateSpawnMode.GetInt() == 2 && srcPlayerId == suspectPlayerId)
+                if (CustomRoles.Madmate.IsEnable() && Options.MadmateSpawnMode.GetInt() == 2 && srcId == suspectId)
                 {
-                    if (FirstCastVote[srcPlayerId])
+                    if (FirstCastVote[srcId])
                     {
                         if (Main.AllPlayerControls.Count(p => p.Is(CustomRoles.Madmate)) < CustomRoles.Madmate.GetCount() && voter.CanBeMadmate())
                         {
@@ -82,28 +85,28 @@ public static class MeetingHudPatch
                             voter.ShowPopUp(GetString("MadmateSelfVoteModeMutinyFailed"));
                             Utils.SendMessage(GetString("MadmateSelfVoteModeMutinyFailed"), voter.PlayerId);
                         }
-                        __instance.RpcClearVote(voter.GetClientId());
+                        __instance.RpcClearVote(voter.PlayerId);
                         Logger.Info($"{voter.GetNameWithRole()} 的投票被清除", nameof(CastVotePatch));
-                        FirstCastVote[srcPlayerId] = false;
+                        FirstCastVote[srcId] = false;
                         return false;
                     }
                 }
                 
                 if (voter.GetRoleClass()?.CheckVoteAsVoter(voted) == false)
                 {
-                    __instance.RpcClearVote(voter.GetClientId());
+                    __instance.RpcClearVote(voter.PlayerId);
                     Logger.Info($"{voter.GetNameWithRole()} 的投票被清除", nameof(CastVotePatch));
                     return false;
                 }
                 if (CustomRoleManager.CheckVoteOthers(voter, voted) == false)
                 {
-                    __instance.RpcClearVote(voter.GetClientId());
+                    __instance.RpcClearVote(voter.PlayerId);
                     Logger.Info($"{voter.GetNameWithRole()} 的投票被清除", nameof(CastVotePatch));
                     return false;
                 }
             }
 
-            MeetingVoteManager.Instance?.SetVote(srcPlayerId, suspectPlayerId);
+            MeetingVoteManager.Instance?.SetVote(srcId, suspectId);
             return true;
         }
     }
@@ -126,10 +129,11 @@ public static class MeetingHudPatch
 
             SoundManager.Instance.ChangeAmbienceVolume(0f);
             if (!GameStates.IsModHost) return;
+            TONX.Roles.AddOns.Common.Colorblind.RpcSetSkinAll();
             var myRole = PlayerControl.LocalPlayer.GetRoleClass();
             foreach (var pva in __instance.playerStates)
             {
-                var pc = Utils.GetPlayerById(pva.TargetPlayerId);
+                var pc = Utils.GetPlayerById(pva.PlayerId);
                 if (pc == null) continue;
                 var roleTextMeeting = Object.Instantiate(pva.NameText);
                 roleTextMeeting.transform.SetParent(pva.NameText.transform);
@@ -205,7 +209,7 @@ public static class MeetingHudPatch
                 var seer = PlayerControl.LocalPlayer;
                 var seerRole = seer.GetRoleClass();
 
-                var target = Utils.GetPlayerById(pva.TargetPlayerId);
+                var target = Utils.GetPlayerById(pva.PlayerId);
                 if (target == null) continue;
 
                 var sb = new StringBuilder();
@@ -264,12 +268,20 @@ public static class MeetingHudPatch
         public static bool Prefix() { return GameManager.Instance is not null; }
         public static void Postfix(MeetingHud __instance)
         {
-            if (!AmongUsClient.Instance.AmHost || !GameStates.IsInGame || __instance == null || __instance.IsDestroyedOrNull()) return;
+            if (__instance == null || __instance.IsDestroyedOrNull()) return;
+            // 设置自定义会议标题
+            if (__instance.CurrentState == MeetingHud.MeetingStates.Discussion)
+            {
+                var customTitle = Options.CurrentGameMode.GetModeClass()?.GetMeetingTitleText();
+                if (!string.IsNullOrEmpty(customTitle) && __instance.TitleText.text != customTitle)
+                    __instance.TitleText.text = customTitle;
+            }
+            if (!AmongUsClient.Instance.AmHost || !GameStates.IsInGame) return;
             if (Input.GetMouseButtonUp(1) && Input.GetKey(KeyCode.LeftControl))
             {
                 __instance.playerStates.DoIf(x => x.HighlightedFX.enabled, x =>
                 {
-                    var player = Utils.GetPlayerById(x.TargetPlayerId);
+                    var player = Utils.GetPlayerById(x.PlayerId);
                     player.RpcExile();
                     var state = PlayerState.GetByPlayerId(player.PlayerId);
                     state.DeathReason = CustomDeathReason.Execution;
@@ -329,28 +341,29 @@ class SetHighlightedPatch
     }
 }
 
-[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.PopulateButtons))]
-class JusticeMeetingHudPopulateButtonsPatch
+[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.SetJudgeOverrule))]
+class JudgeSetJudgeOverrulePatch
 {
-    public static void Postfix(MeetingHud __instance)
+    public static bool Prefix(MeetingHud __instance, [HarmonyArgument(0)] PlayerId judgePlayerId, [HarmonyArgument(1)] PlayerId targetPlayerId)
     {
-        HandleJusticeMeeting(__instance);
-    }
-    public static void HandleJusticeMeeting(MeetingHud __instance)
-    {
-        if (!Justice.IsJusticeMeeting()) return;
+        if (!AmongUsClient.Instance.AmHost) return true;
 
-        var targets = Justice.GetHostingJustice()?.SelectedPlayers ?? new();
-        var num = -1;
-        foreach (var pva in __instance.playerStates)
+        var judge = Utils.GetPlayerById(judgePlayerId);
+        var target = Utils.GetPlayerById(targetPlayerId);
+        if (judge == null || target == null) return true;
+
+        if (judge.GetRoleClass()?.OnCheckOverrule(target) == false)
         {
-            if (!targets.Contains(pva.TargetPlayerId))
+            Logger.Info($"{judge.GetNameWithRole()} 的否决被 {judge.GetRoleClass()?.GetType().Name} 阻止 => {target.GetNameWithRole()}", "JudgeOverrule");
+            var pva = __instance.playerStates.FirstOrDefault(x => (byte)x.PlayerId == (byte)judgePlayerId);
+            if (pva != null)
             {
-                pva.gameObject.SetActive(false);
-                continue;
+                pva.UnsetVote();
+                __instance.RpcClearVote(pva.PlayerId);
             }
-            pva.transform.localPosition = new Vector3(2f * num, 0f, pva.transform.localPosition.z);
-            num *= -1;
+            __instance.UpdateForeground();
+            return false;
         }
+        return true;
     }
 }

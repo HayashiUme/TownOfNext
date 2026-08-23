@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 
 namespace TONX.Modules;
 
@@ -19,7 +19,8 @@ internal static class CustomRoleSelector
     public static int addEngineerNum = 0;
     public static int addNoisemakerNum = 0; 
     public static int addTrackerNum = 0;
-    public static int addDetectiveNum = 0; 
+    public static int addDetectiveNum = 0;
+    public static int addJudgeNum = 0;
     public static int addShapeshifterNum = 0;
     public static int addPhantomNum = 0;
     public static int addViperNum = 0;
@@ -31,6 +32,7 @@ internal static class CustomRoleSelector
         addNoisemakerNum = 0;
         addTrackerNum = 0;
         addDetectiveNum = 0;
+        addJudgeNum = 0;
         addShapeshifterNum = 0;
         addPhantomNum = 0;
         addViperNum = 0;
@@ -44,6 +46,7 @@ internal static class CustomRoleSelector
                 case RoleTypes.Noisemaker: addNoisemakerNum++; break;
                 case RoleTypes.Tracker: addTrackerNum++; break;
                 case RoleTypes.Detective: addDetectiveNum++; break;
+                case RoleTypes.Judge: addJudgeNum++; break;
                 case RoleTypes.Shapeshifter: addShapeshifterNum++; break;
                 case RoleTypes.Phantom: addPhantomNum++; break;
                 case RoleTypes.Viper: addViperNum++; break;
@@ -59,6 +62,7 @@ internal static class CustomRoleSelector
             RoleTypes.Noisemaker => addNoisemakerNum,
             RoleTypes.Tracker => addTrackerNum,
             RoleTypes.Detective => addDetectiveNum,
+            RoleTypes.Judge => addJudgeNum,
             RoleTypes.Shapeshifter => addShapeshifterNum,
             RoleTypes.Phantom => addPhantomNum,
             RoleTypes.Viper => addViperNum,

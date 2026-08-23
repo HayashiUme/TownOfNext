@@ -18,8 +18,7 @@ public class ModUpdater
     {
 #if DEBUG && Windows
         "file:///D:/Desktop/TONX/info.json",
-        "file:///D:/Desktop/info.json",
-        "https://record.tonx.cc/api/version.json"
+        "file:///D:/Desktop/info.json"
 #else
         "https://raw.githubusercontent.com/TownOfNext/TownOfNext/main/info.json",
         "https://download.hayashiume.top/https://raw.githubusercontent.com/TownOfNext/TownOfNext/main/info.json",
@@ -136,15 +135,30 @@ public class ModUpdater
             SetUpdateButtonStatus();
         }, 0f, "CheckForUpdate");
 #elif Android
-        await Task.CompletedTask;
-        isChecked = true;
+        foreach (var url in GetInfoFileUrlList())
+        {
+            if (await GetVersionInfo(url))
+            {
+                isChecked = true;
+                break;
+            }
+        }
+
         new LateTask(() => // 利用LateTask使UI相关操作在主线程进行
         {
-            if (firstLaunch)
+            Logger.Msg("Check For Update: " + isChecked, "CheckRelease");
+            if (isChecked)
             {
-                firstLaunch = false;
-                var annos = IsChineseUser ? announcement_zh : announcement_en;
-                CustomPopup.Show(GetString(StringNames.AnnouncementLabel), annos, new() { (GetString(StringNames.Okay), null) });
+                Logger.Info("Latest Version: " + latestVersion?.ToString(), "CheckRelease");
+                Logger.Info("Announcement (English): " + announcement_en, "CheckRelease");
+                Logger.Info("Announcement (SChinese): " + announcement_zh, "CheckRelease");
+
+                if (firstLaunch)
+                {
+                    firstLaunch = false;
+                    var annos = IsChineseUser ? announcement_zh : announcement_en;
+                    CustomPopup.Show(GetString(StringNames.AnnouncementLabel), annos, new() { (GetString(StringNames.Okay), null) });
+                }
             }
         }, 0f, "CheckForUpdate");
 #endif

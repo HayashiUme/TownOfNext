@@ -83,6 +83,7 @@ static class CustomRolesHelper
                 CustomRoles.Noisemaker or
                 CustomRoles.Tracker or
                 CustomRoles.Detective or
+                CustomRoles.Judge or
                 CustomRoles.Impostor or
                 CustomRoles.Shapeshifter or
                 CustomRoles.Phantom or
@@ -119,6 +120,7 @@ static class CustomRolesHelper
                 CustomRoles.Noisemaker => roleOpt.GetNumPerGame(RoleTypes.Noisemaker),
                 CustomRoles.Tracker => roleOpt.GetNumPerGame(RoleTypes.Tracker),
                 CustomRoles.Detective => roleOpt.GetNumPerGame(RoleTypes.Detective),
+                CustomRoles.Judge => roleOpt.GetNumPerGame(RoleTypes.Judge),
                 CustomRoles.Impostor => roleOpt.GetNumPerGame(RoleTypes.Impostor),
                 CustomRoles.Shapeshifter => roleOpt.GetNumPerGame(RoleTypes.Shapeshifter),
                 CustomRoles.Phantom => roleOpt.GetNumPerGame(RoleTypes.Phantom),
@@ -142,6 +144,7 @@ static class CustomRolesHelper
                 CustomRoles.Noisemaker => roleOpt.GetChancePerGame(RoleTypes.Noisemaker),
                 CustomRoles.Tracker => roleOpt.GetChancePerGame(RoleTypes.Tracker),
                 CustomRoles.Detective => roleOpt.GetChancePerGame(RoleTypes.Detective),
+                CustomRoles.Judge => roleOpt.GetChancePerGame(RoleTypes.Judge),
                 CustomRoles.Impostor => roleOpt.GetChancePerGame(RoleTypes.Impostor),
                 CustomRoles.Shapeshifter => roleOpt.GetChancePerGame(RoleTypes.Shapeshifter),
                 CustomRoles.Phantom => roleOpt.GetChancePerGame(RoleTypes.Phantom),
@@ -163,6 +166,7 @@ static class CustomRolesHelper
             RoleTypes.Noisemaker => CustomRoles.Noisemaker,
             RoleTypes.Tracker => CustomRoles.Tracker,
             RoleTypes.Detective => CustomRoles.Detective,
+            RoleTypes.Judge => CustomRoles.Judge,
             RoleTypes.Impostor => CustomRoles.Impostor,
             RoleTypes.Shapeshifter => CustomRoles.Shapeshifter,
             RoleTypes.Phantom => CustomRoles.Phantom,
