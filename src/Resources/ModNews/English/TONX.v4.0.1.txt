@@ -44,6 +44,7 @@
 - Added Discord status display
 - Added AMCI matchmaker support
 - Added support for crowded, rooms can now accommodate up to 127 players
+- Added Fastboot Mode for skipping the Splash Performance animation.
 - Added dark mode
 
 ## Restoration

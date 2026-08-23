@@ -3,7 +3,7 @@ using UnityEngine;
 using static TONX.Options;
 
 namespace TONX.Roles.AddOns.Common;
-// 这个职业是对GameDataToPacket的实例
+
 public static class Colorblind
 {
     private static readonly int Id = 82200;

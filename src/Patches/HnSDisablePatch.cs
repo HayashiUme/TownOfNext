@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 
 namespace TONX.Patches;
 
-public class HnsDisablePatch
+public class HnSDisablePatch
 {
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
     public class MainMenuManagerStartPatch
