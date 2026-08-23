@@ -8,8 +8,8 @@ namespace TONX.Patches;
 
 public static class DiscordRPC
 {
-    private static string Lobbycode = "";
-    private static string Region = "";
+    private static string _lobbyCode = "";
+    private static string _region = "";
 
     [HarmonyPatch(typeof(DiscordManager), nameof(DiscordManager.SetInMenus))]
     public static class SetInMenusPatch
@@ -19,11 +19,13 @@ public static class DiscordRPC
             if (__instance.presence == null) return false;
             try
             {
+                _lobbyCode = "";
+                _region = "";
                 __instance.ClearPresence();
                 var activity = new Activity
                 {
                     State = "In Menus",
-                    Details = GetDetails(),
+                    Details = $"TONX v{Main.PluginVersion}",
                     Assets = new ActivityAssets
                     {
                         LargeImage = "https://i.imgur.com/947p8jb.png"
@@ -49,6 +51,9 @@ public static class DiscordRPC
             if (__instance.presence == null) return false;
             try
             {
+                _lobbyCode = "";
+                _region = "";
+
                 if (__instance.StartTime == null)
                 {
                     __instance.StartTime = new Il2CppSystem.Nullable<Il2CppSystem.DateTime>(Il2CppSystem.DateTime.UtcNow);
@@ -57,7 +62,7 @@ public static class DiscordRPC
                 var activity = new Activity
                 {
                     State = "In Game",
-                    Details = GetDetails(),
+                    Details = $"TONX v{Main.PluginVersion}",
                     Assets = new ActivityAssets
                     {
                         LargeImage = "https://i.imgur.com/947p8jb.png"
@@ -93,7 +98,7 @@ public static class DiscordRPC
                 var activity = new Activity
                 {
                     State = "In Freeplay",
-                    Details = GetDetails(),
+                    Details = $"TONX v{Main.PluginVersion}",
                     Assets = new ActivityAssets
                     {
                         LargeImage = "https://i.imgur.com/947p8jb.png"
@@ -117,6 +122,11 @@ public static class DiscordRPC
         public static bool Prefix(DiscordManager __instance, int numPlayers, int maxPlayers, int gameId)
         {
             if (__instance.presence == null) return false;
+
+            // 不是大厅状态就不处理，防止游戏中被覆盖
+            if (AmongUsClient.Instance == null || AmongUsClient.Instance.GameState != InnerNetClient.GameStates.Joined)
+                return false;
+
             try
             {
                 if (__instance.StartTime == null)
@@ -125,6 +135,9 @@ public static class DiscordRPC
                 }
 
                 string id = GameCode.IntToGameName(gameId);
+                _lobbyCode = id;
+                _region = ServerManager.Instance?.CurrentRegion?.Name ?? "";
+
                 __instance.ClearPresence();
                 var activity = new Activity
                 {
@@ -166,6 +179,11 @@ public static class DiscordRPC
         public static bool Prefix(DiscordManager __instance, int numPlayers, int maxPlayers, int gameId)
         {
             if (__instance.presence == null) return false;
+
+            // 不是大厅状态就不处理，防止游戏中被覆盖
+            if (AmongUsClient.Instance == null || AmongUsClient.Instance.GameState != InnerNetClient.GameStates.Joined)
+                return false;
+
             try
             {
                 if (__instance.StartTime == null)
@@ -174,6 +192,9 @@ public static class DiscordRPC
                 }
 
                 string text = GameCode.IntToGameName(gameId);
+                _lobbyCode = text;
+                _region = ServerManager.Instance?.CurrentRegion?.Name ?? "";
+
                 var activity = new Activity
                 {
                     State = "In Lobby",
@@ -210,7 +231,7 @@ public static class DiscordRPC
         }
     }
 
-    public static string GetDetails()
+    private static string GetDetails()
     {
         var details = $"TONX v{Main.PluginVersion}";
 #if DEBUG
@@ -218,26 +239,14 @@ public static class DiscordRPC
 #endif
         try
         {
-            if (DataManager.Settings != null && DataManager.Settings.Gameplay != null && !DataManager.Settings.Gameplay.StreamerMode)
-            {
-                if (GameStates.IsLobby && GameStartManager.Instance?.GameRoomNameCode != null)
-                {
-                    Lobbycode = GameStartManager.Instance.GameRoomNameCode.text;
-                    Region = ServerManager.Instance?.CurrentRegion?.Name ?? "";
-                }
-
-                if (!string.IsNullOrEmpty(Lobbycode) && !string.IsNullOrEmpty(Region))
-                {
-                    details = $"TONX - {Lobbycode} ({Region})";
-                }
-            }
+            if (!DataManager.Settings.Gameplay.StreamerMode && !string.IsNullOrEmpty(_lobbyCode) && !string.IsNullOrEmpty(_region))
+                details = $"TONX - {_lobbyCode} ({_region})";
         }
         catch (Exception ex)
         {
             Logger.Error("Error in getting discord rpc details", "DiscordPatch");
             Logger.Exception(ex, "DiscordPatch");
         }
-
         return details;
     }
 
@@ -246,16 +255,13 @@ public static class DiscordRPC
         try
         {
             if (!DestroyableSingleton<DiscordManager>.InstanceExists) return;
+            if (AmongUsClient.Instance == null || AmongUsClient.Instance.GameState != InnerNetClient.GameStates.Joined) return;
 
             var manager = DestroyableSingleton<DiscordManager>.Instance;
-            if (AmongUsClient.Instance != null && AmongUsClient.Instance.AmHost && AmongUsClient.Instance.NetworkMode == NetworkModes.OnlineGame)
-            {
+            if (AmongUsClient.Instance.AmHost && AmongUsClient.Instance.NetworkMode == NetworkModes.OnlineGame)
                 manager.SetInLobbyHost(currentPlayers, maxPlayers, gameId);
-            }
-            else if (AmongUsClient.Instance != null)
-            {
+            else
                 manager.SetInLobbyClient(currentPlayers, maxPlayers, gameId);
-            }
         }
         catch (Exception ex)
         {
@@ -272,8 +278,3 @@ public static class DiscordRPC
     public static void UpdateLobbyPresence(int currentPlayers, int maxPlayers, int gameId) { }
 }
 #endif
-
-
-
-
-
