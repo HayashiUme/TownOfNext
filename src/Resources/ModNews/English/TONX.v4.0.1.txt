@@ -21,6 +21,10 @@
 ## Fix
 - Fixed an issue where a Judge disconnecting caused special meetings to crash.
 - Fixed an issue where the Judge was displayed as Swapper in certain messages.
+- Fixed an issue where the game might crash when a player disconnects.
+- Fixed an issue where the Exile coroutine was not functioning properly on the Airship map.
+- Fixed an issue where roles in Role Draft mode might not synchronize.
+- Fixed a series of issues occurring in FreePlay.
 - Fixed Android CheckForUpdate showing empty announcement popup.
 - Fixed Android MainMenu custom buttons overlapping with the exit button.
 - Fixed Android OpenURL failing to launch browser.
@@ -34,6 +38,8 @@
 
 ## New Feature
 - Added Dleks ehT map for April Fool's Day.
+- The mod clients can see the meeting title text changed related to special meetings.
+- The mod clients can see changes to the meeting title text on special meetings.
 
 ## Restoration
 - Restored the Discord server invite link button in MainMenu.
