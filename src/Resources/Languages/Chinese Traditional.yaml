@@ -121,6 +121,7 @@ DoveOfPeace: "和平之鴿"
 Collator: "基因学家"
 Swapper: "换票师"
 Justice: "大神官"
+SecurityGuard: "保安"
 
 ## 中立阵营 / Neutrals
 Jester: "小丑"
@@ -150,6 +151,7 @@ PlagueDoctor: "疫醫"
 Sunnyboy: "陽光開朗大男孩"
 Shifter: "连环交换师"
 Doomsayer: "末日预言家"
+Yandere: "病嬌"
 
 ## 附加职业 / Add-ons
 LastImpostor: "絕境者"
@@ -197,7 +199,7 @@ Prefix.Mimic: "保險箱"
 Prefix.Reach: "長槍"
 Prefix.Bait: "誘餌"
 Prefix.Beartrap: "設陷"
-Prefix.ColorBlind: "色盲"
+Prefix.Colorblind: "色盲"
 
 ## 胜利界面职业名 / Role Name for End Screen
 WinnerRoleText.Impostor: "偽裝者"
@@ -227,6 +229,7 @@ WinnerRoleText.Provocateur: "神風特攻隊"
 WinnerRoleText.Sunnyboy: "陽光開朗大男孩"
 WinnerRoleText.Follower: "追隨者"
 WinnerRoleText.Doomsayer: "末日预言家"
+WinnerRoleText.Yandere: "病嬌與暗戀對象"
 
 # 以下是职业简介（显示在开局以及任务栏的文本）/ Shows at Impostor/Crewmate Screen
 
@@ -314,6 +317,7 @@ DoveOfPeaceInfo: "何必打打殺殺呢?"
 CollatorInfo: "提取样本"
 SwapperInfo: "交换两位玩家的票数"
 JusticeInfo: "维护公平正义"
+SecurityGuardInfo: "通風管道？通通給我鎖死！"
 
 ## 中立阵营 / Neutral Blurbs
 ArsonistInfo: "燒吧，燒吧，燃燒吧"
@@ -343,6 +347,7 @@ PlagueDoctorInfo: "你看著病的不清啊"
 SunnyboyInfo: "這個角色的建立到底有甚麼用"
 ShifterInfo: "职业没喽，职业回来喽"
 DoomsayerInfo: "猜测其他玩家的职业"
+YandereInfo: "你永遠是我的寶貝~"
 
 ## 附加职业 / Add-ons Blurbs
 LoversInfo: "您墜入了愛河"
@@ -457,6 +462,7 @@ DoveOfPeaceInfoLong: "和平之鴿可以通過進入通風管來進行歌頌，\
 CollatorInfoLong: "基因学家可以通过对玩家点击击杀提取样本，每轮可以提取两位玩家的样本，并在下一轮会议上得到样本的身份信息。"
 SwapperInfoLong: "换票师可以在会议上交换两位玩家的票数。\n换票指令为：/cmd sw [玩家编号]\n您可以在玩家名字前看到该玩家的编号，或者使用/cmd id指令查看所有玩家的编号。"
 JusticeInfoLong: "(来源：Nebula On the Ship)\n大神官可以选择两名玩家召开特殊会议。在此会议上，只能投票给这两名玩家，平票或不投票则同时票出。\n技能指令为：/cmd bl [目标编号]\n您可以在玩家名字前看到该玩家的编号，或者使用/cmd id指令查看所有玩家的编号。"
+SecurityGuardInfoLong: "(來源：The Other Roles)\n保安可以通過使用通風管道來封鎖該管道。一旦管道被封鎖，其他可以使用管道的玩家將無法進入該管道。最多可封鎖的管道數量由房主設置。"
 
 ## 中立阵营 / Neutrals Descriptions
 ArsonistInfoLong: "縱火犯可以通過對玩家使用殺人鍵並跟隨數秒來澆油，開始以及結束澆油時會出現盾牌破碎的效果作為提示。當所有存活玩家都被縱火犯澆上油時，縱火犯可以以跳管道的方式來點火，並單獨獲勝。\n玩家名字顯示「△」表示澆油中\n顯示「▲」表示已經澆油。"
@@ -485,6 +491,7 @@ PlagueDoctorInfoLong: "疫醫的目標是感染所有活著的玩家，疫醫首
 SunnyboyInfoLong: "陽光開朗大男孩可以通過心電圖來查看他人的生命徵象。陽光開朗大男孩在場時遊戲不會因人數優勢而結束(例如偽裝者人數大於船員人數或沒有剩餘的存活偽裝者)，遊戲結束時如果陽光開朗大男孩死亡，則陽光開朗大男孩隨著勝利陣營一同獲勝。"
 ShifterInfoLong: "交换师可以通过对玩家点击击杀按钮进行职业交换，交换技能在下一轮会议结束后生效。请注意：交换师无法获胜。"
 DoomsayerInfoLong: "末日预言家可以通过对玩家点击击杀按钮获取提示，末日预言家需要正确猜测指定个数玩家的职业才能获胜。根据房主设置，猜测错误可能会自杀。\n猜测指令为：/cmd bt [玩家编号] [职业名]\n您可以在玩家名字前看到该玩家的编号，或者使用/cmd id指令查看所有玩家的编号。"
+YandereInfoLong: "(來源：Extreme Roles)\n病嬌擁有一個隨機分配的暗戀對象。靠近暗戀對象的玩家一定時間後會被標記為情敵。病嬌可以擊殺其他玩家，擊殺情敵會減少擊殺冷卻時間，反之會增加冷卻時間。暗戀對象死亡後，病嬌的擊殺冷卻變為房主設定的固定值。\n【獨自勝利條件】除自己和暗戀對象外的所有玩家均死亡。"
 
 ## 附加职业 / Add-ons Descriptions
 LastImpostorInfoLong: "這個效果只在偽裝者陣營只剩下一人時賦予該玩家，被賦予效果的玩家殺人冷卻將會縮短。"
@@ -1031,6 +1038,8 @@ EvilGrenadierSkillDuration: "闪光弹状态持续时间"
 EvilGrenadierSkillRange: "受闪光弹影响的范围"
 JusticeCanUseTimes: "使用次数限制"
 JusticeMeetingVotingTime: "大神官会议投票时间"
+SecurityGuardVentLockMaxCount: "最大封鎖管道數量"
+SecurityGuardVentLockCooldown: "封鎖技能冷卻時間"
 
 # 随机出生点 / Random Spawn Locations
 Junction: "三岔路"
@@ -1209,6 +1218,10 @@ VeteranOffGuard: "警戒狀態已失效，剩餘{0}次使用次數"
 SkillMaxUsage: "已達到技能使用次數上限"
 GrenadierSkillInUse: "閃光彈生效中"
 GrenadierSkillStop: "閃光彈已失效"
+SecurityGuardVentLocked: "管道【{0}】被封鎖"
+SecurityGuardVentLockedBooted: "該管道已被保安封鎖，已自動彈出"
+SecurityGuardVentLockMaxReached: "已達到最大封鎖數量 【{0}】次，無法繼續封鎖"
+SecurityGuardHudText: "已封鎖: {0}/{1}"
 MediumKnowPlayerDead: "剛剛似乎有亡魂發出了一陣嘶吼"
 TicketsStealerGetTicket: "您的票數共增加{0}"
 BecomeMadmateCuzMadmateMode: "您因死亡而成為叛徒"
@@ -1301,6 +1314,16 @@ JusticeMeetingStart: "审判开始！所有玩家只能在【{0}】和【{1}】�
 JusticeMeetingInvalidVote: "特殊会议期间只能投票给被选中的玩家"
 JusticeMeetingForceExile: "玩家【{0}】已死亡，别无选择了，决定驱逐【{1}】"
 JusticeMeetingBanAbility: "正在进行特殊会议，只能对会议上被选中的玩家发动技能"
+YandereDeathCooldown: "暗戀對象死亡後的擊殺冷卻時間"
+YandereProximityRange: "玩家成為情敵需要與暗戀對象的最大距離"
+YandereRivalTime: "成為情敵所需時間"
+YandereRivalKillCdReduction: "擊殺情敵後減少擊殺冷卻時間"
+YandereNonRivalKillCdIncrease: "擊殺非情敵後增加擊殺冷卻時間"
+YandereShowLoverArrow: "顯示指向暗戀對象的箭頭"
+YandereShowRivalArrow: "顯示指向情敵的箭頭"
+YandereRivalKilled: "你擊殺了一名情敵！擊殺冷卻縮短。"
+YandereLoverDead: "暗戀對象已死亡"
+YandereCannotKillLover: "它可是你的寶貝啊~你怎麼能忍心殺它~"
 
 # 信息 / Messages
 Message.SetToSeconds: "訊息傳送冷卻時間設為【{0}】秒"
@@ -1472,6 +1495,7 @@ SwooperRevertVentButtonText: "解除"
 MarioVentButtonText: "跳躍"
 VeteranVetnButtonText: "戒備"
 GrenadierVetnButtonText: "閃光彈"
+SecurityGuardVentButtonText: "封鎖"
 MayorVetnButtonText: "集合"
 ParanoiaVetnButtonText: "呼救"
 SheriffKillButtonText: "執法"
