@@ -590,7 +590,7 @@ AutoKickStopWordsTimes: "Количество предупреждений за 
 AutoKickStopWordsAsBan: "Заблокировать игрока после его кика"
 AutoWarnStopWords: "Предупреждение тем кто пишет запрещенные слова"
 KickAndroidPlayer: "Кикнуть игроков которые зашли в лобби через телефон"
-ShareLobby: "Отправлять код вашей комнаты в Discord сервер TONX"
+ShareLobby: "Отправлять код вашей комнаты в Discord сервер"
 ShareLobbyMinPlayer: "Минимально игроков для отправки кода"
 ShareLobby_NotVerified: "Пожалуйста, сначала завершите проверку в Discord, чтобы включить эту функцию.\nВведите /sign в лобби, чтобы начать проверку."
 Verify_Title: "TONX Проверка"
