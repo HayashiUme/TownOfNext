@@ -27,8 +27,10 @@
 - Fixed the Website button in MainMenu appeared in the opposite order on Chinese and English pages.
 
 ## Changing
+- The Init role turned into Drafter when using Role Draft gamemode.
 - Migrated legacy TownOfHost folder names to TONX.
 - TONX Chan now requires verification; unverified players must use /sign on Discord before sharing lobby codes.
+- The Judge animation will be trigger when Justice special meeting exiled a single player. 
 
 ## New Feature
 - Added Dleks ehT map for April Fool's Day.
