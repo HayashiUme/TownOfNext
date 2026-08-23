@@ -54,11 +54,6 @@ public static class DiscordRPC
                 _lobbyCode = "";
                 _region = "";
 
-                if (__instance.StartTime == null)
-                {
-                    __instance.StartTime = new Il2CppSystem.Nullable<Il2CppSystem.DateTime>(Il2CppSystem.DateTime.UtcNow);
-                }
-
                 var activity = new Activity
                 {
                     State = "In Game",
@@ -68,12 +63,6 @@ public static class DiscordRPC
                         LargeImage = "https://i.imgur.com/947p8jb.png"
                     }
                 };
-                if (__instance.StartTime.hasValue)
-                {
-                    var timestamps = activity.Timestamps;
-                    timestamps.Start = DiscordManager.ToUnixTime(__instance.StartTime.value);
-                    activity.Timestamps = timestamps;
-                }
                 __instance.presence.GetActivityManager().UpdateActivity(activity, new Action<Result>(_ => { }));
                 return false;
             }
@@ -129,11 +118,6 @@ public static class DiscordRPC
 
             try
             {
-                if (__instance.StartTime == null)
-                {
-                    __instance.StartTime = new Il2CppSystem.Nullable<Il2CppSystem.DateTime>(Il2CppSystem.DateTime.UtcNow);
-                }
-
                 string id = GameCode.IntToGameName(gameId);
                 _lobbyCode = id;
                 _region = ServerManager.Instance?.CurrentRegion?.Name ?? "";
@@ -148,12 +132,6 @@ public static class DiscordRPC
                         LargeImage = "https://i.imgur.com/947p8jb.png"
                     }
                 };
-                if (__instance.StartTime.hasValue)
-                {
-                    var timestamps = activity.Timestamps;
-                    timestamps.Start = DiscordManager.ToUnixTime(__instance.StartTime.value);
-                    activity.Timestamps = timestamps;
-                }
                 var party = activity.Party;
                 var size = party.Size;
                 size.CurrentSize = numPlayers;
@@ -186,11 +164,6 @@ public static class DiscordRPC
 
             try
             {
-                if (__instance.StartTime == null)
-                {
-                    __instance.StartTime = new Il2CppSystem.Nullable<Il2CppSystem.DateTime>(Il2CppSystem.DateTime.UtcNow);
-                }
-
                 string text = GameCode.IntToGameName(gameId);
                 _lobbyCode = text;
                 _region = ServerManager.Instance?.CurrentRegion?.Name ?? "";
