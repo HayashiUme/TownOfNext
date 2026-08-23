@@ -24,7 +24,7 @@ public sealed class AmciModGuidAttribute : Attribute
         }
 
         var metadataAttribute = type.Assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
-            .SingleOrDefault(x => x.Key == "Reactor.AmciModGuid");
+            .SingleOrDefault(x => x.Key == "TONX");
         if (metadataAttribute is { Value: not null } && Guid.TryParse(metadataAttribute.Value, out var guid))
         {
             return guid;
