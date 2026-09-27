@@ -6,7 +6,7 @@ namespace TONX.Achievements.Game;
 
 public static class AchievementManager
 {
-    public static string ServerBaseUrl { get; set; } = "https://achievement.tonx.cc";
+    public static string ServerBaseUrl { get; set; } = "https://record.tonx.cc";
 
     private static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(8) };
     
