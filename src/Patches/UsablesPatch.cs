@@ -36,6 +36,14 @@ class CanUseVentPatch
             return false;
         }
 
+        // 保安已经封锁的通风管
+        if (Roles.Crewmate.SecurityGuard.IsVentLocked(__instance.Id))
+        {
+            canUse = false;
+            couldUse = false;
+            return false;
+        }
+
         // ここまでMod独自の処理
         // ここからバニラ処理の置き換え
 

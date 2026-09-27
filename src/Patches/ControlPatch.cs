@@ -1,5 +1,4 @@
 using Hazel;
-using TONX.Achievements.Common;
 using TONX.Achievements.Game;
 using TONX.Achievements.Roles.Crewmate.Criminologist;
 using TONX.Modules;
@@ -173,7 +172,7 @@ internal class ControllerManagerUpdatePatch
         //实名投票
         if (GetKeysDown(KeyCode.Return, KeyCode.V, KeyCode.LeftShift) && GameStates.IsMeeting && !GameStates.IsOnlineGame)
         {
-            MeetingHud.Instance.RpcClearVote(AmongUsClient.Instance.ClientId);
+            MeetingHud.Instance.RpcClearVote(PlayerControl.LocalPlayer.PlayerId);
         }
 
         //打开飞艇所有的门

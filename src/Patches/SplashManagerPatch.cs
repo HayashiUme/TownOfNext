@@ -22,7 +22,8 @@ public class SplashManagerPatch
         var logoAnimator = GameObject.Find("LogoAnimator");
         logoAnimator.SetActive(false);
         CreateTextObj();
-        yield return StartLogoAnima();
+        if (!Main.FastBoot.Value)
+            yield return StartLogoAnima();
         yield return DestroyableSingleton<ReferenceDataManager>.Instance.Initialize();
         try
         {

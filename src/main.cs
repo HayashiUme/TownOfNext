@@ -32,19 +32,19 @@ public class Main : BasePlugin
     public const string DebugKeySalt = "59687b";
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
     // == 版本相关设定 / Version Config ==
-    public const string LowestSupportedVersion = "2025.11.18"; // 17.1.0
+    public const string LowestSupportedVersion = "2026.8.18"; // 18.0
     public static readonly bool IsPublicAvailableOnThisVersion = true;
-    public const string PluginVersion = "4.0.0";
+    public const string PluginVersion = "4.0.1";
     public const int PluginCreation = 1;
     public const VersionType VerType = VersionType.Release;
     public static readonly bool AllowHtmlTagMsgOnOfficialServer = false;
     // == 链接相关设定 / Link Config ==
     public static readonly bool ShowWebsiteButton = true;
-    public static readonly string WebsiteUrl = IsChineseLanguageUser ? "https://tonx.cc/zh" : "https://tonx.cc";
-    public static readonly bool ShowQQButton = false;
-    public static readonly string QQInviteUrl = "https://jq.qq.com/?_wv=1027&k=2RpigaN6";
-    public static readonly bool ShowDiscordButton = false;
-    public static readonly string DiscordInviteUrl = "https://discord.gg/hkk2p9ggv4";
+    public static readonly string WebsiteUrl = IsChineseLanguageUser ? "https://tonx.cc/" : "https://tonx.cc/en/";
+    public static readonly bool ShowQQButton = true;
+    public static readonly string QQInviteUrl = "https://qm.qq.com/q/r50rI1beeI";
+    public static readonly bool ShowDiscordButton = true;
+    public static readonly string DiscordInviteUrl = "https://dsc.gg/tonext";
     public static readonly bool ShowGithubUrl = true;
     public static readonly string GithubRepoUrl = "https://github.com/TownOfNext/TownOfNext";
     // ==========
@@ -56,7 +56,7 @@ public class Main : BasePlugin
     public static string ExceptionMessage;
     public static bool ExceptionMessageIsShown = false;
     public static string CredentialsText;
-    public static NormalGameOptionsV10 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
+    public static NormalGameOptionsV11 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
     //Client Options
     public static ConfigEntry<string> HideName { get; private set; }
     public static ConfigEntry<string> HideColor { get; private set; }
@@ -70,8 +70,10 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> ForceOwnLanguageRoleName { get; private set; }
     public static ConfigEntry<bool> EnableCustomButton { get; private set; }
     public static ConfigEntry<bool> EnableCustomSoundEffect { get; private set; }
+    public static ConfigEntry<bool> FastBoot { get; private set; }
     public static ConfigEntry<bool> VersionCheat { get; private set; }
     public static ConfigEntry<bool> GodMode { get; private set; }
+    public static ConfigEntry<bool> DarkTheme { get; private set; }
 
 
     public static Dictionary<int, PlayerVersion> playerVersion = new();
@@ -174,8 +176,10 @@ public class Main : BasePlugin
         ForceOwnLanguageRoleName = Config.Bind("Client Options", "ForceOwnLanguageRoleName", false);
         EnableCustomButton = Config.Bind("Client Options", "EnableCustomButton", true);
         EnableCustomSoundEffect = Config.Bind("Client Options", "EnableCustomSoundEffect", true);
+        FastBoot = Config.Bind("Client Options", "FastBoot", false);
         VersionCheat = Config.Bind("Client Options", "VersionCheat", false);
         GodMode = Config.Bind("Client Options", "GodMode", false);
+        DarkTheme = Config.Bind("Client Options", "DarkTheme", false);
 
         Logger = BepInEx.Logging.Logger.CreateLogSource("TONX");
         TONX.Logger.Enable();
@@ -239,6 +243,7 @@ public class Main : BasePlugin
                 {CustomRoles.Noisemaker, "#8cffff"},
                 {CustomRoles.Tracker, "#8cffff"},
                 {CustomRoles.Detective, "#8cffff"},
+                {CustomRoles.Judge, "#8cffff"},
                 {CustomRoles.Impostor, "#ff1919"},
                 {CustomRoles.Shapeshifter, "#ff1919"},
                 {CustomRoles.Phantom, "#ff1919"},
@@ -269,6 +274,7 @@ public class Main : BasePlugin
                 {CustomRoles.Charmed, "#ff00ff"},
                 {CustomRoles.Bait, "#00f7ff"},
                 {CustomRoles.Beartrap, "#5a8fd0"},
+                {CustomRoles.Colorblind, "#8c8c8c"},
             };
             var type = typeof(RoleBase);
             var roleClassArray =
@@ -315,6 +321,10 @@ public class Main : BasePlugin
 
         ClassInjector.RegisterTypeInIl2Cpp<ErrorText>();
         ClassInjector.RegisterTypeInIl2Cpp<LogoAnimationController>();
+        ClassInjector.RegisterTypeInIl2Cpp<TONX.Patches.AbstractPagingBehaviour>();
+        ClassInjector.RegisterTypeInIl2Cpp<TONX.Patches.MeetingHudPagingBehaviour>();
+        ClassInjector.RegisterTypeInIl2Cpp<TONX.Patches.ShapeShifterPagingBehaviour>();
+        ClassInjector.RegisterTypeInIl2Cpp<TONX.Patches.VitalsPagingBehaviour>();
 
         Task.Run(SystemEnvironment.SetEnvironmentVariablesAsync);
         
@@ -322,7 +332,9 @@ public class Main : BasePlugin
 
         if (!DebugModeManager.AmDebugger) ConsoleManager.DetachConsole();
         else ConsoleManager.CreateConsole();
-
+        
+        AmciRegistration.Register();
+        
         ModUpdater.RecordVisit();
 
         TONX.Logger.Msg("========= TONX loaded! =========", "Plugin Load");
@@ -391,7 +403,8 @@ public enum CustomWinner
     BloodKnight = CustomRoles.BloodKnight,
     Succubus = CustomRoles.Succubus,
     PlagueDoctor = CustomRoles.PlagueDoctor,
-    Doomsayer = CustomRoles.Doomsayer
+    Doomsayer = CustomRoles.Doomsayer,
+    Yandere = CustomRoles.Yandere
 }
 public enum SuffixModes
 {

@@ -1,4 +1,4 @@
-﻿using Hazel;
+using Hazel;
 using TMPro;
 using TONX.Modules;
 using TONX.Roles.Core.Interfaces;
@@ -233,7 +233,7 @@ public static class GuesserHelper
             exitButton.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
             {
                 __instance.playerStates.ToList().ForEach(x => x.gameObject.SetActive(true));
-                JusticeMeetingHudPopulateButtonsPatch.HandleJusticeMeeting(__instance);
+                SpecialMeetingManager.GetActiveSpecialMeeting()?.HandleSpecialMeeting(__instance);
                 UnityEngine.Object.Destroy(container.gameObject);
             }));
             ExitButton = exitButton.GetComponent<PassiveButton>();
@@ -385,7 +385,7 @@ public static class GuesserHelper
                     }
                     else
                     {
-                        if (!(__instance.state == MeetingHud.VoteStates.Voted || __instance.state == MeetingHud.VoteStates.NotVoted) || !PlayerControl.LocalPlayer.IsAlive()) return;
+                        if (!(__instance.state == MeetingHud.MeetingStates.Voted || __instance.state == MeetingHud.MeetingStates.NotVoted) || !PlayerControl.LocalPlayer.IsAlive()) return;
 
                         Logger.Msg($"Click: {pc.GetNameWithRole()} => {role}", "Guesser UI");
 
@@ -405,7 +405,7 @@ public static class GuesserHelper
 
                         // Reset the GUI
                         __instance.playerStates.ToList().ForEach(x => x.gameObject.SetActive(true));
-                        JusticeMeetingHudPopulateButtonsPatch.HandleJusticeMeeting(__instance);
+                        SpecialMeetingManager.GetActiveSpecialMeeting()?.HandleSpecialMeeting(__instance);
                         UnityEngine.Object.Destroy(container.gameObject);
                         textTemplate.enabled = false;
 
