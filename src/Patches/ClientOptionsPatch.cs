@@ -21,7 +21,6 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem<bool> VersionCheat;
     private static ClientOptionItem<bool> GodMode;
     private static ClientOptionItem<bool> FastBoot;
-    private static ClientOptionItem<bool> EnableAMCIMode;
     private static ClientOptionItem<bool> DarkTheme;
 
     private static bool reseted;
@@ -58,7 +57,6 @@ public static class OptionsMenuBehaviourStartPatch
         CreateIfNull(ref EnableCustomButton, "EnableCustomButton", Main.EnableCustomButton, instance);
         CreateIfNull(ref EnableCustomSoundEffect, "EnableCustomSoundEffect", Main.EnableCustomSoundEffect, instance);
         CreateIfNull(ref FastBoot, "FastBoot", Main.FastBoot, instance);
-        CreateIfNull(ref EnableAMCIMode, "EnableAmciMode", Main.EnableAMCIMode, instance);
         CreateIfNull(ref DarkTheme, "EnableDarkTheme", Main.DarkTheme, instance);
         return;
 
