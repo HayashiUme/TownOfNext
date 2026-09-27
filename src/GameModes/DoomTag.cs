@@ -276,8 +276,8 @@ public sealed class DoomTag : GameModeBase
     {
         intro.TeamTitle.text = GetString("ModeDoomTag");
         intro.TeamTitle.color = ModeInfo.ModeColor;
-        intro.ImpostorText.gameObject.SetActive(true);
-        intro.ImpostorText.text = Utils.GetRoleName(PlayerControl.LocalPlayer.GetCustomRole());
+        // Subtitle is hidden on purpose: only the mode name is shown.
+        intro.ImpostorText.gameObject.SetActive(false);
         intro.BackgroundBar.material.color = ModeInfo.ModeColor;
     }
     public override void EditOutroFormat(ref EndGameManager outro, ref TextMeshPro winnerText, ref string cwText, ref StringBuilder awText, ref string cwColor)

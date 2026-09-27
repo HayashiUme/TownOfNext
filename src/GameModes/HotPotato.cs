@@ -118,11 +118,10 @@ public sealed class HotPotato : GameModeBase
 
     public override void EditIntroFormat(ref IntroCutscene intro)
     {
-        var role = PlayerControl.LocalPlayer.GetCustomRole();
-        intro.TeamTitle.text = Utils.GetRoleName(role);
-        intro.TeamTitle.color = Utils.GetRoleColor(role);
-        intro.ImpostorText.gameObject.SetActive(true);
-        intro.ImpostorText.text = GetString("ModeHotPotato");
+        intro.TeamTitle.text = GetString("ModeHotPotato");
+        intro.TeamTitle.color = ModeInfo.ModeColor;
+        // Subtitle is hidden on purpose: only the mode name is shown.
+        intro.ImpostorText.gameObject.SetActive(false);
         intro.BackgroundBar.material.color = ModeInfo.ModeColor;
         PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HnSImpostorScreamSfx>.Instance.HnSOtherImpostorTransformSfx;
     }
