@@ -704,6 +704,13 @@ public enum CustomRoles
     //GM
     GM,
 
+    //HotPotato
+    HotPotato,
+    ColdPotato,
+
+    //DoomTag
+    Tagger,
+
     //Sub-role after 500
     NotAssigned = 500,
     LastImpostor,

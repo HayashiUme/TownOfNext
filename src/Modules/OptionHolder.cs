@@ -38,6 +38,8 @@ public static class Options
         {
             1 => CustomGameMode.SoloKombat,
             2 => CustomGameMode.RoleDraft,
+            3 => CustomGameMode.HotPotato,
+            4 => CustomGameMode.DoomTag,
             _ => CustomGameMode.Standard
         };
 

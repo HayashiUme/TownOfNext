@@ -1644,6 +1644,8 @@ Preset_5: "Preset 5"
 Standard: "Standard"
 SoloKombat: "Solo PVP"
 ModeSoloKombat: "Mode Solo PVP"
+ModeHotPotato: "Hot Potato"
+ModeDoomTag: "Doom Tag"
 GameMode: "Game Mode"
 FixSpawnPacketSize: "Fix Spawn Packet Size"
 PressTabTONXtPage: "Press Tab or Number for Next Page..."
@@ -1722,10 +1724,49 @@ RD_ShowSelectedRoles: "Show Players Selections"
 Value.HorseMode: "April Fools Horse Mode"
 Value.LongMode: "April Fools Long Mode"
 Value.NormalMode: "Classic Bean Mode"
+
+# 烫手山芋 / Hot Potato
+GetHotPotato: "You got the Hot Potato! Pass it to someone else!"
+HotPotatoTimeRemain: "Hot Potato explosion countdown: {0}"
+
+# 烫手山芋设置 / Hot Potato Settings
+HotPotatoMaxNum: "Max Hot Potatoes"
+ExplosionTotalTime: "Explosion Countdown"
+
+# 末日猎杀 / Doom Tag
+DoomTag: "Doom Tag"
+DoomTag.WrongKillSuicide: "You killed a wrong target. You will commit suicide!"
+DoomTag.WrongKillLowerVision: "You killed a wrong target. Your vision is lowered to {0}x"
+DoomTag.FrenzyModeActivated: "Frenzy Mode activated!"
+DoomTag.FrenzyModeHUD: "Frenzy Mode"
+DoomTag.CurrentTarget: "Current Target"
+
+# 末日猎杀设置 / Doom Tag Settings
+DoomTag.BaseKillCooldown: "Base Kill Cooldown"
+DoomTag.PunishmentMode: "Wrong Kill Punishment"
+DoomTag.PunishSuicide: "Suicide"
+DoomTag.PunishLowerVision: "Lower Vision"
+DoomTag.LowerVisionMultiplier: "Lower Vision Multiplier"
+DoomTag.FrenzyPlayerCount: "Frenzy Player Count"
+DoomTag.FrenzyKillCooldown: "Frenzy Kill Cooldown"
+DoomTag.FrenzySpeedMultiplier: "Frenzy Speed Multiplier"
+DoomTag.ShowTargetArrow: "Show Target Arrow"
+
 # 模式介绍 / Mode descriptions
 ModeDescribe.SoloKombat: "Current mode is [Solo PVP]\nNo role assignment. Everyone has HP and can use the kill button to cause damage to other players. The player with the highest number of kills wins at the end of the game."
+ModeDescribe.HotPotato: "Current mode is [Hot Potato]\nEveryone may become a Hot or Cold Potato. A Hot Potato must pass the potato to a Cold Potato by killing it, or it will be blown up when the countdown ends.\nCold Potatoes must avoid the Hot Potato and stay alive. The last player alive wins."
+ModeDescribe.DoomTag: "Current mode is [Doom Tag]\nEvery player is assigned a target. Killing your own target makes you inherit its target, and killing a wrong target is punished.\nThe last player alive wins."
 
 # 模式身份 / Mode Roles
 Drafter: "Drafter"
 DrafterInfo: "Draft your role during the meeting"
 DrafterInfoLong: "In Role Draft mode, players take turns choosing their role during a special meeting."
+HotPotato: "Hot Potato"
+HotPotatoInfo: "Pass the Hot Potato to someone else!"
+HotPotatoInfoLong: "Pass the Hot Potato to another Cold Potato by killing it, or you will be blown up when the countdown ends. (Everyone can see who holds the Hot Potato)"
+ColdPotato: "Cold Potato"
+ColdPotatoInfo: "Avoid the Hot Potato"
+ColdPotatoInfoLong: "Avoid the Hot Potato and survive to the end. Everyone can see who holds the Hot Potato."
+Tagger: "Tagger"
+TaggerInfo: "Kill your target"
+TaggerInfoLong: "Kill the target assigned to you and inherit its target after a successful kill. Killing a wrong target is punished."

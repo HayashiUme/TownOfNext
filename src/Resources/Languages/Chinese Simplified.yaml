@@ -1695,6 +1695,7 @@ Standard: "标准"
 SoloKombat: "个人竞技"
 ModeSoloKombat: "个人竞技模式"
 ModeHotPotato: "烫手山芋"
+ModeDoomTag: "末日猎杀"
 GameMode: "游戏模式"
 FixSpawnPacketSize: "修正房间超过九人出现非法颜色（试验性）"
 PressTabTONXtPage: "按下tab键查看更多..."
@@ -1773,10 +1774,48 @@ RD_OptionNum: "可选职业数量"
 RD_DraftTimeLimit: "选择时间"
 RD_ShowSelectedRoles: "显示玩家的选择"
 
+# 烫手山芋 / Hot Potato
+GetHotPotato: "你拿到了热土豆！快把它传给其他人！"
+HotPotatoTimeRemain: "热土豆分配&爆炸倒计时：{0}"
+
+# 烫手山芋设置 / Hot Potato Settings
+HotPotatoMaxNum: "热土豆最大数量"
+ExplosionTotalTime: "爆炸倒计时"
+
+# 末日猎杀 / Doom Tag
+DoomTag: "末日猎杀"
+DoomTag.WrongKillSuicide: "你杀错了目标，你将自杀！"
+DoomTag.WrongKillLowerVision: "你杀错了目标，你的视野被降低为 {0} 倍"
+DoomTag.FrenzyModeActivated: "狂暴模式启动！"
+DoomTag.FrenzyModeHUD: "狂暴模式"
+DoomTag.CurrentTarget: "当前目标"
+
+# 末日猎杀设置 / Doom Tag Settings
+DoomTag.BaseKillCooldown: "基础击杀冷却"
+DoomTag.PunishmentMode: "击杀错误目标的惩罚"
+DoomTag.PunishSuicide: "自杀"
+DoomTag.PunishLowerVision: "降低视野"
+DoomTag.LowerVisionMultiplier: "降低视野倍率"
+DoomTag.FrenzyPlayerCount: "狂暴模式触发人数"
+DoomTag.FrenzyKillCooldown: "狂暴模式击杀冷却"
+DoomTag.FrenzySpeedMultiplier: "狂暴模式速度倍率"
+DoomTag.ShowTargetArrow: "显示目标箭头"
+
 # 模式介绍 / Mode descriptions
 ModeDescribe.SoloKombat: "本房间模式为【个人竞技模式】\n没有职业分配，所有人拥有血量，可以使用击杀键对其他人造成伤害。游戏结束时击杀数量最多的玩家获胜。"
+ModeDescribe.HotPotato: "本房间模式为【烫手山芋模式】\n所有玩家都有可能是冷/热土豆，热土豆必须通过击杀把热土豆传给其他冷土豆，否则倒计时结束时自己就会被炸死。\n冷土豆需要躲避热土豆并努力存活，最后存活的人获胜。"
+ModeDescribe.DoomTag: "本房间模式为【末日猎杀模式】\n每名玩家都会被分配一个猎物，击杀自己的猎物后可以继承它的猎物，击杀错误的目标会受到惩罚。\n最后存活的人获胜。"
 
 # 模式职业 / Mode Roles 
 Drafter: "起草者"
 DrafterInfo: "在会议上起草你的职业"
 DrafterInfoLong: "在轮抽选角模式中，玩家在特殊会议中轮流选择自己的职业。"
+HotPotato: "烫手山芋"
+HotPotatoInfo: "把热土豆传给其他人"
+HotPotatoInfoLong: "通过击杀把热土豆传给其他冷土豆，否则倒计时结束时你将被炸死。（所有人都能看见谁是热土豆）"
+ColdPotato: "冷土豆"
+ColdPotatoInfo: "躲避热土豆"
+ColdPotatoInfoLong: "躲避热土豆，努力存活到最后。所有人都能看见谁是热土豆。"
+Tagger: "猎人"
+TaggerInfo: "击杀你的猎物"
+TaggerInfoLong: "击杀分配给你的猎物，击杀成功后你会继承它的猎物。击杀错误的目标会受到惩罚。"
