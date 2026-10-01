@@ -301,7 +301,7 @@ internal class RPCHandlerPatch
                 playerState.RealKiller = (DateTime.MinValue, byte.MaxValue);
                 break;
             case CustomRPC.SyncAchievementTitle:
-                Achievements.Player.AchievementTitleHandler.ReceiveTitleSyncRpc(reader);
+                TONX.Modules.Achievements.Player.AchievementTitleHandler.ReceiveTitleSyncRpc(reader);
                 break;
         }
     }

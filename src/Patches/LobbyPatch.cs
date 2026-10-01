@@ -1,5 +1,6 @@
-﻿using TONX.Achievements.Core.Base;
-using TONX.Achievements.Player;
+﻿using TONX.Modules.Achievements.Core.Base;
+using TONX.Modules.Achievements.Game;
+using TONX.Modules.Achievements.Player;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -40,5 +41,6 @@ public class LobbyStartPatch
             _wasInGame = false;
         }
         _ = AchievementBase.FlushPendingUnlocks();
+        _ = TONX.Modules.Achievements.Game.AchievementManager.FlushProgressAsync();
     }
 }

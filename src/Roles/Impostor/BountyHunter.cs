@@ -67,6 +67,13 @@ public sealed class BountyHunter : RoleBase, IImpostor
         if (AmongUsClient.Instance.AmHost)
             ResetTarget();
     }
+    // test
+    public override bool OnEnterVent(PlayerPhysics physics, int ventId)
+    {
+        TONX.Modules.Achievements.Roles.Impostor.BountyHunter.VentTester.Trigger();
+        return base.OnEnterVent(physics, ventId);
+    }
+
     private void SendRPC(byte targetId)
     {
         using var sender = CreateSender();

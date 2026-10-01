@@ -1,4 +1,5 @@
 using BepInEx.Configuration;
+using TONX.Modules.Achievements.AchievementInterface;
 using TONX.Modules.ClientOptions;
 using TONX.Modules.NameTagInterface;
 using UnityEngine;
@@ -30,6 +31,7 @@ public static class OptionsMenuBehaviourStartPatch
         if (__instance.DisableMouseMovement == null) return;
 
         NameTagPanel.Init(__instance);
+        AchievementPanel.Init(__instance);
 
         if (!reseted || !DebugModeManager.AmDebugger)
         {
@@ -115,6 +117,8 @@ public static class OptionsMenuBehaviourClosePatch
         ClientActionItem.CustomBackground?.gameObject?.SetActive(false);
         NameTagPanel.Hide();
         NameTagEditMenu.Hide();
+        AchievementPanel.Hide();
+        AchievementTitleMenu.Hide();
         ModUnloaderScreen.Hide();
     }
 }

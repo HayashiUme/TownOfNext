@@ -1,10 +1,10 @@
 using Hazel;
-using TONX.Achievements.Game;
-using TONX.Achievements.Player;
+using TONX.Modules.Achievements.Game;
+using TONX.Modules.Achievements.Player;
 using TONX.Attributes;
 using UnityEngine;
 
-namespace TONX.Achievements.Player;
+namespace TONX.Modules.Achievements.Player;
 
 public static class AchievementTitleHandler
 {
@@ -14,6 +14,8 @@ public static class AchievementTitleHandler
         {
             ApplyTitleLocally(playerId, achievementId);
             
+            if (!AmongUsClient.Instance.AmConnected) return;
+
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
                 PlayerControl.LocalPlayer.NetId,
                 (byte)CustomRPC.SyncAchievementTitle,

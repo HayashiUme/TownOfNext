@@ -1,4 +1,4 @@
-namespace TONX.Achievements.Core.Interfaces;
+namespace TONX.Modules.Achievements.Core.Interfaces;
 
 
 public interface IAchievementTracker

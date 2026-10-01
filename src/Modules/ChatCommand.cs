@@ -258,7 +258,7 @@ public class ChatCommand(List<string> keywords, Func<CommandAccess> access, Func
             {
                 if (!GameStates.IsLobby)
                     return (MsgRecallMode.Block, GetString("Achievement.SetWarning"));
-                _ = Achievements.Game.AchievementManager.FetchAndDisplayAchievementsAsync(mc.Player);
+                _ = TONX.Modules.Achievements.Game.AchievementManager.FetchAndDisplayAchievementsAsync(mc.Player);
                 return (MsgRecallMode.Block, null);
             }),
             new(["wach","wearachievement"], () => CommandAccess.All, mc =>
@@ -269,7 +269,7 @@ public class ChatCommand(List<string> keywords, Func<CommandAccess> access, Func
                     return (MsgRecallMode.Block, GetString("Achievement.Tip"));
                 if (GameStates.IsLocalGame)
                     return (MsgRecallMode.Block, GetString("Achievement.Command.Local"));
-                _ = Achievements.Game.AchievementManager.WearTitleAsync(mc.Player, titleId);
+                _ = TONX.Modules.Achievements.Game.AchievementManager.WearTitleAsync(mc.Player, titleId);
                 return (MsgRecallMode.Block, null);
             }),
             new(["ach","achievement"], () => CommandAccess.All, mc =>
@@ -277,7 +277,7 @@ public class ChatCommand(List<string> keywords, Func<CommandAccess> access, Func
                 if (!mc.HasValidArgs || !int.TryParse(mc.Args.Trim(), out int achId))
                     return (MsgRecallMode.Block, GetString("Achievement.Tip2"));
 
-                var achievement = TONX.Achievements.Game.AchievementRegistry.GetById(achId);
+                var achievement = TONX.Modules.Achievements.Game.AchievementRegistry.GetById(achId);
                 if (achievement == null)
                     return (MsgRecallMode.Block, string.Format(GetString("Achievement.NotFound"), achId));
 

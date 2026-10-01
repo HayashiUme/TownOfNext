@@ -1,6 +1,5 @@
 using Hazel;
-using TONX.Achievements.Game;
-using TONX.Achievements.Roles.Crewmate.Criminologist;
+using TONX.Modules.Achievements.Game;
 using TONX.Modules;
 using UnityEngine;
 
