@@ -19,7 +19,11 @@ namespace TONX;
 public class Main : BasePlugin
 {
     // == 程序基本设定 / Program Config ==
-    public static readonly string ModName = "TONX";
+    public static string ModName => IsAprilFools ? "TOHE" : "TONX";
+    public static string DisplayVersion => IsAprilFools ? "2.3.6" : PluginVersion;
+    public static string LogoResource => IsAprilFools ? "TONX.Resources.Images.TOHE-Logo.png" : "TONX.Resources.Images.TONX-Logo.png";
+    public static string ModFullName => IsAprilFools ? "Town Of Host - Edited" : "Town Of Next";
+    public static string ModFullNameCompact => IsAprilFools ? "TownOfHost-Edited" : "TownOfNext";
     public static readonly string ModColor = "#ffc0cb";
     public static readonly Color32 ModColor32 = new(255, 192, 203, 255);
     public static readonly bool AllowPublicRoom = true;

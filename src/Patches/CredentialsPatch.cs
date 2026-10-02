@@ -49,7 +49,7 @@ internal class PingTrackerUpdatePatch
 
         sb.Append($"\r\n").Append($"<color={color}>{ping} ms</size> <size=60%>Ping</size></color>  <color=#00a4ff>{fps} <size=60%>FPS</size></color>  {(GameStates.IsOnlineGame ? ServerName : GetString(StringNames.LocalButton) + " <size=60%>Server</size>")}");
 
-        if (!GameStates.IsModHost) sb.Append($"\r\n").Append("<size=135%>" + Utils.ColorString(Color.red, (Main.IsAprilFools ? GetString("Warning.NoModHost").Replace("TONX","TOHE") : GetString("Warning.NoModHost"))) + "</size>");
+        if (!GameStates.IsModHost) sb.Append($"\r\n").Append("<size=135%>" + Utils.ColorString(Color.red, GetString("Warning.NoModHost")) + "</size>");
         else
         {
             if (Options.NoGameEnd.GetBool()) sb.Append($"\r\n").Append(Utils.ColorString(Color.red, GetString("NoGameEnd")));
@@ -78,7 +78,7 @@ internal class VersionShowerStartPatch
         VersionShowerText = VersionShower.text.text;
 
         TMPTemplate.SetBase(__instance.text);
-        Main.CredentialsText = $"\r\n<color={Main.ModColor}>{(Main.IsAprilFools ? "TOHE" : Main.ModName)}</color> - {(Main.IsAprilFools ? "2.3.6" : Main.PluginVersion)}";
+        Main.CredentialsText = $"\r\n<color={Main.ModColor}>{Main.ModName}</color> - {Main.DisplayVersion}";
         Main.CredentialsText += (Main.VerType == VersionType.Release) ? "" : $" (<color={Main.ModColor}>{Main.VerType}</color>)";
 #if DEBUG
         Main.CredentialsText += $"\r\n<color=#00a4ff>{Main.GitBranch}</color> - {Main.GitCommit}";
@@ -119,9 +119,11 @@ internal class VersionShowerStartPatch
     {
         if (!VersionShower) return;
         var count = ModUpdater.visit_count;
-        VersionShower.text.text = VersionShowerText + "\n" + $"{(count > 0
-            ? string.Format(Main.IsAprilFools ? GetString("ConnectToTONXServerFailed").Replace("TONX","TOHE"): GetString("TONXVisitorCount"), Main.ModColor, count)
-            : Main.IsAprilFools ? GetString("ConnectToTONXServerFailed").Replace("TONX","TOHE") : GetString("ConnectToTONXServerFailed"))}";
+        // 彩蛋日不显示 TONX 的访问数（文案已由 GetString 统一替换）
+        var info = count > 0 && !Main.IsAprilFools
+            ? string.Format(GetString("TONXVisitorCount"), Main.ModColor, count)
+            : GetString("ConnectToTONXServerFailed");
+        VersionShower.text.text = VersionShowerText + "\n" + info;
     }
 }
 
@@ -264,9 +266,7 @@ internal class TitleLogoPatch
         AULogo.transform.localScale = new Vector3(0.66f, 0.67f, 1f);
         AULogo.transform.position += new Vector3(0f, 0.1f, 0f);
         var logoRenderer = AULogo.GetComponent<SpriteRenderer>();
-        logoRenderer.sprite = Main.IsAprilFools
-            ? Utils.LoadSprite("TONX.Resources.Images.TOHE-Logo.png", 150f)
-            : Utils.LoadSprite("TONX.Resources.Images.TONX-Logo.png");
+        logoRenderer.sprite = Utils.LoadSprite(Main.LogoResource, Main.IsAprilFools ? 150f : 1f);
         
         if (!(BottomButtonBounds = GameObject.Find("BottomButtonBounds"))) return;
         BottomButtonBounds.transform.localPosition -= new Vector3(0f, 0.1f, 0f);

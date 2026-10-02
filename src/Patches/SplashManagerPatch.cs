@@ -44,9 +44,7 @@ public class SplashManagerPatch
         };
         logoObj.transform.localPosition+=Vector3.back*10;
         var logoRenderer = logoObj.AddComponent<SpriteRenderer>();
-        logoRenderer.sprite = Main.IsAprilFools
-            ? Utils.LoadSprite("TONX.Resources.Images.TOHE-Logo.png", 150f)
-            : Utils.LoadSprite("TONX.Resources.Images.TONX-Logo.png", 100f);
+        logoRenderer.sprite = Utils.LoadSprite(Main.LogoResource, Main.IsAprilFools ? 150f : 100f);
 
         if (logoRenderer == null) yield break;
         var animControllerObj = new GameObject("TONX_LogoAnimationController_Instance");
@@ -65,7 +63,7 @@ public class SplashManagerPatch
         versionTextObj.transform.localPosition+=Vector3.back*10;
         
         var versionTMP = versionTextObj.AddComponent<TextMeshPro>();
-        versionTMP.text = $"{(Main.IsAprilFools ? "Town Of Host Edited" : "Town Of Next")} - v{(Main.IsAprilFools ? "2.3.6" : Main.PluginVersion)}";
+        versionTMP.text = $"{Main.ModFullName} - v{Main.DisplayVersion}";
         versionTMP.alignment = TextAlignmentOptions.Right;
         versionTMP.color = ((Color)Main.ModColor32).SetAlpha(0.7f).ShadeColor(0.9f);
         versionTMP.fontSize = 2;

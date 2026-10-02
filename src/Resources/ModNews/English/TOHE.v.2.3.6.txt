@@ -1,8 +1,8 @@
 #Number:340001
 #Title:TownOfHostEdited v2.3.6
-#SubTitle:★★★★TOHE is back!★★★★
+#SubTitle:★★★★TOHE is Back!★★★★
 #ShortTitle:★TOHE v2.3.6
-#Date:3202-5-20T00:00:00Z
+#Date:3202-5-21T00:00:00Z
 #-----------------------------
 
 ## Base
@@ -14,10 +14,5 @@
 - Fixed an issue with the background image on the mod's homepage
 - Fixed the issue where the KARPED1EM button on the homepage was missing
 
-## Changing
-- Removed the Chitai-hime service
-- Removed the Cloud EAC service
-- Updated the Discord and QQ links
-	
 ## Role Changing
 - Mario must use the vent 236 times to win

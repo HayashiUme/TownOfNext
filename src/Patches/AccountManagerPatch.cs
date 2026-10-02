@@ -1,4 +1,4 @@
-﻿using TMPro;
+using TMPro;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -13,10 +13,10 @@ public static class UpdateFriendCodeUIPatch
 
         string credentialsText = string.Format(GetString((Main.IsAprilFools ? "MainMenuCredential.AprilFools" : "MainMenuCredential")), $"<color={Main.ModColor}>KARPED1EM</color>");
         credentialsText += "\t\t\t";
-        string versionText = $"<color={Main.ModColor}>{(Main.IsAprilFools ? "TOHE" : Main.ModName)}</color> - {(Main.IsAprilFools ? "2.3.6" : Main.PluginVersion)}";
+        string versionText = $"<color={Main.ModColor}>{Main.ModName}</color> - {Main.DisplayVersion}";
  
 #if CANARY
-        versionText = $"<color=#fffe1e>{(Main.IsAprilFools ? "TOHE" : Main.ModName)}</color> - {Main.GitCommit}";
+        versionText = $"<color=#fffe1e>{Main.ModName}</color> - {Main.GitCommit}";
 #endif
 
 #if DEBUG

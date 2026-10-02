@@ -119,8 +119,17 @@ public static class Translator
             Logger.Fatal($"Error oucured at [{str}] in String.csv", "Translator");
             Logger.Error("Here was the error:\n" + Ex.ToString(), "Translator");
         }
-        return res;
+        return Main.IsAprilFools ? ApplyAprilFoolsBrand(res) : res;
     }
+    private static string ApplyAprilFoolsBrand(string text)
+    {
+        if (string.IsNullOrEmpty(text)) return text;
+        if (text.Contains("TownOfNext")) text = text.Replace("TownOfNext", Main.ModFullNameCompact);
+        if (text.Contains("Town Of Next")) text = text.Replace("Town Of Next", Main.ModFullName);
+        if (text.Contains("TONX")) text = text.Replace("TONX", Main.AprilFoolsModName);
+        return text;
+    }
+
     public static string GetString(StringNames stringName)
         => DestroyableSingleton<TranslationController>.Instance.GetString(stringName, new Il2CppReferenceArray<Il2CppSystem.Object>(0));
     public static string GetRoleString(string str, bool forUser = true)
