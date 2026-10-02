@@ -630,6 +630,7 @@ public enum CustomRoles
     Tracker,
     Detective,
     Judge,
+    SpiritGuide,
     //Crewmate
     Luckey,
     LazyGuy,

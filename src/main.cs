@@ -248,6 +248,7 @@ public class Main : BasePlugin
                 {CustomRoles.Shapeshifter, "#ff1919"},
                 {CustomRoles.Phantom, "#ff1919"},
                 {CustomRoles.Viper, "#ff1919"},
+                { CustomRoles.SpiritGuide, "#ffffff"},
 
                 //Add-Ons
                 {CustomRoles.NotAssigned, "#ffffff"},

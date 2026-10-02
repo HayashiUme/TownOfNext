@@ -341,7 +341,7 @@ public static class GuesserHelper
             foreach (CustomRoles role in Enum.GetValues(typeof(CustomRoles)))
             {
                 if (!gc.CanGuessVanilla && role.IsVanilla()) continue;
-                if (role is CustomRoles.GM or CustomRoles.NotAssigned or CustomRoles.SuperStar or CustomRoles.GuardianAngel) continue;
+                if (role is CustomRoles.GM or CustomRoles.NotAssigned or CustomRoles.SuperStar or CustomRoles.GuardianAngel or CustomRoles.SpiritGuide) continue;
                 if (role.IsGameModeRole()) continue;
                 CreateRole(role);
             }

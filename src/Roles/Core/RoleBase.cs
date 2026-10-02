@@ -48,15 +48,19 @@ public abstract class RoleBase : IDisposable
         Player = player;
         this.hasTasks = hasTasks ?? (roleInfo.CustomRoleType == CustomRoleTypes.Crewmate ? () => HasTask.True : () => HasTask.False);
         CanBeMadmate = canBeMadmate ?? Player.Is(CustomRoleTypes.Crewmate);
+        // 这个判定。refact一下最好。
         HasAbility = hasAbility ?? roleInfo.BaseRoleType.Invoke() is
             RoleTypes.Scientist or
             RoleTypes.GuardianAngel or
             RoleTypes.Engineer or
             RoleTypes.Tracker or
             RoleTypes.Detective or
+            RoleTypes.Judge or 
+            RoleTypes.SpiritGuide or
             RoleTypes.CrewmateGhost or
             RoleTypes.Shapeshifter or
             RoleTypes.Phantom or
+            RoleTypes.Viper or 
             RoleTypes.ImpostorGhost;
 
         MyState = PlayerState.GetByPlayerId(player.PlayerId);
