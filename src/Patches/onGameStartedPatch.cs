@@ -20,10 +20,8 @@ internal class ChangeRoleSettings
             //注:この時点では役職は設定されていません。
             Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.GuardianAngel, 0, 0);
 
-            // v19 new role, disabled like GuardianAngel.
-            // RoleTypes.SpiritGuide (=21) exists only on v19+ game libs, so resolve by name.
-            //if (Enum.TryParse("SpiritGuide", out RoleTypes spiritGuide))
-                //Main.NormalOptions.roleOptions.SetRoleRate(spiritGuide, 0, 0);
+            // 和天使同等待遇
+            Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.SpiritGuide, 0, 0);
 
             Main.OverrideWelcomeMsg = "";
             Main.AllPlayerKillCooldown = new();
