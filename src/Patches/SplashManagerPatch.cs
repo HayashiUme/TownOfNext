@@ -68,6 +68,7 @@ public class SplashManagerPatch
         versionTMP.alignment = TextAlignmentOptions.Right;
         versionTMP.color = ((Color)Main.ModColor32).SetAlpha(0.7f).ShadeColor(0.9f);
         versionTMP.fontSize = 2;
+        versionTMP.enableWordWrapping = false; // 防止愚人节长文本在窄框内折行
         versionTextObj.GetComponent<RectTransform>().sizeDelta = new Vector2(2, 2);
         var versionAP = versionTextObj.AddComponent<AspectPosition>();
         versionAP.Alignment = AspectPosition.EdgeAlignments.RightBottom;
