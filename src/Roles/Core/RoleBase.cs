@@ -48,15 +48,19 @@ public abstract class RoleBase : IDisposable
         Player = player;
         this.hasTasks = hasTasks ?? (roleInfo.CustomRoleType == CustomRoleTypes.Crewmate ? () => HasTask.True : () => HasTask.False);
         CanBeMadmate = canBeMadmate ?? Player.Is(CustomRoleTypes.Crewmate);
+        // 这个判定。refact一下最好。
         HasAbility = hasAbility ?? roleInfo.BaseRoleType.Invoke() is
             RoleTypes.Scientist or
             RoleTypes.GuardianAngel or
             RoleTypes.Engineer or
             RoleTypes.Tracker or
             RoleTypes.Detective or
+            RoleTypes.Judge or 
+            RoleTypes.SpiritGuide or
             RoleTypes.CrewmateGhost or
             RoleTypes.Shapeshifter or
             RoleTypes.Phantom or
+            RoleTypes.Viper or 
             RoleTypes.ImpostorGhost;
 
         MyState = PlayerState.GetByPlayerId(player.PlayerId);
@@ -201,6 +205,12 @@ public abstract class RoleBase : IDisposable
     /// <param name="animate">是否播放动画</param>
     public virtual bool OnCheckAppear(ref bool animate) => true;
     /// <summary>
+    /// 法官投出特殊票调用的函数
+    /// </summary>
+    /// <param name="target">被否决的目标玩家</param>
+    /// <returns>返回 false 阻止本次否决</returns>
+    public virtual bool OnCheckOverrule(PlayerControl target) => true;
+    /// <summary>
     /// 帧 Task 处理函数<br/>
     /// 不需要验证您的身份，因为调用前已经验证<br/>
     /// 请注意：全部模组端都会调用<br/>
@@ -277,6 +287,13 @@ public abstract class RoleBase : IDisposable
     /// <param name="voteResult">投票结果</param>
     public virtual void OnVotingComplete(MeetingVoteManager.VoteResult voteResult)
     { }
+
+    /// <summary>
+    /// 否决 RPC 判定函数。会议投票结束后，返回一个玩家表示通过否决机制强制放逐该玩家。
+    /// </summary>
+    /// <param name="voteResult">投票统计结果</param>
+    /// <returns> 返回 null 表示不否决，走正常投票放逐流程。</returns>
+    public virtual NetworkedPlayerInfo GetVoteOverride(MeetingVoteManager.VoteResult voteResult) => null;
 
     /// <summary>
     /// 当有人投票时触发

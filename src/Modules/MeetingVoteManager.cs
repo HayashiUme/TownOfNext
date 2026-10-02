@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using TONX.Roles.AddOns.Common;
 using TONX.Roles.AddOns.Impostor;
@@ -33,7 +33,7 @@ public class MeetingVoteManager
     {
         foreach (var voteArea in meetingHud.playerStates)
         {
-            allVotes[voteArea.TargetPlayerId] = new(voteArea.TargetPlayerId);
+            allVotes[voteArea.PlayerId] = new(voteArea.PlayerId);
         }
     }
     /// <summary>
@@ -43,7 +43,10 @@ public class MeetingVoteManager
     /// <param name="exiled">驱逐者</param>
     public void ClearAndExile(byte voter, byte exiled)
     {
-        logger.Info($"{Utils.GetPlayerById(voter).GetNameWithRole()} によって {GetVoteName(exiled)} が追放されます");
+        var voterPlayer = Utils.GetPlayerById(voter);
+        var exiledName = GetVoteName(exiled);
+        logger.Info($"ClearAndExile called: voterId={voter}, voterName={(voterPlayer != null ? voterPlayer.GetNameWithRole() : "NULL")}, exiledId={exiled}, exiledName={exiledName}");
+        logger.Info($"{voterPlayer.GetNameWithRole()} によって {exiledName} が追放されます");
         ClearVotes();
         var vote = new VoteData(voter);
         vote.DoVote(exiled, 1);
@@ -155,52 +158,72 @@ public class MeetingVoteManager
     /// <param name="applyVoteMode">是否应用投票的设置</param>
     public void EndMeeting(bool applyVoteMode = true)
     {
+        logger.Info($"EndMeeting called: applyVoteMode={applyVoteMode}, meetingHud={(meetingHud != null ? "exists" : "NULL")}");
         SwappedPlayers.ForEach(swapped => SwapVote(swapped.Target1, swapped.Target2));
         var result = CountVotes(applyVoteMode);
         var logName = result.Exiled == null ? (result.IsTie ? "平票" : "跳过") : result.Exiled.Object.GetNameWithRole();
         logger.Info($"会议结束，结果：{logName}");
         CustomRoleManager.AllActiveRoles.Values.ToList().Do(role => role?.OnVotingComplete(result));
+        
+        var specialMeeting = SpecialMeetingManager.GetActiveSpecialMeeting();
+        bool specialMeetingHandled = specialMeeting != null && specialMeeting.OnSpecialMeetingVotingComplete(result);
 
         var states = new List<MeetingHud.VoterState>();
         foreach (var voteArea in meetingHud.playerStates)
         {
-            var voteData = AllVotes.TryGetValue(voteArea.TargetPlayerId, out var value) ? value : null;
+            var voteData = AllVotes.TryGetValue(voteArea.PlayerId, out var value) ? value : null;
             if (voteData == null)
             {
-                logger.Warn($"{Utils.GetPlayerById(voteArea.TargetPlayerId).GetNameWithRole()} 没有投票数据");
+                logger.Warn($"{Utils.GetPlayerById(voteArea.PlayerId).GetNameWithRole()} 没有投票数据");
                 continue;
             }
             for (var i = 0; i < voteData.NumVotes; i++)
             {
                 states.Add(new()
                 {
-                    VoterId = voteArea.TargetPlayerId,
+                    VoterId = voteArea.PlayerId,
                     VotedForId = voteData.VotedFor,
                 });
             }
         }
 
+        NetworkedPlayerInfo exiled = result.Exiled;
+        bool isTie = result.IsTie;
+        bool wasOverruled = false;
+        if (!specialMeetingHandled)
+        {
+            foreach (var role in CustomRoleManager.AllActiveRoles.Values.ToList())
+            {
+                var overrideTarget = role?.GetVoteOverride(result);
+                if (overrideTarget == null) continue;
+                exiled = overrideTarget;
+                isTie = false;
+                wasOverruled = true;
+                break;
+            }
+        }
+
         if (AntiBlackout.OverrideExiledPlayer)
         {
-            meetingHud.RpcVotingComplete(states.ToArray(), null, true);
-            ExileControllerWrapUpPatch.AntiBlackout_LastExiled = result.Exiled;
+            meetingHud.RpcVotingComplete(states.ToArray(), null, true, false, byte.MaxValue);
+            ExileControllerWrapUpPatch.AntiBlackout_LastExiled = exiled;
         }
         else
         {
-            meetingHud.RpcVotingComplete(states.ToArray(), result.Exiled, result.IsTie);
+            meetingHud.RpcVotingComplete(states.ToArray(), exiled, isTie, wasOverruled, byte.MaxValue);
         }
-        if (result.Exiled != null)
+        if (!specialMeetingHandled && exiled != null)
         {
-            MeetingHudPatch.CheckForDeathOnExile(CustomDeathReason.Vote, result.Exiled.PlayerId);
+            MeetingHudPatch.CheckForDeathOnExile(CustomDeathReason.Vote, exiled.PlayerId);
 
             bool DecidedWinner = false;
             List<string> WinDescriptionText = new();
             foreach (var roleClass in CustomRoleManager.AllActiveRoles.Values.ToList())
             {
-                var action = roleClass.CheckExile(result.Exiled, ref DecidedWinner, ref WinDescriptionText);
+                var action = roleClass.CheckExile(exiled, ref DecidedWinner, ref WinDescriptionText);
                 if (action != null) ExileControllerWrapUpPatch.ActionsOnWrapUp.Add(action);
             }
-            ConfirmEjections.Apply(result.Exiled, DecidedWinner, WinDescriptionText);
+            ConfirmEjections.Apply(exiled, DecidedWinner, WinDescriptionText);
         }
         Destroy();
     }
@@ -222,7 +245,7 @@ public class MeetingVoteManager
         Dictionary<byte, int> votes = new();
         foreach (var voteArea in meetingHud.playerStates)
         {
-            votes[voteArea.TargetPlayerId] = 0;
+            votes[voteArea.PlayerId] = 0;
         }
         votes[Skip] = 0;
         foreach (var vote in AllVotes.Values)
@@ -338,6 +361,10 @@ public class MeetingVoteManager
         /// 是否平票
         /// </summary>
         public readonly bool IsTie;
+        /// <summary>
+        /// 是否无人投票
+        /// </summary>
+        public readonly bool NoVotes;
 
         public VoteResult(Dictionary<byte, int> votedCounts)
         {
@@ -357,9 +384,17 @@ public class MeetingVoteManager
                 Exiled = null;
                 logger.Info($"{string.Join('，', mostVotedPlayers.Select(GetVoteName))} 平票");
             }
+            else if (mostVotedPlayers.Length > 1 && maxVoteNum == 0)
+            {
+                IsTie = true;
+                NoVotes = true;
+                Exiled = null;
+                logger.Info($"{string.Join('，', mostVotedPlayers.Select(GetVoteName))} 票数均为0，无人投票。");
+            }
             else
             {
                 IsTie = false;
+                NoVotes = false;
                 Exiled = GameData.Instance.GetPlayerById(mostVotedPlayers[0]);
                 logger.Info($"得票最多者：{GetVoteName(mostVotedPlayers[0])}");
             }

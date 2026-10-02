@@ -9,8 +9,8 @@ namespace TONX;
 public static class RegistryManager
 {
 #if Windows
-    public static RegistryKey SoftwareKeys => Registry.CurrentUser.OpenSubKey("Software", true);
-    public static RegistryKey Keys = SoftwareKeys?.OpenSubKey("AU-TONX", true);
+    public static RegistryKey? SoftwareKeys => Registry.CurrentUser?.OpenSubKey("Software", true);
+    public static RegistryKey? Keys = SoftwareKeys?.OpenSubKey("AU-TONX", true);
 #endif
 
     public static Version LastVersion;
@@ -52,6 +52,9 @@ public static class RegistryManager
 #if Windows
                 @"./TOH_DATA",
                 @"./TOHE_DATA",
+#elif Android
+                $"{Application.persistentDataPath}/TOH_DATA",
+                $"{Application.persistentDataPath}/TOHE_DATA",
 #endif
             ];
 

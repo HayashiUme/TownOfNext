@@ -35,6 +35,7 @@ public enum CustomRPC
     SyncRolesRecord,
     SyncTaskState,
     Revive,
+    SyncRolesAssigningState,
 
     //Roles
     Guess,
@@ -71,9 +72,12 @@ public enum CustomRPC
     //SyncMarioVentedTimes,
 
     //SoloKombat
-    SyncKBPlayer,
-    SyncKBBackCountdown,
-    SyncKBNameNotify,
+    //SyncKBPlayer,
+    //SyncKBBackCountdown,
+    //SyncKBNameNotify,
+
+    //Achievements
+    SyncAchievementTitle,
 }
 public enum Sounds
 {
@@ -88,7 +92,7 @@ public enum Sounds
 internal class RPCHandlerPatch
 {
     public static bool TrustedRpc(byte id)
-    => (CustomRPC)id is CustomRPC.VersionCheck or CustomRPC.RequestRetryVersionCheck or CustomRPC.AntiBlackout or CustomRPC.Guess or CustomRPC.OnClickMeetingButton;
+    => (CustomRPC)id is CustomRPC.VersionCheck or CustomRPC.RequestRetryVersionCheck or CustomRPC.AntiBlackout or CustomRPC.Guess or CustomRPC.OnClickMeetingButton or CustomRPC.SyncAchievementTitle;
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
         var rpcType = (RpcCalls)callId;
@@ -295,6 +299,9 @@ internal class RPCHandlerPatch
                 playerState.DeathReason = CustomDeathReason.etc;
                 playerState.IsDead = false;
                 playerState.RealKiller = (DateTime.MinValue, byte.MaxValue);
+                break;
+            case CustomRPC.SyncAchievementTitle:
+                TONX.Modules.Achievements.Player.AchievementTitleHandler.ReceiveTitleSyncRpc(reader);
                 break;
         }
     }
@@ -598,6 +605,13 @@ internal static class RPC
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Revive, SendOption.Reliable, -1);
         writer.Write(playerId);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public static void SyncRolesAssigningState(bool assigned)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRolesAssigningState, SendOption.Reliable, -1);
+        writer.Write(assigned);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 }

@@ -485,7 +485,7 @@ static class ExtendedPlayerControl
     }
     public static bool CanUseKillButton(this PlayerControl pc)
     {
-        if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || pc.IsEaten()) return false;
+        if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || pc.Data.Role.Role == RoleTypes.SpiritGuide || pc.IsEaten()) return false;
 
         var roleCanUse = (pc.GetRoleClass() as IKiller)?.CanUseKillButton();
 
@@ -587,7 +587,7 @@ static class ExtendedPlayerControl
             meetingHud.SetForegroundForDead();
         }
         PlayerVoteArea voteArea = MeetingHud.Instance.playerStates.First(
-            x => x.TargetPlayerId == pc.PlayerId
+            x => x.PlayerId == pc.PlayerId
         );
         if (voteArea == null) return;
         if (voteArea.DidVote) voteArea.UnsetVote();
@@ -598,11 +598,11 @@ static class ExtendedPlayerControl
         voteArea.XMark.transform.localScale = Vector3.one;
         foreach (var playerVoteArea in meetingHud.playerStates)
         {
-            if (playerVoteArea.VotedFor != pc.PlayerId) continue;
+            if (playerVoteArea.VotedForId != pc.PlayerId) continue;
             playerVoteArea.UnsetVote();
-            var voteAreaPlayer = Utils.GetPlayerById(playerVoteArea.TargetPlayerId);
+            var voteAreaPlayer = Utils.GetPlayerById(playerVoteArea.PlayerId);
             if (!voteAreaPlayer.AmOwner) continue;
-            meetingHud.ClearVote();
+            meetingHud.ClearVote(PlayerControl.LocalPlayer.PlayerId, true);
         }
     }
     public static void NoCheckStartMeeting(this PlayerControl reporter, NetworkedPlayerInfo target, bool force = false)

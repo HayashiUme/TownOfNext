@@ -211,6 +211,10 @@ public class GameStartManagerPatch
             {
                 return;
             }
+            if (updateTimer % 20 == 0 && GameManager.Instance != null && GameManager.Instance.LogicOptions != null)
+            {
+                Patches.DiscordRPC.UpdateLobbyPresence(__instance.LastPlayerCount, GameManager.Instance.LogicOptions.MaxPlayers, AmongUsClient.Instance.GameId);
+            }
 
             timer = Mathf.Max(0f, timer -= Time.deltaTime);
             int minutes = (int)timer / 60;
@@ -277,7 +281,7 @@ public static class GameStartManagerBeginGamePatch
             if (Options.AddedTheSkeld.GetBool()) randomMaps.Add(0);
             if (Options.AddedMiraHQ.GetBool()) randomMaps.Add(1);
             if (Options.AddedPolus.GetBool()) randomMaps.Add(2);
-            // if (Options.AddedDleks.GetBool()) RandomMaps.Add(3);
+            if (Options.AddedDleks.GetBool()) randomMaps.Add(3);
             if (Options.AddedTheAirShip.GetBool()) randomMaps.Add(4);
             if (Options.AddedTheFungle.GetBool()) randomMaps.Add(5);
 

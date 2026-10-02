@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 
 namespace TONX.Roles.Crewmate;
 public sealed class FortuneTeller : RoleBase
@@ -77,7 +77,7 @@ public sealed class FortuneTeller : RoleBase
                 CustomRoles.Snitch or
                 CustomRoles.Deceiver or
                 CustomRoles.God or
-                CustomRoles.Judge or
+                CustomRoles.JudgeTONX or
                 CustomRoles.Observer or
                 CustomRoles.DoveOfPeace or
                 CustomRoles.Messenger or
@@ -146,10 +146,9 @@ public sealed class FortuneTeller : RoleBase
                 CustomRoles.FortuneTeller or
                 CustomRoles.QuickShooter or
                 CustomRoles.Medium or
-                CustomRoles.Judge or
+                CustomRoles.JudgeTONX or
                 CustomRoles.BloodKnight or
-                CustomRoles.Swapper or
-                CustomRoles.Criminologist
+                CustomRoles.Swapper
                 => "Strong",
 
                 CustomRoles.Witch or
