@@ -119,7 +119,6 @@ internal class VersionShowerStartPatch
     {
         if (!VersionShower) return;
         var count = ModUpdater.visit_count;
-        // 彩蛋日不显示 TONX 的访问数（文案已由 GetString 统一替换）
         var info = count > 0 && !Main.IsAprilFools
             ? string.Format(GetString("TONXVisitorCount"), Main.ModColor, count)
             : GetString("ConnectToTONXServerFailed");
