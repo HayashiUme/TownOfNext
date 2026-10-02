@@ -126,7 +126,7 @@ public static class Translator
         if (string.IsNullOrEmpty(text)) return text;
         if (text.Contains("TownOfNext")) text = text.Replace("TownOfNext", Main.ModFullNameCompact);
         if (text.Contains("Town Of Next")) text = text.Replace("Town Of Next", Main.ModFullName);
-        if (text.Contains("TONX")) text = text.Replace("TONX", Main.AprilFoolsModName);
+        if (text.Contains("TONX")) text = text.Replace("TONX", Main.ModName);
         return text;
     }
 

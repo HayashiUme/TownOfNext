@@ -1697,6 +1697,7 @@ ErrorEndTextDescription: "Во избежание ошибки, комната �
 Loading: "Загрузка..."
 HidenRole: "Скрытая Роль"
 MainMenuCredential: "{0} © 2026"
+MainMenuCredential.AprilFools: "{0} © 2023"
 SendTargets.Default: "Кому: По умолчанию"
 SendTargets.All: "Кому: Всем"
 SendTargets.Dead: "Кому: Призракам"
