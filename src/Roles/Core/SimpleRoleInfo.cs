@@ -196,6 +196,14 @@ public class SimpleRoleInfo
                 roleName = CustomRoles.Detective;
                 customRoleType = CustomRoleTypes.Crewmate;
                 break;
+            case RoleTypes.Judge:
+                roleName = CustomRoles.Judge;
+                customRoleType = CustomRoleTypes.Crewmate;
+                break;
+            case RoleTypes.SpiritGuide:
+                roleName = CustomRoles.SpiritGuide;
+                customRoleType = CustomRoleTypes.Crewmate;
+                break;
             case RoleTypes.Impostor:
                 roleName = CustomRoles.Impostor;
                 customRoleType = CustomRoleTypes.Impostor;

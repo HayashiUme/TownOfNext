@@ -1,4 +1,4 @@
-﻿#Number:100052
+#Number:100052
 #Title:TownOfNext v4.0.0
 #SubTitle:★★★★TO The Next★★★★
 #ShortTitle:★TONX v4.0.0

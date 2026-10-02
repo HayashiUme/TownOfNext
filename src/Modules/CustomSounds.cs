@@ -38,7 +38,7 @@ public static class CustomSoundsManager
     
     public static void Play(string sound)
     {
-        if (!Constants.ShouldPlaySfx() || !Main.EnableCustomSoundEffect.Value) return;
+        if (!Constants.ShouldPlaySfx() || !Main.EnableCustomSoundEffect.Value || !OperatingSystem.IsWindows()) return;
         var path = SOUNDS_PATH + sound + ".wav";
         if (!Directory.Exists(SOUNDS_PATH)) Directory.CreateDirectory(SOUNDS_PATH);
         DirectoryInfo folder = new(SOUNDS_PATH);
@@ -60,13 +60,15 @@ public static class CustomSoundsManager
         Logger.Msg($"播放声音：{sound}", "CustomSounds");
     }
 
-    [DllImport("winmm.dll")]
-    public static extern bool PlaySound(string Filename, int Mod, int Flags);
-    public static void StartPlay(string path)
 #if Windows
-        => PlaySound(@$"{path}", 0, 1); // 第3个形参，把1换为9，连续播放
-#elif Android
-        {} // 安卓暂不处理
+    [DllImport("winmm.dll")]
+    private static extern bool PlaySound(string Filename, int Mod, int Flags);
 #endif
+    public static void StartPlay(string path)
+    {
+#if Windows
+        PlaySound(@$"{path}", 0, 1); // 安卓暂不做处理，会导致声音缺失
+#endif
+    }
 
 }

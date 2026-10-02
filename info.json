@@ -1,5 +1,5 @@
 {
-  "version": "4.0.0",
+  "version": "4.0.1",
   "minVer": "latest",
   "creation": "1",
   "allowStart": "true",
@@ -7,8 +7,8 @@
   "md5": "af628ba1075856c061f42e6a474fb40a",
 
   "announcement": {
-    "SChinese": "由于树懒服务器的更新，刷屏隐藏消息已不再需要。输入指令时请使用 /cmd ，例如 /bt => /cmd bt",
-    "English": "Due to the update of the server, the function of hiding messages is no longer necessary. When inputting commands, please use /cmd, for example, /bt => /cmd bt"
+    "SChinese": "树懒服务器正在大规模的更新反作弊，因此我们并不再推荐您于官方服务器上游玩TONX！开发者也不会花时间对于官方服务器进行适配。请使用Modded，Niko以及其他允许+25的服务器进行游玩。",
+    "English": "Innersloth was currently enhancing the server anti-cheat. As a result, we no longer recommend playing TONX on the vanilla regions! The developers will not be spending time adapting the game for the vanilla regions. Please play on Modded, Niko, and other regions that allow +25 Mode."
   },
 
   "url": {

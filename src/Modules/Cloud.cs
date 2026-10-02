@@ -1,4 +1,4 @@
-﻿using AmongUs.Data;
+﻿﻿using AmongUs.Data;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
@@ -43,24 +43,30 @@ internal class Cloud
         try
         {
             if (!Options.ShareLobby.GetBool() && !command) return false;
-            if (!Main.NewLobby || (GameData.Instance.PlayerCount < Options.ShareLobbyMinPlayer.GetInt() && !command) || !GameStates.IsLobby) return false;
+            if ((!Main.NewLobby && !command) || (GameData.Instance.PlayerCount < Options.ShareLobbyMinPlayer.GetInt() && !command) || !GameStates.IsLobby) return false;
             if (!AmongUsClient.Instance.AmHost || !GameData.Instance || AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame) return false;
 
             if (IP == null || LOBBY_PORT == 0) throw new("Has no ip or port");
 
             Main.NewLobby = false;
-            string msg = $"{GameStartManager.Instance.GameRoomNameCode.text}|{Main.PluginVersion}|{GameData.Instance.PlayerCount + 1}|{TranslationController.Instance.currentLanguage.languageID}|{ServerManager.Instance.CurrentRegion.Name}|{DataManager.player.customization.name}";
+            string msg = $"{GameStartManager.Instance.GameRoomNameCode.text}|{Main.PluginVersion}|{GameData.Instance.PlayerCount}|{TranslationController.Instance.currentLanguage.languageID}|{ServerManager.Instance.CurrentRegion.Name}|{DataManager.player.customization.name}|{EOSManager.Instance?.friendCode ?? ""}";
 
-            if (msg.Length <= 60)
+            if (msg.Length <= 120)
             {
-                byte[] buffer = Encoding.Default.GetBytes(msg);
+                byte[] buffer = Encoding.UTF8.GetBytes(msg);
                 ClientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 ClientSocket.Connect(IP, LOBBY_PORT);
                 ClientSocket.Send(buffer);
                 ClientSocket.Close();
-            }
 
-            Utils.SendMessage(GetString("Message.LobbyShared"), PlayerControl.LocalPlayer.PlayerId);
+                Utils.SendMessage(GetString("Message.LobbyShared"), PlayerControl.LocalPlayer.PlayerId);
+            }
+            else
+            {
+                Utils.SendMessage(GetString("Message.LobbyShareFailed"), PlayerControl.LocalPlayer.PlayerId);
+                Logger.Warn("ShareLobby: message too long", "Cloud");
+                return false;
+            }
 
         }
         catch (Exception e)

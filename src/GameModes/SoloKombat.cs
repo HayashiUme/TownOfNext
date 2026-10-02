@@ -16,7 +16,7 @@ public sealed class SoloKombat : GameModeBase
             SetupCustomOption,
             "#f55252",
             () => $"<color=#f55252><size=1.7>{GetString("ModeSoloKombat")}</size></color>",
-            (true, false)
+            (true, true)
         );
     public SoloKombat() : base(ModeInfo)
     { }
@@ -113,13 +113,11 @@ public sealed class SoloKombat : GameModeBase
     }
     public override void EditIntroFormat(ref IntroCutscene intro)
     {
-        CustomRoles role = PlayerControl.LocalPlayer.GetCustomRole();
-        var color = ColorUtility.TryParseHtmlString("#f55252", out var c) ? c : new(255, 255, 255, 255);
-        intro.TeamTitle.text = Utils.GetRoleName(role);
-        intro.TeamTitle.color = Utils.GetRoleColor(role);
-        intro.ImpostorText.gameObject.SetActive(true);
-        intro.ImpostorText.text = GetString("ModeSoloKombat");
-        intro.BackgroundBar.material.color = color;
+        intro.TeamTitle.text = GetString("ModeSoloKombat");
+        intro.TeamTitle.color = ModeInfo.ModeColor;
+        // Subtitle is hidden on purpose: only the mode name is shown.
+        intro.ImpostorText.gameObject.SetActive(false);
+        intro.BackgroundBar.material.color = ModeInfo.ModeColor;
         PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HnSImpostorScreamSfx>.Instance.HnSOtherImpostorTransformSfx;
     }
     public override void EditOutroFormat(ref EndGameManager outro, ref TextMeshPro winnerText, ref string cwt, ref StringBuilder awt, ref string cwc)

@@ -12,10 +12,10 @@ static class MeetingHudManager
         foreach (var pva in meetingHud.playerStates)
         {
             if (pva == null) continue;
-            if (pva.VotedFor < 253) meetingHud.RpcClearVote(pva.TargetPlayerId);
+            if (pva.VotedForId < 253) meetingHud.RpcClearVote(pva.PlayerId);
         }
         List<MeetingHud.VoterState> voterStates = [];
-        meetingHud.RpcVotingComplete(voterStates.ToArray(), null, true);
+        meetingHud.RpcVotingComplete(voterStates.ToArray(), null, true, false, byte.MaxValue);
         meetingHud.RpcClose();
     }
 }
