@@ -78,7 +78,7 @@ internal class VersionShowerStartPatch
         VersionShowerText = VersionShower.text.text;
 
         TMPTemplate.SetBase(__instance.text);
-        Main.CredentialsText = $"\r\n<color={Main.ModColor}>{Main.ModName}</color> - {Main.PluginVersion}";
+        Main.CredentialsText = $"\r\n<color={Main.ModColor}>{Main.ModName}</color> - {Main.DisplayVersion}";
         Main.CredentialsText += (Main.VerType == VersionType.Release) ? "" : $" (<color={Main.ModColor}>{Main.VerType}</color>)";
 #if DEBUG
         Main.CredentialsText += $"\r\n<color=#00a4ff>{Main.GitBranch}</color> - {Main.GitCommit}";
@@ -119,9 +119,10 @@ internal class VersionShowerStartPatch
     {
         if (!VersionShower) return;
         var count = ModUpdater.visit_count;
-        VersionShower.text.text = VersionShowerText + "\n" + $"{(count > 0
+        var info = count > 0 && !Main.IsAprilFools
             ? string.Format(GetString("TONXVisitorCount"), Main.ModColor, count)
-            : GetString("ConnectToTONXServerFailed"))}";
+            : GetString("ConnectToTONXServerFailed");
+        VersionShower.text.text = VersionShowerText + "\n" + info;
     }
 }
 
@@ -264,8 +265,8 @@ internal class TitleLogoPatch
         AULogo.transform.localScale = new Vector3(0.66f, 0.67f, 1f);
         AULogo.transform.position += new Vector3(0f, 0.1f, 0f);
         var logoRenderer = AULogo.GetComponent<SpriteRenderer>();
-        logoRenderer.sprite = Utils.LoadSprite("TONX.Resources.Images.TONX-Logo.png");
-
+        logoRenderer.sprite = Utils.LoadSprite(Main.LogoResource, Main.IsAprilFools ? 150f : 1f);
+        
         if (!(BottomButtonBounds = GameObject.Find("BottomButtonBounds"))) return;
         BottomButtonBounds.transform.localPosition -= new Vector3(0f, 0.1f, 0f);
 

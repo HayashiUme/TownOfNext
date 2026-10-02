@@ -1,4 +1,4 @@
-﻿using AmongUs.Data;
+using AmongUs.Data;
 using Newtonsoft.Json.Linq;
 using System.Text;
 using TONX.Attributes;
@@ -63,7 +63,7 @@ public static class NameTagManager
         {
             name = Options.GetSuffixMode() switch
             {
-                SuffixModes.TONX => name += $"\r\n<color={Main.ModColor}>TONX v{Main.PluginVersion}</color>",
+                SuffixModes.TONX => name += $"\r\n<color={Main.ModColor}>{Main.ModName} v{Main.DisplayVersion}</color>",
                 SuffixModes.Streaming => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.Streaming")}</color></size>",
                 SuffixModes.Recording => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.Recording")}</color></size>",
                 SuffixModes.RoomHost => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.RoomHost")}</color></size>",

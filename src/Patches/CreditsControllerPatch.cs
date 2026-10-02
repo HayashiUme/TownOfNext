@@ -1,4 +1,4 @@
-﻿namespace TONX;
+namespace TONX;
 
 [HarmonyPatch(typeof(CreditsController))]
 public class CreditsControllerPatch
