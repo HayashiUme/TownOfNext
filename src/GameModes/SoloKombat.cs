@@ -16,7 +16,7 @@ public sealed class SoloKombat : GameModeBase
             SetupCustomOption,
             "#f55252",
             () => $"<color=#f55252><size=1.7>{GetString("ModeSoloKombat")}</size></color>",
-            (true, false)
+            (true, true)
         );
     public SoloKombat() : base(ModeInfo)
     { }

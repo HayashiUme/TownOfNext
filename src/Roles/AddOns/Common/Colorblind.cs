@@ -11,8 +11,8 @@ public static class Colorblind
 
     public static void SetupCustomOption()
     {
-        SetupAddonOptions(Id, TabGroup.Addons, CustomRoles.Colorblind);
-        AddOnsAssignData.Create(Id + 10, CustomRoles.Colorblind, true, true, true);
+        SetupAddonOptions(Id, TabGroup.OtherRoles, CustomRoles.Colorblind);
+        AddOnsAssignData.Create(Id + 10, TabGroup.OtherRoles, CustomRoles.Colorblind, true, true, true);
     }
     [GameModuleInitializer]
     public static void Init()

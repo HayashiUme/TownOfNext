@@ -16,7 +16,7 @@ public sealed class HotPotato : GameModeBase
             SetupCustomOption,
             "#f55252",
             () => $"<color=#f55252><size=1.7>{GetString("ModeHotPotato")}</size></color>",
-            (true, false)
+            (true, true)
         );
 
     public HotPotato() : base(ModeInfo)

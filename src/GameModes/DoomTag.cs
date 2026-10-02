@@ -16,7 +16,7 @@ public sealed class DoomTag : GameModeBase
             SetupCustomOption,
             "#D9BAA5",
             () => $"<color=#D9BAA5><size=1.7>{GetString("ModeDoomTag")}</size></color>",
-            (true, false)
+            (true, true)
         );
 
     public DoomTag() : base(ModeInfo)
