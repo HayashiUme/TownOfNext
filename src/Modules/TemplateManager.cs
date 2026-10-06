@@ -73,7 +73,10 @@ public static class TemplateManager
         else
         {
             var text = File.ReadAllText(TEMPLATE_FILE_PATH, Encoding.GetEncoding("UTF-8"));
-            if(Main.IsAprilFools) File.WriteAllText(TEMPLATE_FILE_PATH, text.Replace("tonx.cc", "tohe.cc"));
+            if(Main.IsAprilFools) 
+                File.WriteAllText(TEMPLATE_FILE_PATH, text.Replace("tonx.cc", "tohe.cc"));
+            else
+                File.WriteAllText(TEMPLATE_FILE_PATH, text.Replace("tohe.cc", "tonx.cc"));
         }
     }
 
