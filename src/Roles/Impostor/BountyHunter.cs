@@ -67,12 +67,6 @@ public sealed class BountyHunter : RoleBase, IImpostor
         if (AmongUsClient.Instance.AmHost)
             ResetTarget();
     }
-    // test
-    public override bool OnEnterVent(PlayerPhysics physics, int ventId)
-    {
-        TONX.Modules.Achievements.Roles.Impostor.BountyHunter.VentTester.Trigger();
-        return base.OnEnterVent(physics, ventId);
-    }
 
     private void SendRPC(byte targetId)
     {
@@ -119,34 +113,23 @@ public sealed class BountyHunter : RoleBase, IImpostor
         {
             if (Player.IsAlive())
             {
-                var target = GetTarget();
-                if (target == null) return;
-                var targetId = target.PlayerId;
-                if (ChangeTimer >= TargetChangeTime)//時間経過でターゲットをリセットする処理
-                {
-                    ResetTarget();//ターゲットの選びなおし
-                    Utils.NotifyRoles(SpecifySeer: Player);
-                }
                 if (ChangeTimer >= 0)
                     ChangeTimer += Time.fixedDeltaTime;
 
-                //BountyHunterのターゲット更新
-                if (PlayerState.GetByPlayerId(targetId).IsDead)
-                {
-                    ResetTarget();
+                var target = Target;
+                var targetIsDead = target != null && PlayerState.GetByPlayerId(target.PlayerId).IsDead;
+                
+                if (!targetIsDead && ChangeTimer < TargetChangeTime) return;
+
+                if (targetIsDead)
                     Logger.Info($"{Player.GetNameWithRole()}のターゲットが無効だったため、ターゲットを更新しました", "BountyHunter");
-                    Utils.NotifyRoles(SpecifySeer: Player);
-                }
+
+                ResetTarget();//ターゲットの選びなおし
+                Utils.NotifyRoles(SpecifySeer: Player);
             }
         }
     }
-    public PlayerControl GetTarget()
-    {
-        if (Target == null)
-            Target = ResetTarget();
-
-        return Target;
-    }
+    public PlayerControl GetTarget() => Target;
     public PlayerControl ResetTarget()
     {
         if (!AmongUsClient.Instance.AmHost) return null;
@@ -158,10 +141,13 @@ public sealed class BountyHunter : RoleBase, IImpostor
         Logger.Info($"{Player.GetNameWithRole()}:ターゲットリセット", "BountyHunter");
         Player.RpcResetAbilityCooldown(); ;//タイマー（変身クールダウン）のリセットと
 
+        var previousTarget = Target;
+        Target = null;
+
         var cTargets = new List<PlayerControl>(Main.AllAlivePlayerControls.Where(pc => !pc.Is(CountTypes.Impostor)));
 
         if (cTargets.Count >= 2)
-            cTargets.RemoveAll(x => x == Target); //前回のターゲットは除外
+            cTargets.RemoveAll(x => x == previousTarget); //前回のターゲットは除外
 
         if (cTargets.Count <= 0)
         {
