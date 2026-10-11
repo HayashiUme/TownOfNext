@@ -1,5 +1,6 @@
 using Hazel;
-using TONX.Modules.Achievements.Game;
+using TONX.Modules.Achievements.Core;
+using TONX.Modules.Achievements.General;
 using TONX.Modules;
 using UnityEngine;
 
@@ -70,6 +71,11 @@ internal class ControllerManagerUpdatePatch
             Logger.Info("导出自定义翻译文件", "KeyCommand");
             ExportCustomTranslation();
             Logger.SendInGame("Exported Custom Translation File");
+        }
+        if (GetKeysDown(KeyCode.F5, KeyCode.A))
+        {
+            Logger.Info("解锁按键测试成就", "KeyCommand");
+            KeyCommandTester.Trigger();
         }
         //日志文件转储
         if (GetKeysDown(KeyCode.F1, KeyCode.LeftControl))

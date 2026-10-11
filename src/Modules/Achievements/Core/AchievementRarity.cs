@@ -10,7 +10,7 @@ public enum AchievementRarity
     Legendary,
 }
 
-public static class AchievementRarityExtensions
+public static class AchievementRarityUtils
 {
     public static Color GetColor(this AchievementRarity rarity) => rarity switch
     {

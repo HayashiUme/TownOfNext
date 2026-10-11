@@ -861,4 +861,18 @@ static class ExtendedPlayerControl
             }
         }
     }
+    
+    public static TONX.Modules.Achievements.Core.CustomAchievementData GetAchievementInfo(this PlayerControl player)
+        => player == null ? null : TONX.Modules.Achievements.Core.CustomAchievementDataManager.GetByPlayer(player);
+
+    public static TONX.Modules.Achievements.Core.CustomAchievementData GetAchievementInfo(this PlayerControl player, bool fetchIfMissing)
+    {
+        var data = player.GetAchievementInfo();
+        if (data == null) return null;
+
+        if (fetchIfMissing && !data.HasData)
+            _ = TONX.Modules.Achievements.Core.AchievementApiClient.EnsureFetchedAsync(data);
+
+        return data;
+    }
 }

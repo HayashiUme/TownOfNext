@@ -1,7 +1,7 @@
-﻿using TMPro;
+using TMPro;
 using TONX.Modules.Achievements.AchievementInterface;
-using TONX.Modules.Achievements.Game;
-using TONX.Modules.Achievements.Player;
+using TONX.Modules.Achievements.Core;
+using TONX.Modules.Achievements.Titles;
 using UnityEngine;
 using static TONX.NameTagManager;
 using Object = UnityEngine.Object;
@@ -49,7 +49,6 @@ public static class NameTagPanel
             tagOptionsPassiveButton.OnClick.AddListener(new Action(() =>
             {
                 AchievementPanel.Hide();
-                AchievementTitleMenu.Hide();
                 CustomBackground.gameObject.SetActive(true);
             }));
         }
@@ -144,18 +143,18 @@ public static class NameTagPanel
         titleEntry.name = "Achievement Title Entry";
         Object.Destroy(titleEntry.GetComponent<UIScrollbarHelper>());
         Object.Destroy(titleEntry.GetComponent<NumberButton>());
-        titleEntry.transform.GetChild(0).GetComponent<TextMeshPro>().text = GetString("AchievementTitle");
+        titleEntry.transform.GetChild(0).GetComponent<TextMeshPro>().text = GetString("Achievement.TitleLabel");
         titleEntry.GetComponent<SpriteRenderer>().color = Main.ModColor32;
         titleEntry.GetComponent<ButtonRolloverHandler>().OutColor = Main.ModColor32;
         var titleEntryPassive = titleEntry.GetComponent<PassiveButton>();
         titleEntryPassive.OnClick = new();
-        titleEntryPassive.OnClick.AddListener(new Action(() => AchievementTitleMenu.Toggle()));
+        titleEntryPassive.OnClick.AddListener(new Action(() => AchievementPanel.Toggle()));
         var titlePreview = Object.Instantiate(titleEntry.transform.GetChild(0).GetComponent<TextMeshPro>(), titleEntry.transform);
         titlePreview.transform.SetLocalX(1.9f);
         titlePreview.fontSize = 1f;
         var localPlayer = PlayerControl.LocalPlayer;
         var equippedId = localPlayer == null ? 0 : PlayerAchievementData.GetEquippedTitle(localPlayer.PlayerId);
-        var equipped = TONX.Modules.Achievements.Game.AchievementRegistry.GetById(equippedId);
+        var equipped = TONX.Modules.Achievements.Core.AchievementRegistry.GetById(equippedId);
         titlePreview.text = equipped != null ? equipped.TitleDisplay : GetString("Achievement.NoTitleEquipped");
         Items.Add("AchievementTitle", titleEntry);
 

@@ -1,10 +1,8 @@
 using Hazel;
-using TONX.Modules.Achievements.Game;
-using TONX.Modules.Achievements.Player;
 using TONX.Attributes;
-using UnityEngine;
+using TONX.Modules.Achievements.Core;
 
-namespace TONX.Modules.Achievements.Player;
+namespace TONX.Modules.Achievements.Titles;
 
 public static class AchievementTitleHandler
 {
@@ -13,7 +11,7 @@ public static class AchievementTitleHandler
         _ = new LateTask(() =>
         {
             ApplyTitleLocally(playerId, achievementId);
-            
+
             if (!AmongUsClient.Instance.AmConnected) return;
 
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
@@ -27,11 +25,14 @@ public static class AchievementTitleHandler
 
         }, 0f, $"AchievementTitleSyncRpc p{playerId}");
     }
-    
-    public static void ReceiveTitleSyncRpc(MessageReader reader)
+
+    public static void ReceiveTitleSyncRpc(MessageReader reader, PlayerControl sender)
     {
         byte playerId = reader.ReadByte();
         int achievementId = reader.ReadInt32();
+
+        if (sender == null || !sender.AmOwner) return;
+
         ApplyTitleLocally(playerId, achievementId);
     }
 
@@ -39,7 +40,7 @@ public static class AchievementTitleHandler
     {
         PlayerAchievementData.SetEquippedTitle(playerId, achievementId);
         Logger.Info($"Player {playerId} Title change → ID={achievementId}", "TitleHandler");
-        
+
         if (!GameStates.IsLobby) return;
 
         var player = Utils.GetPlayerById(playerId);
@@ -48,7 +49,7 @@ public static class AchievementTitleHandler
         _ = new LateTask(() => NameTagManager.ApplyFor(player),
             0.15f, $"RefreshNameForTitle p{playerId}");
     }
-    
+
     // 实现接口
     public class AchievementTitleProvider : NameTagManager.INameTagProvider
     {

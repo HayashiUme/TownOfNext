@@ -1,8 +1,7 @@
-﻿using TONX.Modules.Achievements.Core.Base;
-using TONX.Modules.Achievements.Game;
-using TONX.Modules.Achievements.Player;
+﻿using TONX.Modules.Achievements.Titles;
 using UnityEngine;
 using Object = UnityEngine.Object;
+using AchManager = TONX.Modules.Achievements.Core.AchievementManager;
 
 namespace TONX;
 
@@ -10,7 +9,7 @@ namespace TONX;
 public class LobbyStartPatch
 {
     private static GameObject Paint;
-    
+
     private static bool _wasInGame = false;
 
     [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.ExitGame))]
@@ -18,10 +17,16 @@ public class LobbyStartPatch
     {
         public static void Prefix() => _wasInGame = GameStates.IsInGame;
     }
+
     public static void Postfix(LobbyBehaviour __instance)
     {
         SetPaint(__instance);
-        ResetTitles();
+        
+        if (_wasInGame)
+        {
+            _ = AchManager.FlushAllAsync();
+            _wasInGame = false;
+        }
     }
 
     public static void SetPaint(LobbyBehaviour __instance)
@@ -32,15 +37,5 @@ public class LobbyStartPatch
         Paint.transform.localPosition = new Vector3(0.042f, -2.59f, -10.5f);
         SpriteRenderer renderer = Paint.GetComponent<SpriteRenderer>();
         renderer.sprite = Utils.LoadSprite("TONX.Resources.Images.LobbyPaint.png", 290f);
-    }
-    public static void ResetTitles()
-    {
-        if (_wasInGame)
-        {
-            PlayerAchievementData.ResetTitles();
-            _wasInGame = false;
-        }
-        _ = AchievementBase.FlushPendingUnlocks();
-        _ = TONX.Modules.Achievements.Game.AchievementManager.FlushProgressAsync();
     }
 }

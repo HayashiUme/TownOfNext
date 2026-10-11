@@ -2,7 +2,6 @@ using BepInEx.Unity.IL2CPP.Utils.Collections;
 using System.Collections;
 using TMPro;
 using TONX.Modules.Achievements.Core;
-using TONX.Modules.Achievements.Core.Base;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -10,7 +9,7 @@ namespace TONX.Modules.Achievements.AchievementInterface;
 
 public static class AchievementToast
 {
-    private static readonly Queue<(AchievementBase achievement, bool unlocked)> Pending = new();
+    private static readonly Queue<(AchievementBase achievement, int progress, bool unlocked)> Pending = new();
     private static bool _showing;
 
     private static GameObject _toast;
@@ -19,10 +18,10 @@ public static class AchievementToast
 
     private const float ShowSeconds = 2.6f;
 
-    public static void Enqueue(AchievementBase achievement, bool unlocked = false)
+    public static void Enqueue(AchievementBase achievement, int progress, bool unlocked = false)
     {
         if (achievement == null) return;
-        Pending.Enqueue((achievement, unlocked));
+        Pending.Enqueue((achievement, progress, unlocked));
         if (!_showing) AmongUsClient.Instance.StartCoroutine(CoPlayQueue().WrapToIl2Cpp());
     }
 
@@ -33,11 +32,11 @@ public static class AchievementToast
         {
             while (Pending.Count > 0)
             {
-                var (achievement, unlocked) = Pending.Dequeue();
-                if (TryShow(achievement, unlocked))
+                var (achievement, progress, unlocked) = Pending.Dequeue();
+                if (TryShow(achievement, progress, unlocked))
                     yield return CoAnimate();
                 else
-                    PlayerControl.LocalPlayer?.ShowPopUp(FormatText(achievement, unlocked));
+                    PlayerControl.LocalPlayer?.ShowPopUp(FormatText(achievement, progress, unlocked));
             }
         }
         finally
@@ -47,15 +46,15 @@ public static class AchievementToast
         }
     }
 
-    private static string FormatText(AchievementBase achievement, bool unlocked)
+    private static string FormatText(AchievementBase achievement, int progress, bool unlocked)
     {
         string color = achievement.Rarity.GetColorCode();
         string title = unlocked ? GetString("Achievement.Toast.Unlocked") : GetString("Achievement.Toast.Progress");
-        string progress = achievement.IsProgressAchievement ? $"  ({achievement.Progress}/{achievement.RequiredValue})" : "";
-        return $"<color={color}>{title}</color>\n<color={achievement.TitleColorHex}>{achievement.Name}</color>{progress}";
+        string progressText = achievement.IsProgressAchievement ? $"  ({progress}/{achievement.RequiredValue})" : "";
+        return $"<color={color}>{title}</color>\n<color={achievement.TitleColorHex}>{achievement.Name}</color>{progressText}";
     }
 
-    private static bool TryShow(AchievementBase achievement, bool unlocked)
+    private static bool TryShow(AchievementBase achievement, int progress, bool unlocked)
     {
         if (_toast == null) BuildToast();
         if (_toast == null) return false;
@@ -69,9 +68,9 @@ public static class AchievementToast
 
         string color = achievement.Rarity.GetColorCode();
         string title = unlocked ? GetString("Achievement.Toast.Unlocked") : GetString("Achievement.Toast.Progress");
-        string progress = achievement.IsProgressAchievement ? $"  ({achievement.Progress}/{achievement.RequiredValue})" : "";
+        string progressText = achievement.IsProgressAchievement ? $"  ({progress}/{achievement.RequiredValue})" : "";
         _title.text = $"<color={color}>{title}</color>  <size=70%>{achievement.Rarity.GetDisplayName()}</size>";
-        _body.text = $"<color={achievement.TitleColorHex}>{achievement.Name}</color>{progress}";
+        _body.text = $"<color={achievement.TitleColorHex}>{achievement.Name}</color>{progressText}";
         return true;
     }
 

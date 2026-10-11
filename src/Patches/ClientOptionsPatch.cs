@@ -118,7 +118,6 @@ public static class OptionsMenuBehaviourClosePatch
         NameTagPanel.Hide();
         NameTagEditMenu.Hide();
         AchievementPanel.Hide();
-        AchievementTitleMenu.Hide();
         ModUnloaderScreen.Hide();
     }
 }

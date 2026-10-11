@@ -77,6 +77,8 @@ class GameEndChecker
         var winnerWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.EndGame, SendOption.Reliable);
         CustomWinnerHolder.WriteTo(winnerWriter);
         AmongUsClient.Instance.FinishRpcImmediately(winnerWriter);
+        
+        _ = TONX.Modules.Achievements.Core.AchievementManager.FlushAllAsync();
 
         // 蘇生を確実にゴーストロール設定の後に届けるための遅延
         yield return new WaitForSeconds(EndGameDelay);

@@ -15,6 +15,4 @@ public interface IAchievement
     bool Hidden { get; }
     string Category { get; }
     int RequiredValue { get; }
-    int Progress { get; }
-    bool Unlocked { get; }
 }

@@ -53,6 +53,7 @@ public class MainMenuManagerPatch
         asa2?.ScaleObject(Utils.GetAspectRatio(Screen.width, Screen.height));
 
         CustomPopup.Update();
+        TONX.Modules.Achievements.AchievementInterface.AchievementPanel.Update();
 
         if (GameObject.Find("MainUI") == null) ShowingPanel = false;
 

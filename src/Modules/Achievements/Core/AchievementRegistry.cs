@@ -1,14 +1,12 @@
 using System.Reflection;
 using TONX.Attributes;
-using TONX.Modules.Achievements.Core.Base;
-using TONX.Modules.Achievements.Core.Interfaces;
-using TONX.Modules.Achievements.Player;
 
-namespace TONX.Modules.Achievements.Game;
+namespace TONX.Modules.Achievements.Core;
 
 public static class AchievementRegistry
 {
     private static readonly Dictionary<int, AchievementBase> All = new();
+    private static readonly Dictionary<Type, AchievementBase> ByType = new();
     private static readonly Dictionary<string, List<AchievementBase>> ByCategory = new();
 
     public static IReadOnlyList<string> Categories { get; private set; } = new List<string>();
@@ -17,6 +15,7 @@ public static class AchievementRegistry
     public static void Initialize()
     {
         All.Clear();
+        ByType.Clear();
         ByCategory.Clear();
 
         var types = Assembly.GetExecutingAssembly()
@@ -26,13 +25,15 @@ public static class AchievementRegistry
             .ToArray();
 
         foreach (var type in types)
-            Register((AchievementBase)Activator.CreateInstance(type));
-        
-        foreach (var type in types.Where(t => typeof(IAchievementTracker).IsAssignableFrom(t)))
         {
-            var tracker = (IAchievementTracker)Activator.CreateInstance(type);
-            foreach (var achievement in tracker.TrackedAchievements)
-                if (achievement is AchievementBase tracked) Register(tracked);
+            try
+            {
+                Register((AchievementBase)Activator.CreateInstance(type));
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Failed to register {type.Name}：{ex.Message}", "AchievementRegistry");
+            }
         }
 
         Categories = ByCategory.Keys.OrderBy(x => x, StringComparer.Ordinal).ToList().AsReadOnly();
@@ -43,22 +44,13 @@ public static class AchievementRegistry
         => All.TryGetValue(id, out var a) ? a : null;
 
     public static AchievementBase GetByType(Type type)
-        => All.Values.FirstOrDefault(a => a.GetType() == type);
+        => ByType.TryGetValue(type, out var a) ? a : null;
 
     public static T Get<T>() where T : AchievementBase
-        => All.Values.OfType<T>().FirstOrDefault();
+        => GetByType(typeof(T)) as T;
 
     public static IReadOnlyCollection<AchievementBase> GetAll()
-        => All.Values.ToList().AsReadOnly();
-
-    public static IReadOnlyList<AchievementBase> GetByCategory(string category)
-        => ByCategory.TryGetValue(category, out var list) ? list : new List<AchievementBase>();
-    
-    public static void SyncLocalState(List<AchievementRecord> records)
-    {
-        if (records == null) return;
-        foreach (var record in records) GetById(record.Id)?.ApplyServerRecord(record);
-    }
+        => All.Values;
 
     private static void Register(AchievementBase achievement)
     {
@@ -69,6 +61,7 @@ public static class AchievementRegistry
         }
 
         All[achievement.Id] = achievement;
+        ByType[achievement.GetType()] = achievement;
         if (!ByCategory.ContainsKey(achievement.Category)) ByCategory[achievement.Category] = new();
         ByCategory[achievement.Category].Add(achievement);
         Logger.Info($"Registry successfully [{achievement.Id}] {achievement.Name}", "AchievementRegistry");
