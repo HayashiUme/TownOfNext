@@ -695,6 +695,8 @@ public enum CustomRoles
     Shifter,
     Doomsayer,
     Yandere,
+    Lawyer,
+    Prosecutors,
 
     //SoloKombat
     KB_Normal = 400,
