@@ -253,7 +253,7 @@ public class ChatCommand(List<string> keywords, Func<CommandAccess> access, Func
                 Logger.Warn($"VisorId: {of.VisorId}", "Get Cos Id");
                 Logger.Warn($"NamePlateId: {of.NamePlateId}", "Get Cos Id");
                 return (MsgRecallMode.Block, null);
-            }),
+            }), /*
             new(["achid","achevementid"], () => CommandAccess.All, mc =>
             {
                 if (!GameStates.IsLobby)
@@ -284,7 +284,7 @@ public class ChatCommand(List<string> keywords, Func<CommandAccess> access, Func
                 string msg = $"<color={achievement.TitleColorHex}>【{achievement.Name}】</color>\n" +
                              $"{achievement.Description}";
                 return (MsgRecallMode.Block, msg);
-            }),
+            }),*/
             new(["qq","dc"], () => CommandAccess.Host, mc =>
             {
                 Cloud.ShareLobby();

@@ -135,6 +135,7 @@ public static class NameTagPanel
         Items?.Values?.Do(Object.Destroy);
         Items = new();
 
+        /*
         // 置顶成就头衔
         numItems++;
         var titleEntry = Object.Instantiate(buttonPrefab, scroller.Inner);
@@ -156,7 +157,7 @@ public static class NameTagPanel
         var equippedId = localPlayer == null ? 0 : PlayerAchievementData.GetEquippedTitle(localPlayer.PlayerId);
         var equipped = TONX.Modules.Achievements.Core.AchievementRegistry.GetById(equippedId);
         titlePreview.text = equipped != null ? equipped.TitleDisplay : GetString("Achievement.NoTitleEquipped");
-        Items.Add("AchievementTitle", titleEntry);
+        Items.Add("AchievementTitle", titleEntry);*/
 
         foreach (var nameTag in AllNameTags.Where(t => !t.Value.Isinternal))
         {
