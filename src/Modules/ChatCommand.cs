@@ -231,6 +231,25 @@ public class ChatCommand(List<string> keywords, Func<CommandAccess> access, Func
                 string text = GetFormatString(containDeadPlayers: true);
                 return (MsgRecallMode.Block, text);
             }),
+            new(["cec", "kc", "gs"], () => CommandAccess.All, mc =>
+            {
+                string text = GetString("Message.CanNotUseInLobby");
+                if (GameStates.IsInGame)
+                {
+                    if (!Options.EnableEvilCount.GetBool())
+                        text = string.Format(GetString("Message.DirectorModeDisabled"), GetString("EnableEvilCount"));
+                    else if (MeetingStates.FirstMeeting && Options.EvilCountDisableInFirstMeeting.GetBool())
+                        text = GetString("Message.EvilCountDisabledInFirstMeeting");
+                    else
+                    {
+                        int impNum = Main.AllAlivePlayerControls.Count(p => p.Is(CustomRoleTypes.Impostor));
+                        int neutralNum = Main.AllAlivePlayerControls.Count(p => p.Is(CustomRoleTypes.Neutral));
+                        int madmateNum = Main.AllAlivePlayerControls.Count(p => p.Is(CustomRoles.Madmate));
+                        text = string.Format(GetString("Message.CurrentEvilCount"), impNum, neutralNum, madmateNum);
+                    }
+                }
+                return (MsgRecallMode.Block, text);
+            }),
             new(["end", "endgame"], () => CommandAccess.Host, mc =>
             {
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Draw);

@@ -336,6 +336,10 @@ public static class Options
     public static OptionItem FixFirstKillCooldown;
     public static OptionItem ShieldPersonDiedFirst;
     public static OptionItem KillFlashDuration;
+
+    // 邪恶人数指令
+    public static OptionItem EnableEvilCount;
+    public static OptionItem EvilCountDisableInFirstMeeting;
     // public static OptionItem EnableRoleDraftMode;
     // public static OptionItem ShowSelectedRoles;
 
@@ -1104,7 +1108,15 @@ public static class Options
             .SetColor(new Color32(193, 255, 209, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
-        
+
+        // 邪恶人数指令（/cec、/kc、/gs）
+        EnableEvilCount = BooleanOptionItem.Create(3_041_001, "EnableEvilCount", false, TabGroup.GameSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(193, 255, 209, byte.MaxValue));
+        EvilCountDisableInFirstMeeting = BooleanOptionItem.Create(3_041_002, "EvilCountDisableInFirstMeeting", true, TabGroup.GameSettings, false).SetParent(EnableEvilCount)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(193, 255, 209, byte.MaxValue));
+
         // 轮抽选角
         // EnableRoleDraftMode = BooleanOptionItem.Create(3_046_001, "EnableRoleDraftMode", false, TabGroup.GameSettings, false)
         //     .SetGameMode(CustomGameMode.Standard)
