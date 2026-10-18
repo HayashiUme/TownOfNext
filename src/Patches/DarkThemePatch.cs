@@ -57,6 +57,15 @@ public static class DarkThemePatch
                 __instance.freeChatField.textArea.outputText.color = Color.white;
             if (__instance.quickChatField.background.color != DarkBackgroundColor)
                 __instance.quickChatField.background.color = DarkBackgroundColor;
+            
+            var quickChatIcon = GameObject.Find("QuickChatIcon")?.transform.GetComponent<SpriteRenderer>();
+            if (quickChatIcon) quickChatIcon.sprite = Utils.LoadSprite("TONX.Resources.Images.DarkQuickChat.png", 100f);
+    
+            var openBanMenuIcon = GameObject.Find("OpenBanMenuIcon")?.transform.GetComponent<SpriteRenderer>();
+            if (openBanMenuIcon) openBanMenuIcon.sprite = Utils.LoadSprite("TONX.Resources.Images.DarkReport.png", 100f);
+    
+            var openKeyboardIcon = GameObject.Find("OpenKeyboardIcon")?.transform.GetComponent<SpriteRenderer>();
+            if (openKeyboardIcon) openKeyboardIcon.sprite = Utils.LoadSprite("TONX.Resources.Images.DarkKeyboard.png", 100f);
         }
     }
 
