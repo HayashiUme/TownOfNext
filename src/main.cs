@@ -439,7 +439,8 @@ public enum OutfitType
 {
     NormalMode,
     HorseMode,
-    LongMode
+    LongMode,
+    ClassicMode
 }
 
 public enum VersionType

@@ -153,6 +153,8 @@ Sunnyboy: "阳光开朗大男孩"
 Shifter: "连环交换师"
 Doomsayer: "末日预言家"
 Yandere: "病娇"
+Lawyer: "律师"
+Prosecutors: "起诉人"
 
 ## 附加职业 / Add-ons
 LastImpostor: "绝境者"
@@ -349,6 +351,8 @@ SunnyboyInfo: "这个角色的建立究竟有什么意义"
 ShifterInfo: "职业没喽，职业回来喽"
 DoomsayerInfo: "猜测其他玩家的职业"
 YandereInfo: "你永远是我的宝宝~"
+LawyerInfo: "客户即胜利"
+ProsecutorsInfo: "空包弹，也是弹"
 
 ## 附加职业 / Add-ons Blurbs
 LoversInfo: "最重要的是，记得照顾好您的另一半"
@@ -493,6 +497,8 @@ SunnyboyInfoLong: "阳光开朗大男孩可以通过生命面板查看他人的�
 ShifterInfoLong: "交换师可以通过对玩家点击击杀按钮进行职业交换，交换技能在下一轮会议结束后生效。请注意：交换师无法获胜。"
 DoomsayerInfoLong: "末日预言家可以通过对玩家点击击杀按钮获取提示，末日预言家需要正确猜测指定个数玩家的职业才能获胜。根据房主设置，猜测错误可能会自杀。\n猜测指令为：/cmd bt [玩家编号] [职业名]\n您可以在玩家名字前看到该玩家的编号，或者使用/cmd id指令查看所有玩家的编号。"
 YandereInfoLong: "(来源：Extreme Roles)\n病娇拥有一个随机分配的暗恋对象。靠近暗恋对象的玩家一定时间后会被标记为情敌。病娇可以击杀其他玩家，击杀情敌会减少击杀冷却时间，反之会增加冷却时间。暗恋对象死亡后，病娇的击杀冷却变为房主设定的固定值。\n【独自胜利条件】除自己和暗恋对象外的所有玩家均死亡。"
+LawyerInfoLong: "游戏开始时律师会被分配到一个非船员的客户（恋人不可作为客户），并在其昵称旁用分配符号「§」表示。若律师存活且客户的阵营胜利，则律师替代客户跟随其胜利；若律师死亡，则会跟随客户的阵营胜利；若客户死亡，则律师会转变为起诉人；若场上没有符合条件的客户，律师也会直接转变为起诉人。\n请注意：根据房主设定，叛徒与小丑可以作为客户；律师可以知道客户的职业；客户也可以知道自己拥有律师。"
+ProsecutorsInfoLong: "起诉人由律师的客户死亡后转变而来，可以使用击杀键向一名玩家发射空包弹，被空包弹命中的玩家下一次击杀会失效，空包弹本身不会击杀任何人。\n【追加胜利条件】游戏结束时起诉人仍然存活。"
 
 ## 附加职业 / Add-ons Descriptions
 LastImpostorInfoLong: "这个效果在内鬼仅剩一人时赋予该内鬼。使其击杀冷却缩短。"
@@ -1117,6 +1123,7 @@ EnableDarkTheme: "深色模式"
 Value.HorseMode: "愚人节牧马模式"
 Value.LongMode: "愚人节长颈豆模式"
 Value.NormalMode: "经典豆子模式"
+Value.ClassicMode: "怀旧豆子模式"
 
 # 头衔管理 / Custom Titles
 NameTagOptions: "头衔管理"
@@ -1328,6 +1335,15 @@ YandereShowRivalArrow: "显示指向情敌的箭头"
 YandereRivalKilled: "你击杀了一名情敌！击杀冷却缩短。"
 YandereLoverDead: "暗恋对象已死亡"
 YandereCannotKillLover: "它可是你的宝宝啊~你怎么能忍心杀它~"
+LawyerCanTargetMadmate: "<color=#ff1919>叛徒</color>可以作为客户"
+LawyerCanTargetJester: "<color=#ec62a5>小丑</color>可以作为客户"
+LawyerKnowTargetRole: "律师可以知道客户的职业"
+LawyerTargetKnowsLawyer: "客户知道自己拥有律师"
+ProsecutorsSkillCooldown: "空包弹冷却时间"
+ProsecutorsSkillLimit: "空包弹数量"
+ProsecutorsButtonText: "空包弹"
+LawyerBecameProsecutors: "您的客户已死亡，您转变为了起诉人"
+LawyerNoTargetBecameProsecutors: "场上没有符合条件的客户，您直接变成了起诉人"
 
 # 信息 / Messages
 Message.SetToSeconds: "信息发送冷却时间为【{0}】秒"

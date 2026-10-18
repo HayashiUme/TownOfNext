@@ -2,21 +2,27 @@
 #当前翻译文件语言的ID / Language ID of current file
 LangID: "5"
 TextBelowVersionText: ""
+
 #职业类型 / Role Type
 TypeImpostor: "Предатели"
 TypeCrewmate: "Члены Экипажа"
 TypeNeutral: "Нейтралы"
 TypeAddon: "Атрибуты"
+
 #阵营 / Teams
 TeamImpostor: "Предатель"
 TeamNeutral: "Нейтрал"
 TeamCrewmate: "Член Экипажа"
+
 #个人竞技模式 / PVP
 KB_Normal: "Боец"
 KB_NormalInfo: "Уничтожь их!"
+
 #职业 / Roles
+
 ## 其它 / Other
 GM: "GM (Призрак)"
+
 ## 原版职业 / Vanilla
 Crewmate: "Член Экипажа"
 Engineer: "Инженер"
@@ -31,6 +37,7 @@ Shapeshifter: "Оборотень"
 Phantom: "Фантом"
 Viper: "Гадюка"
 SpiritGuide: "Инфлюэнсер"
+
 ## 内鬼阵营 / Impostors
 BountyHunter: "Охотник за Головами"
 Mare: "Ночной"
@@ -77,6 +84,7 @@ Penguin: "Пингвин"
 Insider: "Инсайдер"
 Bard: "Бард"
 EvilGrenadier: "Злой гренадер"
+
 ## 船员阵营 / Crewmates
 Luckey: "Удачник"
 LazyGuy: "Ленивый Парень"
@@ -112,6 +120,7 @@ Collator: "Генетик"
 Swapper: "Подменщик голосов"
 Justice: "Верховный жрец"
 SecurityGuard: "Охранник"
+
 ## 中立阵营 / Neutrals
 Jester: "Шут"
 Arsonist: "Поджигатель"
@@ -141,6 +150,9 @@ Sunnyboy: "Солнечный Мальчик"
 Shifter: "Сменщик"
 Doomsayer: "Вестник рока"
 Yandere: "Яндере"
+Lawyer: "Адвокат"
+Prosecutors: "Прокурор"
+
 ## 附加职业 / Add-ons
 LastImpostor: "Последний Предатель"
 Lovers: "Любовники"
@@ -166,6 +178,7 @@ Charmed: "Зачарован"
 Bait: "Байт"
 Beartrap: "Капкан"
 Colorblind: "Дальтоник"
+
 ## 附加职业作为前缀时 / Prefixes for Add-ons
 Prefix.Neptune: "Нептунский "
 Prefix.Watcher: "Наблюдательный "
@@ -187,6 +200,7 @@ Prefix.Reach: "Длиннолап "
 Prefix.Bait: "Байт "
 Prefix.Beartrap: "Капкан "
 Prefix.Colorblind: "Дальтоник "
+
 ## 胜利界面职业名 / Role Name for End Screen
 WinnerRoleText.Impostor: "Предатели"
 WinnerRoleText.Crewmate: "Члены Экипажа"
@@ -216,6 +230,7 @@ WinnerRoleText.Sunnyboy: "Солнечные Мальчики"
 WinnerRoleText.Follower: "Последователи"
 WinnerRoleText.Doomsayer: "Вестник рока"
 WinnerRoleText.Yandere: "Яндере и Возлюбленный"
+
 #以下是职业简介（显示在开局以及任务栏的文本）/ Shows at Impostor/Crewmate Screen
 ## 内鬼阵营 / Impostor Blurbs
 BountyHunterInfo: "Охотьтесь за своей целью"
@@ -265,6 +280,7 @@ PenguinInfo: "Утащить и уничтожить!"
 InsiderInfo: "Знание — сила"
 BardInfo: "Поэма для вас, умрите сейчас!"
 EvilGrenadierInfo: "Ослепите членов экипажа!"
+
 ## 船员阵营 / Crewmate Blurbs
 LuckeyInfo: "Ваш убийца может промазать по вам"
 LazyGuyInfo: "Вы слишком ленивый"
@@ -301,6 +317,7 @@ CollatorInfo: "Собирайте и сопоставляйте образцы"
 SwapperInfo: "Поменяйте местами голоса двух игроков"
 JusticeInfo: "Выберите двух игроков для суда справедливости"
 SecurityGuardInfo: "Вентиляции? Заблокируйте их все!"
+
 ## 中立阵营 / Neutral Blurbs
 ArsonistInfo: "Облейте всех игроков, а потом подожгите"
 JesterInfo: "Заставьте игроков проголосовать за вас"
@@ -330,6 +347,9 @@ SunnyboyInfo: "Свети, свети солнышко моё!"
 ShifterInfo: "Обменяйтесь ролями с другим игроком"
 DoomsayerInfo: "Угадывайте роли других игроков"
 YandereInfo: "Ты навсегда моя любовь~"
+LawyerInfo: "Победа моего клиента — моя победа"
+ProsecutorsInfo: "Холостой патрон — тоже патрон"
+
 ## 附加职业 / Add-ons Blurbs
 LoversInfo: "Выживите со своим Любовником"
 MadmateInfo: "Помогите Предателям"
@@ -354,9 +374,11 @@ ReachInfo: "У вас самая большая дальность убийст�
 BaitInfo: "Убийца моментально саморепнет ваше тело"
 BeartrapInfo: "Замораживаете своего убийцу на несколько секунд"
 ColorblindInfo: "По-разному воспринимает цвет каждого игрока"
+
 ## 其它 / Other Blurbs
 GMInfo: "Вы Мастер Игры, наслаждайтесь хаосом!"
 NotAssignedInfo: "Нет назначенной роли"
+
 #以下是职业描述（使用/m或/r指令后得到的文本）/ Role Descriptions
 ## 内鬼阵营 / Impostors Descriptions
 BountyHunterInfoLong: "Если Охотник за головами убьет назначенную ему цель, время отката убийства будет намного меньше чем обычно.\nПри убийстве игрока который не является его целью, приводит к стандартному времени отката убийства. \nЦели меняются спустя какое-то время\""
@@ -404,6 +426,7 @@ PenguinInfoLong: "(Предатели):\nПингвин может схвати�
 InsiderInfoLong: "(Предатели):\nИнсайдер видит роли, состояния способностей и число заданий всех игроков на карте."
 BardInfoLong: "Бард сочиняет поэмы для изгнанных игроков!\nС каждой завершенной поэмой, Бард сокращает перезарядку своего убийства вдвое."
 EvilGrenadierInfoLong: "(Предатели):\nЗлой гренадер может исчезнуть и бросить световую гранату, полностью ослепляя экипаж."
+
 ## 船员阵营 / Crewmates Descriptions
 LuckeyInfoLong: "(Экипаж):\nКогда Счастливчика пытаются убить, есть шанс избежать смерти (шанс настраивается хостом)."
 LazyGuyInfoLong: "(Экипаж):\nУ Лентяя всего одно задание, и на него не действуют способности предателей (напр. взлом Хакера или метка Кукловода)."
@@ -440,6 +463,7 @@ CollatorInfoLong: "(Экипаж):\nГенетик собирает образц
 SwapperInfoLong: "(Экипаж):\nПодменщик может поменять местами голоса двух игроков на собрании командой /cmd sw [id]."
 JusticeInfoLong: "(Экипаж):\nВерховный жрец выбирает двух игроков для балансирующего собрания командой /cmd bl [id]."
 SecurityGuardInfoLong: "(Источник: The Other Roles)\nОхранник может заблокировать вентиляцию, войдя в неё. После блокировки другие игроки не смогут использовать эту вентиляцию. Максимальное количество блокируемых вентиляций настраивается хостом."
+
 ## 中立阵营 / Neutrals Descriptions
 ArsonistInfoLong: "(Нейтралы):\nПоджигатель обливает игроков бензином, а затем прыгает в люк для поджога и соло-победы."
 JesterInfoLong: "(Нейтралы):\nШут побеждает в одиночку, если его изгонят на голосовании."
@@ -468,6 +492,9 @@ SunnyboyInfoLong: "(Нейтралы):\nСолнечный мальчик вид
 ShifterInfoLong: "(Нейтралы):\nСменщик обменивается ролью с другим игроком после собрания."
 DoomsayerInfoLong: "(Нейтралы):\nВестник рока угадывает роли игроков на собраниях и побеждает при определенном числе верных догадок."
 YandereInfoLong: "(Источник: Extreme Roles)\nУ Яндере есть случайно выбранный объект обожания. Игроки, находящиеся рядом с ним некоторое время, помечаются как Соперники. Яндере может убивать игроков: убийство Соперника уменьшает перезарядку убийства, а убийство обычного игрока увеличивает. После смерти объекта обожания перезарядка убийства становится фиксированной.\n[Условие одиночной победы] Все игроки, кроме Яндере и её объекта обожания, мертвы."
+LawyerInfoLong: "В начале игры Адвокату назначается клиент, не являющийся членом экипажа (Любовники не могут быть клиентами), помеченный символом «§» рядом с именем. Если Адвокат жив и команда клиента побеждает, Адвокат занимает место клиента и побеждает вместе с ним; если Адвокат мёртв, он всё равно побеждает с командой клиента; если клиент умирает, Адвокат становится Прокурором; если подходящих клиентов нет, Адвокат сразу становится Прокурором.\nВнимание: в зависимости от настроек хоста Безумцы и Шуты могут быть клиентами; Адвокат может знать роль клиента; клиент также может знать, что у него есть Адвокат."
+ProsecutorsInfoLong: "Прокурор — это то, чем становится Адвокат после смерти своего клиента. Он может использовать кнопку убийства, чтобы выстрелить холостым патроном в игрока, из-за чего следующее убийство этого игрока не сработает. Сам холостой патрон никого не убивает.\n[Дополнительное условие победы] Прокурор ещё жив в конце игры."
+
 ## 附加职业 / Add-ons Descriptions
 LastImpostorInfoLong: "Атрибут, присваивается последнему Предателю. \nВремя отката убийства становится меньше, чем обычно. \nНе назначается Охотнику за головами, Серийному убийце или Вампиру."
 LoversInfoLong: "(Влюбленные):\nВлюбленные видят значок «♡» рядом с именами друг друга. Если один побеждает — побеждают оба. Если один погибает, второй умирает от горя (согласно настройкам хоста)."
@@ -492,8 +519,10 @@ ReachInfoLong: "Длиннолап имеет самую большую даль
 BaitInfoLong: "Когда Байта убивают, он заставляет убившего игрока \nмоментально зарепортить ваш труп."
 BeartrapInfoLong: "После того как Охотника убьют, то его убийца будет обездвижен на несколько секунд. (время зависит от настроек)"
 ColorblindInfoLong: "У человека с цветовой слепотой цвет каждого игрока воспринимается как цвет, отличный от его реального цвета."
+
 ## 其它 / Other Descriptions
 GMInfoLong: "GM (Мастер Игры) — это роль, которая наблюдает за игрой в роле призрака. \nОн не влияет на игру, и все игроки всегда знают кто Мастер Игры. Всегда назначается только хосту лобби и становится призраком в самом начале игры."
+
 #选项菜单标题 / Option Menu Titles
 MenuTitle.Disable: "★ Отключение ★"
 MenuTitle.Sabotage: "★ Саботаж ★"
@@ -518,6 +547,7 @@ MenuDescriptionText.ImpostorRoles: "Настройка ролей предате
 MenuDescriptionText.NeutralRoles: "Настройка ролей нейтралов."
 MenuDescriptionText.OtherRoles: "Настройка экспериментальных ролей."
 MenuDescriptionText.SystemSettings: "Настройка системных параметров."
+
 #游戏&系统选项 / System&Game Settings
 DisableMeeting: "Отключить собрания"
 DisableCloseDoor: "Отключить саботаж дверей"
@@ -692,6 +722,7 @@ PolusReactorTimeLimit: "Polus время саботажа Реактора"
 AirshipReactorTimeLimit: "Airship время саботажа Реактора"
 FungleReactorTimeLimit: "Лимит времени реактора The Fungle"
 FungleMushroomMixupDuration: "Длительность перемешивания грибов"
+
 #职业详细设定 / Role Settings
 AssignMode: "Режим распределения ролей"
 AssignAlgorithm.Fixed: "Фиксированный"
@@ -1024,6 +1055,7 @@ JusticeCanUseTimes: "Максимум балансирующих собрани�
 JusticeMeetingVotingTime: "Время голосования на суде"
 SecurityGuardVentLockMaxCount: "Макс. количество заблокированных вентиляций"
 SecurityGuardVentLockCooldown: "Перезарядка блокировки вентиляции"
+
 #随机出生点 / Random Spawn Locations
 Junction: "Перекресток"
 OfficeLeft: "Офис (левый)"
@@ -1035,6 +1067,7 @@ Bonfire: "Костер"
 JungleTop: "Джунгли (верх)"
 JungleBottom: "Джунгли (низ)"
 Precipice: "Обрыв"
+
 #死因 / Death Reasons
 DeathReason.Kill: "Убит"
 DeathReason.Vote: "Изгнан"
@@ -1066,6 +1099,7 @@ DeathReason.etc: "Другое"
 Alive: "Выжил"
 Win: " Победили"
 Last-: "Последний "
+
 #客户端选项 / Client Options
 TONXOptions: "Настройки TONX"
 Back: "Назад"
@@ -1092,6 +1126,13 @@ SwitchOutfitType: "Тип скинов игроков"
 EnableCustomButton: "Кастомные текстуры кнопок"
 EnableCustomSoundEffect: "Кастомные звуковые эффекты"
 EnableDarkTheme: "Темная тема"
+
+# 外表形象 / Outfit
+Value.HorseMode: "Режим лошади (1 апреля)"
+Value.LongMode: "Режим длинношеих (1 апреля)"
+Value.NormalMode: "Классический режим"
+Value.ClassicMode: "Режим Legacy Bean"
+
 #头衔管理 / Custom Titles
 NameTagOptions: "Кастомные титулы"
 NewNameTag: "Новый"
@@ -1112,6 +1153,7 @@ PleaseEnterFriendCode: "Введите код дружбы для привязк
 FriendCodeAlreadyExist: "У этого кода дружбы уже есть титул"
 FriendCodeIncorrect: "Пожалуйста, введите корректный код дружбы"
 CustomNameTagHelp: "Хост может назначить титул любому игроку, который действует в его комнате."
+
 #指令帮助 / Commands Help
 CommandList: "★ Список команд:"
 Command.now: "→ Показать активные настройки"
@@ -1132,6 +1174,7 @@ Command.idlist: "→ Отобразить список идентификато�
 Command.qq: "→ Лобби будет размещено на сайт QQ (Только для Китая)"
 Command.dump: "→ Вывод журнала на Рабочий Стол"
 Command.up: "[Роль] — Назначить роль (Режим режиссера)"
+
 #给玩家的技能提示信息 / Skill Notifications
 SkillUsedLeft: "Вы активировали навык для проведения собрания. \nОставшееся количество использование вашего навыка:"
 MafiaDeadMsg: "Смерть Мафии означает начало мести \nПожалуйста, используйте /rv + [номер игрока], чтобы убить указанного игрока \nВы можете увидеть номер игрока перед его именем \nИли введите команду /rv, чтобы получить список номеров игроков"
@@ -1299,6 +1342,16 @@ YandereShowRivalArrow: "Показывать стрелку на Соперни�
 YandereRivalKilled: "Вы убили Соперника! Перезарядка убийства снижена."
 YandereLoverDead: "Объект обожания мертв"
 YandereCannotKillLover: "Это же твоя любовь~ Как у тебя рука поднимется~"
+LawyerCanTargetMadmate: "<color=#ff1919>Безумцы</color> могут быть клиентами"
+LawyerCanTargetJester: "<color=#ec62a5>Шуты</color> могут быть клиентами"
+LawyerKnowTargetRole: "Адвокат может знать роль своего клиента"
+LawyerTargetKnowsLawyer: "Клиент знает, что у него есть Адвокат"
+ProsecutorsSkillCooldown: "Перезарядка холостого патрона"
+ProsecutorsSkillLimit: "Количество холостых патронов"
+ProsecutorsButtonText: "Холостой"
+LawyerBecameProsecutors: "Ваш клиент погиб. Вы стали Прокурором."
+LawyerNoTargetBecameProsecutors: "Подходящих клиентов нет. Вы сразу стали Прокурором."
+
 #信息 / Messages
 Message.SetToSeconds: "Установлено на [{0}] секунд."
 Message.MessageWaitHelp: "Укажите аргумент в секундах."
@@ -1345,6 +1398,7 @@ Message.DirectorModeCanNotFindRoleThePlayerEnter: "Пожалуйста, пра�
 Message.DirectorModeNotice: "Внимание: в этой комнате включен [режим Ютуб Ролика], владелец может поставить отдельные роли игрокам.\n Эта функция может использоваться только для создания видео роликов, если создатель комнаты нарушает это правило, выйдите или сообщите о нём.\n Текущие настройки:"
 Message.CurrentEvilCount: "Предатели: {0} Нейтралы: {1}, Безумцы: {2}"
 Message.EvilCountDisabledInFirstMeeting: "Эта команда отключена на первом собрании"
+
 #通知 / Notifications
 PlayerLeft: "[{0}] покинул игру"
 PlayerKickByHost: "[{0}] исключен хостом"
@@ -1363,6 +1417,7 @@ AntiBlackOutRequestHostToForceEnd: "Вы были причиной черног�
 AntiBlackOutHostRejectForceEnd: "Вы были причиной черного экрана, хост отказывается завершать игру, и скоро мы вас отключим."
 KBDisplayScore: "Место: {1} Счёт: {1}"
 KBTimeRemain: "Осталось времени: {0} секунд"
+
 #警告 / Warnings
 Warning.OverrideExiledPlayer: "Внимание: из-за активации независимых ролей (Шакал, Пеликан, Суккуб) для предотвращения черного экрана анимация изгнания пропускается."
 Warning.InvalidRpc: "{0} был кикнут так как получен недопустимый RPC. \nУбедитесь что в системе нет других модов кроме TONX."
@@ -1370,16 +1425,19 @@ Warning.NoModHost: "У Хоста Лобби не установлен TONX"
 Warning.MismatchedVersion: "{0} Версия \nне соответствует версии Хоста лобби {1}"
 Warning.AutoExitAtMismatchedVersion: "Версия {0} не соответствует Хосту лобби. \nВы будете исключены через {1} секунды"
 Warning.CantKickDev: "Извините, вы не можете кикнуть разработчика"
+
 #错误 / Error
 Error.MeetingException: "Ошибка: {0}\nПожалуйста используйте SHIFT+M+ENTER чтобы принудительно завершить собрание"
 Error.InvalidRoleAssignment: "Ошибка: Во время назначения роли для игрока обнаружена недопустимая роль({0})"
 Error.InvalidColor: "Ошибка: Нельзя использовать другие цвета, кроме цветов по умолчанию"
 Error.InvalidColorPreventStart: "Другим игрокам не разрешается использовать другие цвета, в противном случае это приведет к серьезной ошибке"
+
 ## ErrorText関連, / Error Levels
 ErrorLevel1: "Могут возникнуть некоторые ошибки."
 ErrorLevel2: "Возможно вы столкнулись с ошибкой."
 ErrorLevel3: "Эта версия никогда не должна быть выпущена."
 TerminateCommand: "Команда устарела"
+
 ### 000 Test,
 ERR-000-000-0: "Ошибок не обнаружено"
 ERR-000-900-0: "Ошибка теста - Lv0"
@@ -1387,10 +1445,13 @@ ERR-000-910-1: "Ошибка теста - Lv1"
 ERR-000-920-2: "Ошибка теста - Lv2"
 ERR-000-930-3: "Ошибка теста - Lv3"
 ERR-000-804-1: "Мод не поддерживает обычные Прятки. Мод был отключён"
+
 ### 001 Main,
 ERR-001-000-3: "Дублирование ключей происходит в основном словаре."
+
 ### 002 Support
 ERR-002-000-1: "Ваша версия Among Us несовместима с TONX, обновите игру"
+
 #消息标题 / Messages Titles
 DefaultSystemMessageTitle: "【 ★ Системное сообщение ★ 】"
 MessageFromTheHost: "【 ★ Сообщение от Хоста ★ 】"
@@ -1412,6 +1473,7 @@ OnPlayerJoinMsgTitle: "★ Добро пожаловать, {0}! ★"
 SwapVoteTitle: "★ Подменщик голосов ★"
 JusticeBalanceTitle: "★ Суд справедливости ★"
 MeetingDeathGlobal: "★ Сообщение о смерти ★"
+
 #单位 / Units
 Format.Players: "{0}"
 Format.Seconds: "{0} с"
@@ -1422,6 +1484,7 @@ Format.Votes: "{0}"
 Format.Pieces: "{0}"
 Format.Health: "{0}"
 Format.Level: "{0}"
+
 #按钮文本 / Buttons Texts
 KillButtonText: "УБИТЬ"
 SniperSnipeButtonText: "ЗАСТРЕЛИТЬ"
@@ -1480,6 +1543,7 @@ PenguinKillButtonText: "Тащить"
 ShifterButtonText: "Обмен"
 CollatorButtonText: "Образец"
 DoomsayerKillButtonText: "Подсказка"
+
 #作弊 / EAC
 EAC.CheatDetected.HighLevel: "Предупреждение: EAC обнаружил высокий уровень читов."
 EAC.CheatDetected.LowLevel: "Предупреждение: EAC обнаружил низкий уровень читов. Один из игроков читерит."
@@ -1495,6 +1559,7 @@ ExiledWrongPerson: "Изгнание {0} вызывает у вас нехоро
 ExiledJester: "<color=#ec62a5>Шут</color> громко смеется: он обманом заставил вас изгнать его!"
 ExiledExeTarget: "Но он также был целью <color=#611c3a>Палача</color>!"
 ExiledInnocentTarget: "Оглядываясь назад, <color=#8f815e>Невинный</color> пересчитывает деньги в руках"
+
 #游戏结束原因 / Game Over Reasons
 GameOverReason.CrewmatesByTask: "Члены Экипажа выполнили задания"
 GameOverReason.CrewmatesByVote: "Предатели были изгнаны"
@@ -1503,6 +1568,7 @@ GameOverReason.ImpostorsByKill: "Предатели убили всех"
 GameOverReason.ImpostorsBySabotage: "Предатели саботировали обьект"
 GameOverReason.ImpostorsByVote: "Члены Экипажа были изгнаны"
 GameOverReason.ImpostorDisconnect: "Предатели вышли из игры"
+
 #占卜师信息 / Fortune Teller Checks
 FortuneTellerCheck.HideMsg: "Похоже, 【{0}】 скрывает секреты."
 FortuneTellerCheck.Honest: "Похоже, 【{0}】 просто честный гражданин."
@@ -1517,6 +1583,7 @@ FortuneTellerCheck.None: "Похоже, 【{0}】 имеет спокойную 
 FortuneTellerCheck.Glitch: "TV2gPZ4wUJWYr{0}05gA6T5PKzBG17"
 FortuneTellerCheck.Love: "♡ + ♡ = ♡♡"
 FortuneTellerCheck.TaskDone: "【{0}】Роль -【{1}】"
+
 #模组信息 / Mod Infos
 Creater: "Создатель"
 Collaborators: "Разработчики"
@@ -1531,6 +1598,7 @@ TownOfHost_Y: "<color=#ffff00>TOH-Y</color> и все его разработч�
 SuperNewRoles: "<color=#ff7f00>Super</color><color=#ff0000>New</color><color=#00ff00>Roles</color> и все его разработчики"
 Project-Lotus: "<color=#db985c>Project Lotus</color> и все его разработчики"
 LangTChinese: "Традиционный китайский"
+
 #断连提示 / Disconect Reasons
 DCNotify.Hacking: "Вы были исключены античитом.\n (использование сторонних модулей может быть принято за читы)"
 DCNotify.Banned: "Вам запрещено входить в эту комнату"
@@ -1553,6 +1621,7 @@ DCNotify.VoluntarilyQuit: "Вы решили выйти из комнаты.\nВ
 DCNotify.LowLevel: "Ваш уровень не соответствует требованиям комнаты"
 DCNotify.NotLogin: "Игроки без входа в аккаунт не допускаются в эту комнату"
 DCNotify.Andriod: "Игроки с Android не допускаются в эту комнату"
+
 #其它 / Other Things
 BaseOn: "На основе: "
 TabGroup.SystemSettings: "Системные настройки"
@@ -1715,6 +1784,7 @@ Deadbody: "МЕРТВ"
 PenguinTimerText: "Таймер перетаскивания"
 Infected: "Заражен"
 CurrentVersionType: "Текущая версия: "
+
 # 成就 / Achievement
 Achievement.ChatTitle: "【 ★ Сообщение о достижении ★ 】"
 Achievement.SetWarning: "Эту команду можно использовать только в лобби"
@@ -1766,13 +1836,12 @@ RoleDraft.Choices: "Выберите одну из следующих ролей
 RoleDraft.TimeNotice: "Осталось около <b>{0} с</b>. Поторопитесь!"
 RoleDraft.OtherSuccessfullyChosen: "<b>Игрок {0}</b> выбрал: {1}"
 RoleDraft.Random: "Случайно"
+
 # 轮抽选角设置 / Role Draft Settings
 RD_OptionNum: "Количество вариантов"
 RD_DraftTimeLimit: "Время на выбор"
 RD_ShowSelectedRoles: "Показывать выбор игроков"
-Value.HorseMode: "Режим лошади (1 апреля)"
-Value.LongMode: "Режим длинношеих (1 апреля)"
-Value.NormalMode: "Классический режим"
+
 # 模式介绍 / Mode descriptions
 ModeDescribe.SoloKombat: "Текущий режим — [Одиночный бой] Без распределения ролей. У всех есть ОЗ, и можно атаковать кнопкой убийства. Побеждает игрок с наибольшим числом убийств."
 

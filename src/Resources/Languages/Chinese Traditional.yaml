@@ -153,6 +153,8 @@ Sunnyboy: "陽光開朗大男孩"
 Shifter: "连环交换师"
 Doomsayer: "末日预言家"
 Yandere: "病嬌"
+Lawyer: "律師"
+Prosecutors: "起訴人"
 
 ## 附加职业 / Add-ons
 LastImpostor: "絕境者"
@@ -349,6 +351,8 @@ SunnyboyInfo: "這個角色的建立到底有甚麼用"
 ShifterInfo: "职业没喽，职业回来喽"
 DoomsayerInfo: "猜测其他玩家的职业"
 YandereInfo: "你永遠是我的寶貝~"
+LawyerInfo: "客戶即勝利"
+ProsecutorsInfo: "空包彈，也是彈"
 
 ## 附加职业 / Add-ons Blurbs
 LoversInfo: "您墜入了愛河"
@@ -493,6 +497,8 @@ SunnyboyInfoLong: "陽光開朗大男孩可以通過心電圖來查看他人的�
 ShifterInfoLong: "交换师可以通过对玩家点击击杀按钮进行职业交换，交换技能在下一轮会议结束后生效。请注意：交换师无法获胜。"
 DoomsayerInfoLong: "末日预言家可以通过对玩家点击击杀按钮获取提示，末日预言家需要正确猜测指定个数玩家的职业才能获胜。根据房主设置，猜测错误可能会自杀。\n猜测指令为：/cmd bt [玩家编号] [职业名]\n您可以在玩家名字前看到该玩家的编号，或者使用/cmd id指令查看所有玩家的编号。"
 YandereInfoLong: "(來源：Extreme Roles)\n病嬌擁有一個隨機分配的暗戀對象。靠近暗戀對象的玩家一定時間後會被標記為情敵。病嬌可以擊殺其他玩家，擊殺情敵會減少擊殺冷卻時間，反之會增加冷卻時間。暗戀對象死亡後，病嬌的擊殺冷卻變為房主設定的固定值。\n【獨自勝利條件】除自己和暗戀對象外的所有玩家均死亡。"
+LawyerInfoLong: "遊戲開始時律師會被分配到一個非船員的客戶（戀人不可作為客戶），並在其暱稱旁用分配符號「§」表示。若律師存活且客戶的陣營勝利，則律師替代客戶跟隨其勝利；若律師死亡，則會跟隨客戶的陣營勝利；若客戶死亡，則律師會轉變為起訴人；若場上沒有符合條件的客戶，律師也會直接轉變為起訴人。\n請注意：根據房主設定，叛徒與小丑可以作為客戶；律師可以知道客戶的職業；客戶也可以知道自己擁有律師。"
+ProsecutorsInfoLong: "起訴人由律師的客戶死亡後轉變而來，可以使用擊殺鍵向一名玩家發射空包彈，被空包彈命中的玩家下一次擊殺會失效，空包彈本身不會擊殺任何人。\n【追加勝利條件】遊戲結束時起訴人仍然存活。"
 
 ## 附加职业 / Add-ons Descriptions
 LastImpostorInfoLong: "這個效果只在偽裝者陣營只剩下一人時賦予該玩家，被賦予效果的玩家殺人冷卻將會縮短。"
@@ -1114,9 +1120,11 @@ EnableCustomButton: "使用模組按鈕樣式"
 EnableCustomSoundEffect: "開啟模組技能音效"
 EnableDarkTheme: "深色主題"
 
+# 外表形象 / Outfit
 Value.HorseMode: "愚人節牧馬模式"
 Value.LongMode: "愚人節長頸豆模式"
-Value.NormalMode: "经典豆子模式"
+Value.NormalMode: "經典豆子模式"
+Value.ClassicMode: "懷舊豆子模式"
 
 # 头衔管理 / Custom Titles
 NameTagOptions: "頭銜管理"
@@ -1328,6 +1336,15 @@ YandereShowRivalArrow: "顯示指向情敵的箭頭"
 YandereRivalKilled: "你擊殺了一名情敵！擊殺冷卻縮短。"
 YandereLoverDead: "暗戀對象已死亡"
 YandereCannotKillLover: "它可是你的寶貝啊~你怎麼能忍心殺它~"
+LawyerCanTargetMadmate: "<color=#ff1919>叛徒</color>可以作為客戶"
+LawyerCanTargetJester: "<color=#ec62a5>小丑</color>可以作為客戶"
+LawyerKnowTargetRole: "律師可以知道客戶的職業"
+LawyerTargetKnowsLawyer: "客戶知道自己擁有律師"
+ProsecutorsSkillCooldown: "空包彈冷卻時間"
+ProsecutorsSkillLimit: "空包彈數量"
+ProsecutorsButtonText: "空包彈"
+LawyerBecameProsecutors: "您的客戶已死亡，您轉變為了起訴人"
+LawyerNoTargetBecameProsecutors: "場上沒有符合條件的客戶，您直接變成了起訴人"
 
 # 信息 / Messages
 Message.SetToSeconds: "訊息傳送冷卻時間設為【{0}】秒"
