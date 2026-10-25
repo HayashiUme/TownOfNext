@@ -2,6 +2,7 @@
 using Hazel;
 
 using TONX.Modules;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Impostor;
@@ -36,6 +37,17 @@ public sealed class Assassin : RoleBase, IImpostor
     }
 
     public byte MarkedPlayer = new();
+    private PlayerControl assassinationTarget;
+    private readonly HashSet<(byte, string)> assassinationVictims = new();
+    public int SuccessfulAssassinations => assassinationVictims.Count;
+
+    public void OnMurderPlayerAsKiller(MurderInfo info)
+    {
+        if (info.AttemptTarget == assassinationTarget && !info.IsSuicide && info.AttemptTarget.Data.IsDead
+            && !info.AttemptTarget.Data.Disconnected
+            && assassinationVictims.Add((info.AttemptTarget.PlayerId, info.AttemptTarget.FriendCode)))
+            AssassinationCompleted.Trigger(Player);
+    }
     private static void SetupOptionItem()
     {
         MarkCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.AssassinMarkCooldown, new(2.5f, 180f, 2.5f), 20f, false)
@@ -101,7 +113,12 @@ public sealed class Assassin : RoleBase, IImpostor
                 if (!(target == null || !target.IsAlive() || target.IsEaten() || target.inVent || !GameStates.IsInTask))
                 {
                     Utils.TP(Player.NetTransform, target.GetTruePosition());
-                    CustomRoleManager.OnCheckMurder(Player, target);
+                    assassinationTarget = target;
+                    try
+                    {
+                        CustomRoleManager.OnCheckMurder(Player, target);
+                    }
+                    finally { assassinationTarget = null; }
                 }
             }, 1.5f, "Assassin Assassinate");
         }

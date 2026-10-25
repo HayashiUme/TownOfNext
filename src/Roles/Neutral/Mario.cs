@@ -2,6 +2,7 @@
 using Hazel;
 
 using TONX.Modules;
+using TONX.Modules.Achievements.Neutral;
 
 namespace TONX.Roles.Neutral;
 public sealed class Mario : RoleBase
@@ -34,6 +35,8 @@ public sealed class Mario : RoleBase
     }
 
     private int VentedTimes;
+    public int SuccessfulVents => VentedTimes;
+    public bool VentWinTriggered { get; private set; }
     private static void SetupOptionItem()
     {
         OptionVentNums = IntegerOptionItem.Create(RoleInfo, 10, OptionName.MarioVentNumWin, new(1, 999, 1), 55, false);
@@ -80,6 +83,10 @@ public sealed class Mario : RoleBase
             CustomWinnerHolder.WinnerIds.Add(Player.PlayerId);
         }
 
+        if (VentedTimes >= (Main.IsAprilFools ? 236 : OptionVentNums.GetInt()))
+            VentWinTriggered = true;
+        if (VentedTimes >= ((Main.IsAprilFools ? 236 : OptionVentNums.GetInt()) + 1) / 2)
+            MarioHalfway.Trigger(Player);
         return true;
     }
 }

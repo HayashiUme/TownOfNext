@@ -33,6 +33,8 @@ public sealed class Terrorist : RoleBase
         CanTerroristSuicideWin
     }
     private static bool canSuicideWin;
+    public bool TaskDeathWinTriggered { get; private set; }
+    public bool ExileWinTriggered { get; private set; }
 
     private static void SetupOptionItem()
     {
@@ -66,6 +68,7 @@ public sealed class Terrorist : RoleBase
         {
             Win();
             DecidedWinner = true;
+            ExileWinTriggered = true;
         }
     }
     public bool CanWin()
@@ -88,5 +91,6 @@ public sealed class Terrorist : RoleBase
         }
         CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Terrorist);
         CustomWinnerHolder.WinnerIds.Add(Player.PlayerId);
+        TaskDeathWinTriggered = true;
     }
 }

@@ -380,8 +380,7 @@ public static class AchievementPanel
         if (string.IsNullOrEmpty(SearchText)) return true;
         if (!unlocked && achievement.Hidden)
             return GetString("Achievement.HiddenName").Contains(SearchText, StringComparison.OrdinalIgnoreCase);
-        return GetString(achievement.Name).Contains(SearchText, StringComparison.OrdinalIgnoreCase)
-            || achievement.TitleDisplay.Contains(SearchText, StringComparison.OrdinalIgnoreCase);
+        return GetString(achievement.Name).Contains(SearchText, StringComparison.OrdinalIgnoreCase);
     }
 
     private static string GetFilterText(ListFilter filter) => filter switch
@@ -414,7 +413,7 @@ public static class AchievementPanel
 
         var body = equipped
             ? GetString("Achievement.UnequipConfirm")
-            : string.Format(GetString("Achievement.EquipConfirm"), $"<color={achievement.TitleColorHex}>{achievement.TitleDisplay}</color>");
+            : string.Format(GetString("Achievement.EquipConfirm"), $"<color={achievement.TitleColorHex}>{GetString(achievement.Name)}</color>");
 
         AchievementConfirmWindow.Open(body, () => Wear(achievement, !equipped));
     }

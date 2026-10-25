@@ -81,7 +81,7 @@ public sealed class QuickShooter : RoleBase, IImpostor
         if (Player.killTimer < 1 && shapeshifting)
         {
             ShotLimit++;
-            RoleAchievementState.Record<BulletStored>(Player);
+            BulletStored.Trigger(Player);
             SendRPC();
             Storaging = true;
             Player.ResetKillCooldown();

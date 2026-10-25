@@ -8,7 +8,6 @@ public abstract class AchievementBase : IAchievement
     public abstract int Id { get; }
     public virtual string Name => $"Achievement.{Id}.Name";
     public virtual string Description => $"Achievement.{Id}.Description";
-    public abstract string TitleDisplay { get; }
     public abstract Color TitleColor { get; }
 
     public virtual AchievementRarity Rarity => AchievementRarity.Common;
@@ -26,6 +25,9 @@ public abstract class AchievementBase : IAchievement
 
     public static void TriggerFor<T>(PlayerControl player = null) where T : AchievementBase
     {
+        if (AmongUsClient.Instance?.AmHost != true || !GameStates.IsInGame || GameStates.IsFreePlay)
+            return;
+
         var achievement = AchievementRegistry.GetByType(typeof(T));
         if (achievement == null)
         {

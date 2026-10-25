@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using System.Text;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -186,6 +187,7 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
         if (!CanTarget() || target.Is(CustomRoleTypes.Impostor)) return false;
 
         SetTarget(target.PlayerId);
+        TrackerTargetLocked.Trigger(Player);
         Logger.Info($"{Player.GetNameWithRole()}のターゲットを{target.GetNameWithRole()}に設定", "EvilTrackerTarget");
         Player.MarkDirtySettings();
         Utils.NotifyRoles();

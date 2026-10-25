@@ -1,7 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using TONX.Modules;
-using TONX.Modules.Achievements.Core;
 using TONX.Modules.Achievements.Crewmate;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
@@ -30,6 +29,7 @@ public sealed class Medic : RoleBase, IKiller
     )
     {
         ProtectList = new();
+        ShieldSources.Clear();
 
         CustomRoleManager.MarkOthers.Add(GetMarkOthers);
         CustomRoleManager.OnCheckMurderPlayerOthers_Before.Add(OnCheckMurderPlayerOthers_Before);
@@ -49,6 +49,9 @@ public sealed class Medic : RoleBase, IKiller
 
     private int ProtectLimit;
     private static List<byte> ProtectList;
+    private static readonly Dictionary<byte, (string TargetCode, Medic Owner, string OwnerCode)> ShieldSources = new();
+    private readonly HashSet<MurderInfo> blockedAttacks = new();
+    public int ShieldsConsumed => blockedAttacks.Count;
     public bool IsKiller { get; private set; } = false;
     private static void SetupOptionItem()
     {
@@ -111,12 +114,13 @@ public sealed class Medic : RoleBase, IKiller
     {
         if (info.IsSuicide) return true;
         var (killer, target) = info.AttemptTuple;
-        if (ProtectList.Contains(target.PlayerId)) return false;
+        if (ProtectLimit <= 0 || ProtectList.Contains(target.PlayerId)) return false;
 
         ProtectLimit--;
         SendRPC_SyncLimit();
         ProtectList.Add(target.PlayerId);
-        RoleAchievementState.Record<ShieldGranted>(Player);
+        ShieldSources[target.PlayerId] = (target.FriendCode, this, Player.FriendCode);
+        ShieldGranted.Trigger(Player);
         SendRPC_SyncList();
 
         killer.SetKillCooldownV2(target: target);
@@ -137,6 +141,12 @@ public sealed class Medic : RoleBase, IKiller
         if (!ProtectList.Contains(target.PlayerId)) return true;
 
         ProtectList.Remove(target.PlayerId);
+        if (ShieldSources.Remove(target.PlayerId, out var source)
+            && info.CanKill && info.DoKill
+            && source.TargetCode == target.FriendCode && source.Owner.Player?.Data != null
+            && source.Owner.Player.FriendCode == source.OwnerCode && !source.Owner.Player.Data.Disconnected
+            && source.Owner.Player.GetRoleClass() == source.Owner)
+            source.Owner.blockedAttacks.Add(info);
         SendRPC_SyncList();
 
         killer.SetKillCooldownV2(target: target, forceAnime: true);

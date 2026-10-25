@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using TONX.Attributes;
+using TONX.Modules.Achievements.Neutral;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -37,9 +38,17 @@ public sealed class Prosecutors : RoleBase, IKiller, IAdditionalWinner
 
     private int ProsecutorsLimit;
     public static HashSet<byte> BlankList = new(15);
+    private static readonly Dictionary<byte, (string TargetCode, Prosecutors Owner, string OwnerCode)> BlankSources = new();
+    private readonly HashSet<(byte, string)> interceptedKillers = new();
+    public int InterceptedKillers => interceptedKillers.Count;
+    public bool SurvivalWinGranted { get; private set; }
 
     [GameModuleInitializer]
-    public static void Init() => BlankList.Clear();
+    public static void Init()
+    {
+        BlankList.Clear();
+        BlankSources.Clear();
+    }
 
     public override void Add()
     {
@@ -69,7 +78,8 @@ public sealed class Prosecutors : RoleBase, IKiller, IAdditionalWinner
         {
             ProsecutorsLimit -= 1;
             SendRPC_SyncLimit();
-            BlankList.Add(target.PlayerId);
+            if (BlankList.Add(target.PlayerId))
+                BlankSources[target.PlayerId] = (target.FriendCode, this, Player.FriendCode);
 
             Utils.NotifyRoles(SpecifySeer: killer);
             Logger.Info($"{killer.GetNameWithRole()} 向 {target.GetNameWithRole()} 发射了空包弹，剩余 {ProsecutorsLimit} 发", "Prosecutors");
@@ -87,15 +97,25 @@ public sealed class Prosecutors : RoleBase, IKiller, IAdditionalWinner
         if (!BlankList.Contains(killer.PlayerId)) return true;
 
         BlankList.Remove(killer.PlayerId);
+        if (BlankSources.Remove(killer.PlayerId, out var source)
+            && info.CanKill && info.DoKill
+            && source.TargetCode == killer.FriendCode && source.Owner.Player?.Data != null
+            && source.Owner.Player.FriendCode == source.OwnerCode && !source.Owner.Player.Data.Disconnected
+            && source.Owner.Player.GetRoleClass() == source.Owner)
+        {
+            source.Owner.interceptedKillers.Add((killer.PlayerId, killer.FriendCode));
+            BlankIntercepted.Trigger(source.Owner.Player);
+        }
         killer.RpcProtectedMurderPlayer(target);
         killer.SetKillCooldownV2();
         Logger.Info($"{killer.GetNameWithRole()} 的空包弹生效，本次击杀失效", "Prosecutors");
         return false;
     }
-    public override void OnStartMeeting() => BlankList.Clear();
+    public override void OnStartMeeting() => Init();
     public bool CheckWin(ref CustomRoles winnerRole)
     {
-        return Player.IsAlive();
+        SurvivalWinGranted = Player.IsAlive();
+        return SurvivalWinGranted;
     }
     public override string GetProgressText(bool comms = false) => Utils.ColorString(CanUseKillButton() ? RoleInfo.RoleColor : Color.gray, $"({ProsecutorsLimit})");
     public bool OverrideKillButtonText(out string text)

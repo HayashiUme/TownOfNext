@@ -36,6 +36,10 @@ public sealed class Lawyer : RoleBase, IAdditionalWinner
     }
 
     public byte TargetId = byte.MaxValue;
+    public string AssignedClientCode { get; private set; }
+    public bool ClientWinGranted { get; private set; }
+    public bool ClientWinRemoved { get; private set; }
+    public string WinningClientCode { get; private set; }
 
     private static OptionItem OptionCanTargetMadmate;
     private static OptionItem OptionCanTargetJester;
@@ -104,6 +108,7 @@ public sealed class Lawyer : RoleBase, IAdditionalWinner
         }
         var selectedTarget = targetList[rand.Next(targetList.Count)];
         TargetId = selectedTarget.PlayerId;
+        AssignedClientCode = selectedTarget.FriendCode;
 
         NameColorManager.Add(Player.PlayerId, selectedTarget.PlayerId, RoleInfo.RoleColorCode);
         SendRPC();
@@ -155,11 +160,19 @@ public sealed class Lawyer : RoleBase, IAdditionalWinner
     }
     public bool CheckWin(ref CustomRoles winnerRole)
     {
+        ClientWinGranted = false;
+        ClientWinRemoved = false;
+        WinningClientCode = null;
         if (TargetId == byte.MaxValue) return false;
         if (!CustomWinnerHolder.WinnerIds.Contains(TargetId)) return false;
 
+        var client = Utils.GetPlayerById(TargetId);
+        ClientWinGranted = client?.Data != null && !client.Data.Disconnected
+            && !string.IsNullOrEmpty(AssignedClientCode) && client.FriendCode == AssignedClientCode;
+        WinningClientCode = client?.FriendCode;
         if (Player.IsAlive())
-            CustomWinnerHolder.WinnerIds.Remove(TargetId);
+            ClientWinRemoved = CustomWinnerHolder.WinnerIds.Remove(TargetId)
+                && client != null && !CustomWinnerHolder.WinnerRoles.Contains(client.GetCustomRole());
         return true;
     }
     public void ChangeRole(bool noValidTarget = false)

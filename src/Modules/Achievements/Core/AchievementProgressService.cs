@@ -8,11 +8,13 @@ public static class AchievementProgressService
 
     public static void RecordUnit(string friendCode, int achievementId)
     {
-        if (AmongUsClient.Instance == null || !AmongUsClient.Instance.AmHost || !GameStates.IsInGame) return;
+        if (AmongUsClient.Instance?.AmHost != true || !GameStates.IsInGame || GameStates.IsFreePlay
+            || string.IsNullOrWhiteSpace(friendCode)) return;
 
         var definition = AchievementRegistry.GetById(achievementId);
+        if (definition == null || definition is ProposalAchievement) return;
         var data = CustomAchievementDataManager.GetOrCreate(friendCode);
-        if (definition == null || data == null || !data.RecordUnit(definition)) return;
+        if (data == null || !data.RecordUnit(definition)) return;
 
         Logger.Info($"Recorded achievement unit locally: {friendCode} [{achievementId}]", "Achievement");
     }

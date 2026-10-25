@@ -11,23 +11,20 @@ public static class AchievementSettlement
 {
     public static Task<bool> SettleAsync()
     {
-        if (AmongUsClient.Instance?.AmHost != true || !GameStates.IsInGame)
+        if (AmongUsClient.Instance?.AmHost != true || !GameStates.IsInGame || GameStates.IsFreePlay
+            || CustomWinnerHolder.WinnerTeam is CustomWinner.Draw or CustomWinner.Error or CustomWinner.Default)
             return Task.FromResult(false);
 
-        RoleAchievementState.Commit();
-
         var players = Main.AllPlayerControls
-            .Where(x => x != null && !string.IsNullOrEmpty(x.FriendCode))
+            .Where(x => x?.Data != null && !x.Data.Disconnected && !string.IsNullOrEmpty(x.FriendCode))
             .ToList();
 
         foreach (var player in players)
         {
             var data = CustomAchievementDataManager.Get(player.FriendCode);
-            if (data == null) continue;
-
             foreach (var definition in AchievementRegistry.GetAll())
             {
-                if (!data.Has(definition.Id) && definition.CheckClear(player))
+                if (data?.Has(definition.Id) != true && definition.CheckClear(player))
                     AchievementManager.TryUpdateUnit(player.FriendCode, definition.Id);
             }
         }

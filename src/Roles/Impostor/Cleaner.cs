@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using TONX.Modules;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Impostor;
@@ -33,6 +34,7 @@ public sealed class Cleaner : RoleBase, IImpostor
     }
 
     private List<byte> BodiesCleanedUp;
+    public int CleanedBodies => BodiesCleanedUp.Distinct().Count();
     private static void SetupOptionItem()
     {
         OptionKillCooldown = FloatOptionItem.Create(RoleInfo, 10, GeneralOption.KillCooldown, new(2.5f, 180f, 2.5f), 30f, false)
@@ -48,7 +50,7 @@ public sealed class Cleaner : RoleBase, IImpostor
     public override string GetReportButtonText() => GetString("CleanerReportButtonText");
     public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
-        if (BodiesCleanedUp.Contains(target.PlayerId))
+        if (target != null && BodiesCleanedUp.Contains(target.PlayerId))
         {
             reporter.Notify(Utils.ColorString(RoleInfo.RoleColor, GetString("ReportCleanedBodies")));
             Logger.Info($"{target.Object.GetNameWithRole()} 的尸体已被清理，无法被报告", "Cleaner.OnCheckReportDeadBody");
@@ -57,6 +59,7 @@ public sealed class Cleaner : RoleBase, IImpostor
         if (!Is(reporter) || target == null) return true;
         ReportDeadBodyPatch.CanReport[target.PlayerId] = false;
         BodiesCleanedUp.Add(target.PlayerId);
+        BodyCleaned.Trigger(Player);
         if (OptionResetKillCooldownAfterClean.GetBool()) Player.SetKillCooldownV2();
         Player.Notify(GetString("CleanerCleanBody"));
         Player.RPCPlayCustomSound("Clothe");

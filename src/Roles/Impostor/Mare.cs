@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using static TONX.Options;
 
@@ -33,6 +34,15 @@ public sealed class Mare : RoleBase, IImpostor
 
     private static OptionItem OptionKillCooldownInLightsOut;
     private static OptionItem OptionSpeedInLightsOut;
+    private readonly HashSet<(byte, string)> lightsOutVictims = new();
+    public int LightsOutKills => lightsOutVictims.Count;
+    public void OnMurderPlayerAsKiller(MurderInfo info)
+    {
+        if (!info.IsSuicide && info.AttemptTarget.Data.IsDead && !info.AttemptTarget.Data.Disconnected
+            && Utils.IsActive(SystemTypes.Electrical)
+            && lightsOutVictims.Add((info.AttemptTarget.PlayerId, info.AttemptTarget.FriendCode)))
+            LightsOutKillCompleted.Trigger(Player);
+    }
     enum OptionName
     {
         MareAddSpeedInLightsOut,

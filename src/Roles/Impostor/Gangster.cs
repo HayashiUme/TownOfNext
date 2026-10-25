@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -43,6 +44,9 @@ public sealed class Gangster : RoleBase, IImpostor
     }
 
     private int RecruitLimit;
+    private readonly HashSet<(byte Id, string FriendCode)> recruits = new();
+    public bool HasSurvivingRecruit => recruits.Count >= 2 && Main.AllPlayerControls.Any(p =>
+        p.IsAlive() && p.Is(CustomRoles.Madmate) && recruits.Contains((p.PlayerId, p.FriendCode)));
     private static void SetupOptionItem()
     {
         OptionKillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.GangsterRecruitCooldown, new(2.5f, 180f, 2.5f), 20f, false)
@@ -93,6 +97,8 @@ public sealed class Gangster : RoleBase, IImpostor
             SendRPC();
 
             target.RpcSetCustomRole(CustomRoles.Madmate);
+            if (target.Is(CustomRoles.Madmate) && recruits.Add((target.PlayerId, target.FriendCode)))
+                MadmateRecruited.Trigger(Player);
 
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Gangster), GetString("GangsterSuccessfullyRecruited")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Gangster), GetString("BeRecruitedByGangster")));

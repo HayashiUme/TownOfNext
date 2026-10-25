@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using TONX.Modules;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -34,6 +35,17 @@ public sealed class Warlock : RoleBase, IImpostor
     PlayerControl CursedPlayer;
     bool IsCursed;
     bool Shapeshifting;
+    private PlayerControl curseKillTarget;
+    private readonly HashSet<(byte, string)> curseVictims = new();
+    public int SuccessfulCurseKills => curseVictims.Count;
+
+    public void OnMurderPlayerAsKiller(MurderInfo info)
+    {
+        if (info.AttemptTarget == curseKillTarget && !info.IsSuicide && info.AttemptTarget.Data.IsDead
+            && !info.AttemptTarget.Data.Disconnected
+            && curseVictims.Add((info.AttemptTarget.PlayerId, info.AttemptTarget.FriendCode)))
+            CurseKillCompleted.Trigger(Player);
+    }
     private static void SetupOptionItem()
     {
         OptionCanKillAllies = BooleanOptionItem.Create(RoleInfo, 10, GeneralOption.CanKillAllies, false, false);
@@ -131,11 +143,13 @@ public sealed class Warlock : RoleBase, IImpostor
                     var killTarget = nearest.Key;
 
                     var killed = false;
-                    CustomRoleManager.OnCheckMurder(
-                        Player, killTarget,
-                        CursedPlayer, killTarget,
-                        () => killed = true
-                        );
+                    curseKillTarget = killTarget;
+                    try
+                    {
+                        CustomRoleManager.OnCheckMurder(Player, killTarget, CursedPlayer, killTarget,
+                            () => killed = true);
+                    }
+                    finally { curseKillTarget = null; }
 
                     if (killed)
                     {

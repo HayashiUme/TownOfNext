@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Impostor;
@@ -22,6 +23,15 @@ public sealed class Miner : RoleBase, IImpostor
     )
     { }
 
+    private float lastTeleport = float.NegativeInfinity;
+    public int SuccessfulTeleports { get; private set; }
+    public bool KilledAfterTeleport { get; private set; }
+    public override void OnStartMeeting() => lastTeleport = float.NegativeInfinity;
+    public void OnMurderPlayerAsKiller(MurderInfo info)
+    {
+        if (!info.IsSuicide && info.AttemptTarget.Data.IsDead && UnityEngine.Time.time - lastTeleport <= 10f)
+            KilledAfterTeleport = true;
+    }
     public override bool GetAbilityButtonText(out string text)
     {
         text = GetString("MinerTeleButtonText");
@@ -34,6 +44,9 @@ public sealed class Miner : RoleBase, IImpostor
         if (Main.LastEnteredVent.ContainsKey(Player.PlayerId))
         {
             Utils.TP(Player.NetTransform, Main.LastEnteredVentLocation[Player.PlayerId]);
+            SuccessfulTeleports++;
+            lastTeleport = UnityEngine.Time.time;
+            MinerTeleported.Trigger(Player);
             Logger.Msg($"矿工传送：{Player.GetNameWithRole()}", "Miner.OnShapeshift");
         }
     }

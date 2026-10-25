@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Impostor;
@@ -45,6 +46,17 @@ public sealed class SoulCatcher : RoleBase, IImpostor
         return !Shapeshifting;
     }
     private bool Shapeshifting = false;
+    private float lastSwap = float.NegativeInfinity;
+    public int KillsAfterSwap { get; private set; }
+    public override void OnStartMeeting() => lastSwap = float.NegativeInfinity;
+    public void OnMurderPlayerAsKiller(MurderInfo info)
+    {
+        if (!info.IsSuicide && info.AttemptTarget.Data.IsDead && UnityEngine.Time.time - lastSwap <= 5f)
+        {
+            KillsAfterSwap++;
+            lastSwap = float.NegativeInfinity;
+        }
+    }
     public override void OnShapeshift(PlayerControl target)
     {
         Shapeshifting = !Is(target);
@@ -58,8 +70,14 @@ public sealed class SoulCatcher : RoleBase, IImpostor
                 if (!(!GameStates.IsInTask || !Player.IsAlive() || !target.IsAlive() || Player.inVent || target.inVent))
                 {
                     var originPs = target.GetTruePosition();
+                    var differentPositions = originPs != Player.GetTruePosition();
                     Utils.TP(target.NetTransform, Player.GetTruePosition());
                     Utils.TP(Player.NetTransform, originPs);
+                    if (differentPositions)
+                    {
+                        lastSwap = UnityEngine.Time.time;
+                        SoulsSwapped.Trigger(Player);
+                    }
                 }
             }, 1.5f, "SoulCatcher.OnShapeshift");
         }

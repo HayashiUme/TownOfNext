@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -34,6 +35,8 @@ public sealed class Eraser : RoleBase, IImpostor
     private int EraseLimit;
     private byte PlayerToErase;
     private bool DidVote;
+    private readonly HashSet<(byte, string)> erasedPlayers = new();
+    public int ErasedPlayers => erasedPlayers.Count;
     private static void SetupOptionItem()
     {
         OptionEraseLimit = IntegerOptionItem.Create(RoleInfo, 10, OptionName.EraseLimit, new(1, 15, 1), 2, false)
@@ -103,7 +106,14 @@ public sealed class Eraser : RoleBase, IImpostor
         if (PlayerToErase == byte.MaxValue) return;
         var player = Utils.GetPlayerById(PlayerToErase);
         if (player == null) return;
+        var oldRole = player.GetCustomRole();
+        var wasCrew = player.GetCountTypes() == CountTypes.Crew && !player.Is(CustomRoles.Madmate) && !player.Is(CustomRoles.Charmed);
         player.RpcChangeRole(player.Is(CustomRoleTypes.Impostor) ? CustomRoles.Impostor : CustomRoles.Crewmate);
+        if (wasCrew && oldRole != player.GetCustomRole() && player.GetCustomRole() == CustomRoles.Crewmate)
+        {
+            erasedPlayers.Add((player.PlayerId, player.FriendCode));
+            RoleErased.Trigger(Player);
+        }
         NameNotifyManager.Notify(player, GetString("LostRoleByEraser"));
         Logger.Info($"{player.GetNameWithRole()} 被擦除了", "Eraser.AfterMeetingTasks");
 

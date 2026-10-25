@@ -29,6 +29,7 @@ public sealed class Workaholic : RoleBase
     private static OptionItem OptionNoWinAtDeath;
     private static OptionItem OptionVisibleToEveryone;
     private static Options.OverrideTasksData Tasks;
+    public bool TaskWinTriggered { get; private set; }
     enum OptionName
     {
         WorkaholicCannotWinAtDeath,
@@ -75,5 +76,6 @@ public sealed class Workaholic : RoleBase
         }
         CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Workaholic);
         CustomWinnerHolder.WinnerIds.Add(Player.PlayerId);
+        TaskWinTriggered = true;
     }
 }

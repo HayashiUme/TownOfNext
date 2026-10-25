@@ -14,7 +14,7 @@ public static class AchievementTitleHandler
             var achievement = AchievementRegistry.GetById(titleId);
             if (achievement == null) return null;
 
-            return $"<size=75%><color={achievement.TitleColorHex}>[{achievement.TitleDisplay}]</color></size>";
+            return $"<size=75%><color={achievement.TitleColorHex}>[{GetString(achievement.Name)}]</color></size>";
         }
     }
 }

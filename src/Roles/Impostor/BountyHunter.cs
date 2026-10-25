@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -51,6 +52,9 @@ public sealed class BountyHunter : RoleBase, IImpostor
     public bool CanBeLastImpostor { get; } = false;
     public PlayerControl Target;
     public float ChangeTimer;
+    private MurderInfo bountyKill;
+    private readonly HashSet<(byte, string)> bountyVictims = new();
+    public int SuccessfulBounties => bountyVictims.Count;
 
     private static void SetupOptionItem()
     {
@@ -93,6 +97,8 @@ public sealed class BountyHunter : RoleBase, IImpostor
 
             if (GetTarget() == target)
             {//ターゲットをキルした場合
+                if (ChangeTimer < TargetChangeTime)
+                    bountyKill = info;
                 Logger.Info($"{killer?.Data?.PlayerName}:ターゲットをキル", "BountyHunter");
                 Main.AllPlayerKillCooldown[killer.PlayerId] = SuccessKillCooldown;
                 killer.SyncSettings();//キルクール処理を同期
@@ -107,6 +113,15 @@ public sealed class BountyHunter : RoleBase, IImpostor
         }
         return;
     }
+    public void OnMurderPlayerAsKiller(MurderInfo info)
+    {
+        if (info == bountyKill && !info.IsSuicide && info.AttemptTarget.Data.IsDead
+            && !info.AttemptTarget.Data.Disconnected
+            && bountyVictims.Add((info.AttemptTarget.PlayerId, info.AttemptTarget.FriendCode)))
+            BountyCompleted.Trigger(Player);
+        bountyKill = null;
+    }
+
     public override void OnFixedUpdate(PlayerControl player)
     {
         if (AmongUsClient.Instance.AmHost)

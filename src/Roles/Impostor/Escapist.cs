@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using TONX.Modules;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -30,6 +31,14 @@ public sealed class Escapist : RoleBase, IImpostor
     private bool Shapeshifting;
     private bool Marked;
     private Vector2 MarkedPosition;
+    private float lastTeleport = float.NegativeInfinity;
+    public bool KilledAfterTeleport { get; private set; }
+    public override void OnStartMeeting() => lastTeleport = float.NegativeInfinity;
+    public void OnMurderPlayerAsKiller(MurderInfo info)
+    {
+        if (!info.IsSuicide && info.AttemptTarget.Data.IsDead && Time.time - lastTeleport <= 10f)
+            KilledAfterTeleport = true;
+    }
     public override void Add()
     {
         Marked = false;
@@ -61,8 +70,11 @@ public sealed class Escapist : RoleBase, IImpostor
         if (Marked)
         {
             Marked = false;
+            var distance = Vector2.Distance(Player.GetTruePosition(), MarkedPosition);
             Player.RPCPlayCustomSound("Teleport");
             Utils.TP(Player.NetTransform, MarkedPosition);
+            lastTeleport = Time.time;
+            if (distance >= 8f) EscapistReturned.Trigger(Player);
             Logger.Msg($"{Player.GetNameWithRole()}：{MarkedPosition}", "Escapist.OnShapeshift");
         }
         else

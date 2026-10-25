@@ -21,7 +21,8 @@ public static class AchievementRegistry
         var types = Assembly.GetExecutingAssembly()
             .GetTypes()
             .Where(t => t.IsClass && !t.IsAbstract && !t.ContainsGenericParameters
-                        && typeof(AchievementBase).IsAssignableFrom(t))
+                        && typeof(AchievementBase).IsAssignableFrom(t)
+                        && t.GetConstructor(Type.EmptyTypes) != null)
             .ToArray();
 
         foreach (var type in types)
@@ -35,6 +36,9 @@ public static class AchievementRegistry
                 Logger.Error($"Failed to register {type.Name}：{ex.Message}", "AchievementRegistry");
             }
         }
+
+        foreach (var definition in ProposalAchievementCatalog.CreateDefinitions())
+            if (!All.ContainsKey(definition.Id)) Register(definition);
 
         Categories = ByCategory.Keys.OrderBy(x => x, StringComparer.Ordinal).ToList().AsReadOnly();
         Logger.Info($"{All.Count} achievements in {Categories.Count} categories", "AchievementRegistry");
@@ -64,7 +68,6 @@ public static class AchievementRegistry
             achievement.RequiredValue <= 0 || achievement.RequiredValue > 1_000_000 ||
             string.IsNullOrWhiteSpace(achievement.Name) ||
             string.IsNullOrWhiteSpace(achievement.Description) ||
-            string.IsNullOrWhiteSpace(achievement.TitleDisplay) ||
             string.IsNullOrWhiteSpace(achievement.Category))
         {
             Logger.Error($"Invalid achievement definition: {achievement.GetType().Name}", "AchievementRegistry");

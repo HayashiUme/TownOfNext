@@ -1,0 +1,2630 @@
+[
+  {
+    "Id": 100101,
+    "Name": "正中悬赏",
+    "Description": "在悬赏时限内亲自击杀当前悬赏目标",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "赏金猎人"
+  },
+  {
+    "Id": 100102,
+    "Name": "连环通缉",
+    "Description": "同一局内成功完成3次悬赏击杀，并且内鬼阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "赏金猎人"
+  },
+  {
+    "Id": 100201,
+    "Name": "血债未冷",
+    "Description": "在自杀倒计时结束前完成一次击杀",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "嗜血杀手"
+  },
+  {
+    "Id": 100202,
+    "Name": "嗜血终夜",
+    "Description": "同一局完成3次击杀并随内鬼阵营获胜，且未因倒计时自杀",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "嗜血杀手"
+  },
+  {
+    "Id": 100301,
+    "Name": "迟来的死亡",
+    "Description": "一次吸血成功，并由该次吸血造成目标延迟死亡",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "吸血鬼"
+  },
+  {
+    "Id": 100302,
+    "Name": "血月盛宴",
+    "Description": "同一局中至少2次吸血造成延迟死亡，且内鬼阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "吸血鬼"
+  },
+  {
+    "Id": 100401,
+    "Name": "咒令生效",
+    "Description": "成功诅咒一名玩家，并由术士发动的诅咒击杀造成另一名玩家死亡；不计被诅咒者自己的普通击杀",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "术士"
+  },
+  {
+    "Id": 100402,
+    "Name": "借手除敌",
+    "Description": "同一局中2次诅咒击杀实际生效，且内鬼阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "术士"
+  },
+  {
+    "Id": 100501,
+    "Name": "标记与处决",
+    "Description": "成功标记目标，并通过变形传送完成对该目标的击杀",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "刺客"
+  },
+  {
+    "Id": 100502,
+    "Name": "无声抵达",
+    "Description": "同一局以刺客传送刺杀成功击杀2名不同目标，并存活到内鬼阵营获胜结算",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "刺客"
+  },
+  {
+    "Id": 100601,
+    "Name": "缓慢逼近",
+    "Description": "僵尸机制至少实际降低一次移动速度后，仍成功击杀一名玩家；不计单纯重复计算冷却",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "僵尸"
+  },
+  {
+    "Id": 100602,
+    "Name": "不死的终点",
+    "Description": "本人的速度已因僵尸机制累计下降至少0.3倍基础速度，之后仍完成一次击杀，并随内鬼阵营获胜；不使用不存在的“最低档”字段",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "僵尸"
+  },
+  {
+    "Id": 100701,
+    "Name": "强制报告",
+    "Description": "成功骇入一名玩家，并使其报告骇客本轮击杀的尸体",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "骇客"
+  },
+  {
+    "Id": 100702,
+    "Name": "无尸报案",
+    "Description": "在场上没有可报告尸体时，骇入实际召开一次特殊会议，并随内鬼阵营获胜",
+    "Rarity": "Rare",
+    "Hidden": true,
+    "Category": "Impostor",
+    "Role": "骇客"
+  },
+  {
+    "Id": 100801,
+    "Name": "旧管道新出口",
+    "Description": "通过变形或解除变形，成功传送到上一次使用的通风管道",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "矿工"
+  },
+  {
+    "Id": 100802,
+    "Name": "管道穿梭",
+    "Description": "同一局中成功触发3次矿工传送，并在其中一次传送后10秒内完成击杀",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "矿工"
+  },
+  {
+    "Id": 100901,
+    "Name": "原点撤离",
+    "Description": "标记位置后，与标记点的世界坐标距离达到8单位，再成功传送回标记点；距离与屏幕尺寸无关",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "逃逸者"
+  },
+  {
+    "Id": 100902,
+    "Name": "来去无踪",
+    "Description": "一次成功传送回标记点后10秒内完成击杀，且内鬼阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "逃逸者"
+  },
+  {
+    "Id": 101001,
+    "Name": "只懂杀戮",
+    "Description": "以杀戮机器身份完成一次有效击杀；职业天然限制只作为机制说明，不额外当作挑战条件",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "杀戮机器"
+  },
+  {
+    "Id": 101002,
+    "Name": "纯粹的杀意",
+    "Description": "同一局完成3次击杀并随内鬼阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "杀戮机器"
+  },
+  {
+    "Id": 101101,
+    "Name": "会后生效",
+    "Description": "诅咒目标后，该目标在会议结束后因诅咒死亡",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "女巫"
+  },
+  {
+    "Id": 101102,
+    "Name": "未竟的审判",
+    "Description": "同一局中2次诅咒均造成会后死亡，且内鬼阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "女巫"
+  },
+  {
+    "Id": 101201,
+    "Name": "死后仍有生意",
+    "Description": "死亡后使用指定玩家编号指令成功击杀一名玩家",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "黑手党"
+  },
+  {
+    "Id": 101202,
+    "Name": "幕后终局",
+    "Description": "死亡后以黑手党技能击杀一名船员，该次死亡触发的下一次胜负检查产生内鬼基础胜利，且最终内鬼阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": true,
+    "Category": "Impostor",
+    "Role": "黑手党"
+  },
+  {
+    "Id": 101301,
+    "Name": "烟火试放",
+    "Description": "成功放置并引爆至少一枚烟花炸弹，且炸弹造成击杀",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "烟花商人"
+  },
+  {
+    "Id": 101302,
+    "Name": "满天焰火",
+    "Description": "一次引爆造成至少3名其他玩家死亡，并且内鬼阵营获胜",
+    "Rarity": "Legendary",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "烟花商人"
+  },
+  {
+    "Id": 101401,
+    "Name": "直线命中",
+    "Description": "用变形起点与终点构成的射线成功狙杀一名玩家",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "狙击手"
+  },
+  {
+    "Id": 101402,
+    "Name": "一箭穿局",
+    "Description": "同一局中以狙击射线完成2次击杀，并随内鬼阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "狙击手"
+  },
+  {
+    "Id": 101501,
+    "Name": "提线开场",
+    "Description": "成功标记一名玩家，并由傀儡自动击杀机制实际造成一名有效目标死亡",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "傀儡师"
+  },
+  {
+    "Id": 101502,
+    "Name": "看不见的操纵",
+    "Description": "同一局中傀儡自动击杀机制实际造成2名不同目标死亡，且内鬼阵营获胜；不计傀儡本人的普通击杀",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "傀儡师"
+  },
+  {
+    "Id": 101601,
+    "Name": "停电狩猎",
+    "Description": "在停电期间完成一次击杀",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "梦魇"
+  },
+  {
+    "Id": 101602,
+    "Name": "黑暗加速",
+    "Description": "同一局在停电期间完成2次击杀，并随内鬼阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "梦魇"
+  },
+  {
+    "Id": 101701,
+    "Name": "时间被蚀",
+    "Description": "完成击杀，且由本人蚀时效果使随后一次会议的最终可用时长实际减少",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "蚀时者"
+  },
+  {
+    "Id": 101702,
+    "Name": "没有时间讨论",
+    "Description": "同一局中至少2次有效击杀产生蚀时效果，且至少一次会议的最终时长确实因此减少，并随内鬼阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "蚀时者"
+  },
+  {
+    "Id": 101801,
+    "Name": "猜中身份",
+    "Description": "会议中正确猜测一名玩家的职业并成功将其击杀",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "邪恶赌怪"
+  },
+  {
+    "Id": 101802,
+    "Name": "百发百中",
+    "Description": "同一局连续2次有效猜测正确并造成目标死亡，期间没有错误猜测，并随内鬼阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "邪恶赌怪"
+  },
+  {
+    "Id": 101901,
+    "Name": "有人靠近设备",
+    "Description": "一次受监测设备的“有人靠近”状态从假变为真，并成功生成监管者提示；不统计具体玩家身份",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "监管者"
+  },
+  {
+    "Id": 101902,
+    "Name": "设备巡夜",
+    "Description": "同一局收到至少3次有效靠近提示，覆盖至少2类设备，并随内鬼阵营获胜；同一设备持续有人只计一次，恢复无人后再次有人才重新计数",
+    "Rarity": "Epic",
+    "Hidden": true,
+    "Category": "Impostor",
+    "Role": "监管者"
+  },
+  {
+    "Id": 102001,
+    "Name": "冷却缩短",
+    "Description": "成功击杀后，击杀冷却按职业机制实际缩短",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "狂妄杀手"
+  },
+  {
+    "Id": 102002,
+    "Name": "越战越快",
+    "Description": "同一局完成3次有效击杀，其中至少2次之间未召开会议，且后一次击杀时冷却已因本职业缩短，并随内鬼阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "狂妄杀手"
+  },
+  {
+    "Id": 102101,
+    "Name": "同归于尽",
+    "Description": "发动自爆并至少炸死一名其他玩家",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "自爆兵"
+  },
+  {
+    "Id": 102102,
+    "Name": "最后的爆响",
+    "Description": "一次自爆杀死至少3名其他玩家，且本局按规则判定内鬼阵营获胜",
+    "Rarity": "Legendary",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "自爆兵"
+  },
+  {
+    "Id": 102201,
+    "Name": "别碰那具尸体",
+    "Description": "击杀后布下诡雷，并由报告该尸体的玩家触发诡雷死亡",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "诡雷"
+  },
+  {
+    "Id": 102202,
+    "Name": "连环误报",
+    "Description": "同一条诡雷连锁实际造成至少2名不同报告者死亡，且内鬼阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": true,
+    "Category": "Impostor",
+    "Role": "诡雷"
+  },
+  {
+    "Id": 102301,
+    "Name": "锁定目标",
+    "Description": "通过变形成功设置或切换一次追踪目标",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "追踪者"
+  },
+  {
+    "Id": 102302,
+    "Name": "杀戮闪烁",
+    "Description": "房主向本人发送一次队友击杀闪烁后，本人在下一次会议前完成一次击杀，且内鬼阵营获胜",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "追踪者"
+  },
+  {
+    "Id": 102401,
+    "Name": "无尸可报",
+    "Description": "成功击杀一名玩家且因清道夫机制未留下可报告尸体",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "清道夫"
+  },
+  {
+    "Id": 102402,
+    "Name": "踪迹尽灭",
+    "Description": "同一局完成3次清道夫无尸体击杀，并随内鬼阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "清道夫"
+  },
+  {
+    "Id": 102501,
+    "Name": "变脸不停",
+    "Description": "同一局成功变形成至少2名不同玩家",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "千面鬼"
+  },
+  {
+    "Id": 102502,
+    "Name": "千面难辨",
+    "Description": "同一局成功变形成至少4名不同玩家，并在其中一次变形结束后10秒内完成击杀",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "千面鬼"
+  },
+  {
+    "Id": 102601,
+    "Name": "强制加班",
+    "Description": "成功给一名符合技能条件的玩家增加短任务",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "资本家"
+  },
+  {
+    "Id": 102602,
+    "Name": "任务债务",
+    "Description": "同一局至少3次成功增加短任务，且至少一名目标完成了可追溯至本人的新增任务，最终内鬼阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "资本家"
+  },
+  {
+    "Id": 102701,
+    "Name": "招募成功",
+    "Description": "成功将一名可招募玩家转为叛徒",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "教父"
+  },
+  {
+    "Id": 102702,
+    "Name": "扩张组织",
+    "Description": "同一局成功招募2名叛徒，且至少一名被招募者存活到内鬼阵营获胜结算",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "教父"
+  },
+  {
+    "Id": 102801,
+    "Name": "清理现场",
+    "Description": "成功清理一具尸体，使其无法被报告",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "清理工"
+  },
+  {
+    "Id": 102802,
+    "Name": "没有目击者",
+    "Description": "同一局成功清理2名不同死者的尸体，并随内鬼阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "清理工"
+  },
+  {
+    "Id": 102901,
+    "Name": "量子化",
+    "Description": "成功使一名目标进入量子幽灵状态",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "球状闪电"
+  },
+  {
+    "Id": 102902,
+    "Name": "幽灵也会消失",
+    "Description": "同一局有2名由本人量子化的目标因量子幽灵接触机制实际死亡，且内鬼阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "球状闪电"
+  },
+  {
+    "Id": 103001,
+    "Name": "奇偶循环",
+    "Description": "在一次会议重置后完成首次有效击杀，并使其按奇数次击杀规则更新冷却",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "贪婪者"
+  },
+  {
+    "Id": 103002,
+    "Name": "永不空手",
+    "Description": "同一局完成至少3次有效击杀，且奇数次与偶数次冷却更新均实际生效，并随内鬼阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "贪婪者"
+  },
+  {
+    "Id": 103101,
+    "Name": "诅咒反击",
+    "Description": "遭遇常规击杀尝试时消耗反击额度、阻止自身死亡并成功杀死凶手",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "呪狼"
+  },
+  {
+    "Id": 103102,
+    "Name": "双重咒返",
+    "Description": "同一局成功触发2次诅咒反击并杀死不同凶手，且随内鬼阵营获胜；反击额度不足2次时不参与判定",
+    "Rarity": "Epic",
+    "Hidden": true,
+    "Category": "Impostor",
+    "Role": "呪狼"
+  },
+  {
+    "Id": 103201,
+    "Name": "交换位置",
+    "Description": "通过变形完成一次有效的位置交换",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "夺魂者"
+  },
+  {
+    "Id": 103202,
+    "Name": "夺魂瞬移",
+    "Description": "成功交换位置后5秒内完成击杀，同一局达成2次，并随内鬼阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "夺魂者"
+  },
+  {
+    "Id": 103301,
+    "Name": "储弹完毕",
+    "Description": "在击杀冷却结束后通过变形成功储存一颗子弹",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "快枪手"
+  },
+  {
+    "Id": 103302,
+    "Name": "连射不歇",
+    "Description": "同一轮内连续完成3次有效击杀，其中后两次均实际消耗储存子弹抵消冷却",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "快枪手"
+  },
+  {
+    "Id": 103401,
+    "Name": "全员黑影",
+    "Description": "成功发动隐蔽技能，房主完成对符合条件玩家的统一外观设置；不要求验证每个客户端实际画面",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "隐蔽者"
+  },
+  {
+    "Id": 103402,
+    "Name": "黑影脱身",
+    "Description": "技能生效期间完成击杀，并在随后实际召开的下一次会议中未被放逐，最终内鬼阵营获胜；没有后续会议则不满足",
+    "Rarity": "Rare",
+    "Hidden": true,
+    "Category": "Impostor",
+    "Role": "隐蔽者"
+  },
+  {
+    "Id": 103501,
+    "Name": "技能抹除",
+    "Description": "会议投票后成功抹除一名符合技能条件的船员的职业技能",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "抹除者"
+  },
+  {
+    "Id": 103502,
+    "Name": "白板时代",
+    "Description": "同一局成功抹除2名不同船员的职业技能，并随内鬼阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "抹除者"
+  },
+  {
+    "Id": 103601,
+    "Name": "尸体不止一具",
+    "Description": "一次有效击杀触发肢解机制，且该受害者的多尸体生成已完成；重复尸体不计多次死亡",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "肢解者"
+  },
+  {
+    "Id": 103602,
+    "Name": "满地残影",
+    "Description": "同一局对3名不同受害者成功触发肢解多尸体效果，并随内鬼阵营获胜；不奖励报告失败、卡死或异常交互",
+    "Rarity": "Epic",
+    "Hidden": true,
+    "Category": "Impostor",
+    "Role": "肢解者"
+  },
+  {
+    "Id": 103701,
+    "Name": "无视防护",
+    "Description": "变形期间成功绞杀一名在该次攻击前具有常规防护状态的目标；防护类型需在实现时按代码列入支持白名单",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "刽子手"
+  },
+  {
+    "Id": 103702,
+    "Name": "不留痕迹",
+    "Description": "同一局对2名不同目标完成有效绞杀，其中至少一名目标具有可被绞杀绕过的死亡被动，且该被动实际未执行；不把目标本来没有被动视作成功绕过",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "刽子手"
+  },
+  {
+    "Id": 103801,
+    "Name": "进出无形",
+    "Description": "通过通风管道进入并成功退出隐身状态",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "隐匿者"
+  },
+  {
+    "Id": 103802,
+    "Name": "隐身处决",
+    "Description": "隐身状态结束前完成一次击杀，并随内鬼阵营获胜",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "隐匿者"
+  },
+  {
+    "Id": 103901,
+    "Name": "任务夺命",
+    "Description": "完成一项任务，并由此次船鬼任务技能实际造成目标死亡",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "船鬼"
+  },
+  {
+    "Id": 103902,
+    "Name": "致命清单",
+    "Description": "同一局通过船鬼任务技能造成至少3名不同玩家死亡，并随内鬼阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": true,
+    "Category": "Impostor",
+    "Role": "船鬼"
+  },
+  {
+    "Id": 104001,
+    "Name": "失明现场",
+    "Description": "击杀一名玩家并使至少一名符合暗杀者技能房间判断的其他玩家进入失明状态",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "暗杀者"
+  },
+  {
+    "Id": 104002,
+    "Name": "黑暗中的第二刀",
+    "Description": "同一局至少2次击杀成功使至少一名其他玩家失明，并随内鬼阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "暗杀者"
+  },
+  {
+    "Id": 104101,
+    "Name": "会前情报",
+    "Description": "会议开始时房主成功向本人发送至少一条带尸体标记的房间情报",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "情报贩子"
+  },
+  {
+    "Id": 104102,
+    "Name": "故地重演",
+    "Description": "房主发送带尸体标记的房间情报后，本人在该次会议结束至下一次会议开始之间，于所记录房间完成一次击杀，并最终内鬼阵营获胜；不要求会议清理后的旧尸体继续存在，也不推断玩家是否依据情报行动",
+    "Rarity": "Epic",
+    "Hidden": true,
+    "Category": "Impostor",
+    "Role": "情报贩子"
+  },
+  {
+    "Id": 104201,
+    "Name": "拖到角落",
+    "Description": "成功拖拽一名目标，并由拖拽倒计时或再次按键将其杀死",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "企鹅"
+  },
+  {
+    "Id": 104202,
+    "Name": "谁也找不到",
+    "Description": "将拖拽目标带到距开始拖拽位置至少5个世界坐标单位处并以企鹅技能击杀，同一局对2名不同目标达成，且内鬼阵营获胜；不累计来回走动路程",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "企鹅"
+  },
+  {
+    "Id": 104301,
+    "Name": "身份尽收眼底",
+    "Description": "在配置允许的范围内，房主成功向本人提供至少一名其他玩家的职业或技能信息；不要求存在全员信息面板",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "内幕人"
+  },
+  {
+    "Id": 104302,
+    "Name": "叛徒现形",
+    "Description": "达到设定击杀数后，首次成功向本人提供一名实际叛徒的识别信息，并随内鬼阵营获胜；识别选项关闭或没有叛徒时不参与",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "内幕人"
+  },
+  {
+    "Id": 104401,
+    "Name": "写下一句",
+    "Description": "以吟游诗人身份经历一次有人被放逐的结算，并使自身击杀冷却按职业规则实际减半；外部一言文本接口成功与否不影响达成",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "吟游诗人"
+  },
+  {
+    "Id": 104402,
+    "Name": "余韵成刃",
+    "Description": "同一局因两次不同的有效放逐结算降低击杀冷却，并在第二次之后完成一次有效击杀，最终内鬼阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": true,
+    "Category": "Impostor",
+    "Role": "吟游诗人"
+  },
+  {
+    "Id": 104501,
+    "Name": "闪光弹生效",
+    "Description": "发动邪恶掷雷兵闪光弹，并使至少一名符合技能条件的非内鬼玩家实际受到视野限制",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "邪恶的掷雷兵"
+  },
+  {
+    "Id": 104502,
+    "Name": "黑暗只属于敌人",
+    "Description": "一次闪光弹实际影响至少3名非内鬼玩家，并在其视野限制持续期间完成击杀，且内鬼阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "邪恶的掷雷兵"
+  },
+  {
+    "Id": 200101,
+    "Name": "正义猜测",
+    "Description": "会议中正确猜测一名技能允许的邪恶目标职业并成功击杀目标",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "正义赌怪"
+  },
+  {
+    "Id": 200102,
+    "Name": "一局双中",
+    "Description": "同一局连续2次有效猜测正确并造成目标死亡，期间没有错误猜测，最终船员阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "正义赌怪"
+  },
+  {
+    "Id": 200201,
+    "Name": "死里逃生",
+    "Description": "幸运儿遭遇常规击杀尝试时成功触发概率抵挡死亡",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "幸运儿"
+  },
+  {
+    "Id": 200202,
+    "Name": "命不该绝",
+    "Description": "同一局成功抵挡2次常规击杀，并随本局实际所属阵营获胜；此项依赖概率，抵挡概率为零时不参与",
+    "Rarity": "Epic",
+    "Hidden": true,
+    "Category": "Crewmate",
+    "Role": "幸运儿"
+  },
+  {
+    "Id": 200301,
+    "Name": "任务只做一个",
+    "Description": "完成摆烂人开局分配的唯一任务；职业生成的新增任务不影响这项",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "摆烂人"
+  },
+  {
+    "Id": 200302,
+    "Name": "懒到最后",
+    "Description": "开局任务完成后存活经历至少2次实际会议，且最终船员阵营获胜",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "摆烂人"
+  },
+  {
+    "Id": 200401,
+    "Name": "众目睽睽",
+    "Description": "因凶手与大明星之外的第三名存活玩家距大明星小于2个世界坐标单位，实际阻止一次常规击杀；不使用“同房间”判据",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "大明星"
+  },
+  {
+    "Id": 200402,
+    "Name": "不能独处",
+    "Description": "同一局在两次不同常规击杀尝试中，均因上述距离保护而免死，并随本局实际所属阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "大明星"
+  },
+  {
+    "Id": 200501,
+    "Name": "全员收到快讯",
+    "Description": "网红死亡后成功向至少一名符合条件的其他玩家发送网红死亡提示",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "网红"
+  },
+  {
+    "Id": 200502,
+    "Name": "头条反击",
+    "Description": "网红死亡后的下一次会议将直接击杀网红的凶手放逐，且船员阵营获胜；此项不要求已死网红本人投票",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "网红"
+  },
+  {
+    "Id": 200601,
+    "Name": "一票多用",
+    "Description": "一次有效投票结算中，市长的票实际按多于1票计入",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "市长"
+  },
+  {
+    "Id": 200602,
+    "Name": "关键多数",
+    "Description": "本人额外票数实际改变一次平票或放逐结果，且结果为放逐内鬼；按本次其余实际结算规则不变、仅移除本人额外票重算作比较",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "市长"
+  },
+  {
+    "Id": 200701,
+    "Name": "一键修复",
+    "Description": "用一次修复动作成功触发修理工专属快速修复，例如单点完成原需多处操作的破坏，或单一开关修复照明",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "修理工"
+  },
+  {
+    "Id": 200702,
+    "Name": "船上维修王",
+    "Description": "同一局成功终止3次不同的破坏实例，其中至少一次使用修理工专属快速修复，最终船员阵营获胜；修门不计破坏实例",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "修理工"
+  },
+  {
+    "Id": 200801,
+    "Name": "精准执法",
+    "Description": "以警长技能成功击杀一名内鬼",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "警长"
+  },
+  {
+    "Id": 200802,
+    "Name": "不走火的枪",
+    "Description": "同一局以警长技能成功击杀2名不同内鬼，期间没有错误执法，最终船员阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "警长"
+  },
+  {
+    "Id": 200901,
+    "Name": "凭空报案",
+    "Description": "使用通风管道触发一次虚假尸体报告并成功召开会议",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "被害妄想症"
+  },
+  {
+    "Id": 200902,
+    "Name": "无尸有罪",
+    "Description": "本人虚假报告召开的会议中，本人投票给内鬼并成功将其放逐，且船员阵营获胜",
+    "Rarity": "Rare",
+    "Hidden": true,
+    "Category": "Crewmate",
+    "Role": "被害妄想症"
+  },
+  {
+    "Id": 201001,
+    "Name": "红名之谜",
+    "Description": "会议期间房主向本人提供的红名列表中，包含至少一名实际内鬼；只计信息生成，不推断已阅读",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "愚者"
+  },
+  {
+    "Id": 201002,
+    "Name": "真假红名",
+    "Description": "本人在两次不同会议中，分别投票给当次本人红名列表中的实际内鬼，且两名不同内鬼均在对应会议被放逐",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "愚者"
+  },
+  {
+    "Id": 201101,
+    "Name": "任务全清",
+    "Description": "完成所有任务并成功解锁至少一名内鬼的红名提示",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "告密者"
+  },
+  {
+    "Id": 201102,
+    "Name": "最后一项证据",
+    "Description": "完成全部任务后，在下一次会议投票给已获提示的内鬼并将其放逐，且随本局实际所属阵营获胜",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "告密者"
+  },
+  {
+    "Id": 201201,
+    "Name": "越做越快",
+    "Description": "完成任务后因增速者机制实际提升一次移动速度",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "增速者"
+  },
+  {
+    "Id": 201202,
+    "Name": "极速完成",
+    "Description": "同一局因完成任务实际触发3次增速，并存活到船员阵营获胜结算；配置或任务数不足以触发3次时不参与，不使用“最高档位”字段",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "增速者"
+  },
+  {
+    "Id": 201301,
+    "Name": "死因确认",
+    "Description": "房主通过法医能力成功生成并向本人提供一名实际死者的死因信息；不依赖生命面板是否在客户端打开",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "法医"
+  },
+  {
+    "Id": 201302,
+    "Name": "还原两起案件",
+    "Description": "同一局获得2名不同死者的有效死因信息，并在之后一次会议投票给内鬼并将其放逐，最终船员阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "法医"
+  },
+  {
+    "Id": 201401,
+    "Name": "一换一",
+    "Description": "发动独裁技能并强制放逐目标，随后独裁者按技能代价死亡",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "独裁者"
+  },
+  {
+    "Id": 201402,
+    "Name": "以命定罪",
+    "Description": "发动独裁技能成功放逐内鬼，在该次完整会议死亡队列结算后的胜负检查中触发船员基础胜利，且最终船员阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "独裁者"
+  },
+  {
+    "Id": 201501,
+    "Name": "报告线索",
+    "Description": "本人报告尸体后，房主成功向本人发送侦探线索",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "侦探"
+  },
+  {
+    "Id": 201502,
+    "Name": "循线追凶",
+    "Description": "同一局在两次不同的报告会议中收到侦探线索，且本人分别投票给对应死者的实际凶手并将其放逐，最终船员阵营获胜；凶手须为两名不同玩家，不推断线索与决策的心理因果",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "侦探"
+  },
+  {
+    "Id": 201601,
+    "Name": "只此一剑",
+    "Description": "使用侠客正义击杀成功击杀一名技能允许的邪恶目标",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "侠客"
+  },
+  {
+    "Id": 201602,
+    "Name": "一剑定局",
+    "Description": "侠客击杀命中内鬼，该次技能死亡队列处理后的下一次胜负检查触发船员基础胜利，且最终船员阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "侠客"
+  },
+  {
+    "Id": 201701,
+    "Name": "位置错乱",
+    "Description": "完成任务并成功触发两名不同玩家的位置交换",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "传送师"
+  },
+  {
+    "Id": 201702,
+    "Name": "传送连锁",
+    "Description": "同一局触发3次有效位置交换，并在对局结束时船员阵营获胜；交换前两人位置相同的无效传送不计",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "传送师"
+  },
+  {
+    "Id": 201801,
+    "Name": "会议延长",
+    "Description": "完成任务，且其时间操纵效果使随后会议的最终可用时长实际增加",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "时间操纵者"
+  },
+  {
+    "Id": 201802,
+    "Name": "争取来的时间",
+    "Description": "一次会议的最终可用时长因本人任务增益增加至少30秒，并在该会议投票给内鬼并将其放逐；超过时长上限被截断的部分不计",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "时间操纵者"
+  },
+  {
+    "Id": 201901,
+    "Name": "戒备反杀",
+    "Description": "进入戒备状态后成功反杀一名尝试击杀自己的玩家",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "老兵"
+  },
+  {
+    "Id": 201902,
+    "Name": "谁动谁死",
+    "Description": "同一局触发2次有效戒备反杀，且至少一名被反杀者属于内鬼阵营，最终船员阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "老兵"
+  },
+  {
+    "Id": 202001,
+    "Name": "替人挡刀",
+    "Description": "在附近玩家将被击杀时成功阻止该次击杀并与凶手同归于尽",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "保镖"
+  },
+  {
+    "Id": 202002,
+    "Name": "最后一道防线",
+    "Description": "成功阻止对船员的击杀并带走内鬼凶手，且船员阵营获胜",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "保镖"
+  },
+  {
+    "Id": 202101,
+    "Name": "卖出赝品",
+    "Description": "成功将赝品交给一名玩家",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "赝品商"
+  },
+  {
+    "Id": 202102,
+    "Name": "赝品走火",
+    "Description": "由本人发放的赝品实际使持有者在尝试击杀时走火自杀，且船员阵营最终获胜",
+    "Rarity": "Rare",
+    "Hidden": true,
+    "Category": "Crewmate",
+    "Role": "赝品商"
+  },
+  {
+    "Id": 202201,
+    "Name": "闪瞎内鬼",
+    "Description": "使用通风管道发动闪光弹，并使至少一名内鬼实际受到视野限制",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "掷雷兵"
+  },
+  {
+    "Id": 202202,
+    "Name": "趁盲制胜",
+    "Description": "一次闪光弹实际影响至少2名内鬼，且在会议开始前、视野限制仍生效时，由船员技能击杀其中一名；不把会议中的放逐计作失明期间击杀",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "掷雷兵"
+  },
+  {
+    "Id": 202301,
+    "Name": "护盾发放",
+    "Description": "成功给一名玩家发放护盾",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "医生"
+  },
+  {
+    "Id": 202302,
+    "Name": "救命恩人",
+    "Description": "同一局由本人发放的护盾实际抵挡2次常规击杀，且船员阵营获胜；重复发送同一次攻击提示不计",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "医生"
+  },
+  {
+    "Id": 202401,
+    "Name": "占卜有果",
+    "Description": "会议中成功发动占卜，房主向本人提供一名目标的信息",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "占卜师"
+  },
+  {
+    "Id": 202402,
+    "Name": "真相揭示",
+    "Description": "完成全部任务后，对一名实际内鬼的占卜信息成功提供给本人，且本人在该次会议投票给该目标并将其放逐，最终船员阵营获胜",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "占卜师"
+  },
+  {
+    "Id": 202501,
+    "Name": "不计入生者",
+    "Description": "以活死人身份肉体未死亡地完成一次有效对局；用 `PlayerState.IsDead` 与 `Data.IsDead` 判定，不调用恒为假的普通 `IsAlive()`",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "活死人"
+  },
+  {
+    "Id": 202502,
+    "Name": "生死之外",
+    "Description": "同一胜负检查快照中，实际活死人规则与“仅将本人作为普通存活船员计入”的比较检查得出不同基础结论，并在最终结算时肉体未死且本人获胜；比较检查必须无副作用",
+    "Rarity": "Epic",
+    "Hidden": true,
+    "Category": "Crewmate",
+    "Role": "活死人"
+  },
+  {
+    "Id": 202601,
+    "Name": "正确审判",
+    "Description": "使用审判指令成功击杀一名符合技能邪恶判定的目标",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "法官"
+  },
+  {
+    "Id": 202602,
+    "Name": "法槌落下",
+    "Description": "同一局连续2次有效审判成功，期间没有错误审判，最终船员阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "法官"
+  },
+  {
+    "Id": 202701,
+    "Name": "最后接触者",
+    "Description": "本人报告尸体后，房主成功向本人发送被害者生前最后接触玩家的信息",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "入殓师"
+  },
+  {
+    "Id": 202702,
+    "Name": "死亡证词",
+    "Description": "本人获得的最后接触者恰为对应死者的实际凶手，并在该次或下一次会议投票给该凶手并将其放逐，最终随本局实际所属阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "入殓师"
+  },
+  {
+    "Id": 202801,
+    "Name": "逝者回应",
+    "Description": "报告尸体后成功建立联系，且房主成功向本人发送一次有效的亡者是/否回答",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "通灵师"
+  },
+  {
+    "Id": 202802,
+    "Name": "问完最后一问",
+    "Description": "在一次会议中成功收到亡者回答，并在该会议投票给对应死者的实际凶手并将其放逐，最终船员阵营获胜",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "通灵师"
+  },
+  {
+    "Id": 202901,
+    "Name": "看见碎盾",
+    "Description": "房主通过观察者能力向本人发送一次针对其他玩家的有效碎盾提示",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "观察者"
+  },
+  {
+    "Id": 202902,
+    "Name": "盾后真相",
+    "Description": "同一局通过观察者能力收到3次不同攻击事件的有效碎盾提示，并在之后一次会议投票给邪恶目标并将其放逐，最终随本局实际所属阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": true,
+    "Category": "Crewmate",
+    "Role": "观察者"
+  },
+  {
+    "Id": 203001,
+    "Name": "歌颂时刻",
+    "Description": "使用通风管道发动歌颂，并对至少一名有效玩家成功执行冷却重置",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "和平之鸽"
+  },
+  {
+    "Id": 203002,
+    "Name": "和平之后",
+    "Description": "一次歌颂对至少2名拥有击杀键的不同玩家成功执行冷却重置，且本人存活到船员阵营获胜结算",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "和平之鸽"
+  },
+  {
+    "Id": 203101,
+    "Name": "采集样本",
+    "Description": "同一轮成功采集两名不同玩家的样本",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "基因学家"
+  },
+  {
+    "Id": 203102,
+    "Name": "样本指向凶手",
+    "Description": "本人样本信息生成并发送后，在该次或下一次会议投票给样本对应的实际内鬼并将其放逐，且船员阵营获胜",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "基因学家"
+  },
+  {
+    "Id": 203201,
+    "Name": "票数互换",
+    "Description": "一次会议中对两名不同玩家成功执行换票结算",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "换票师"
+  },
+  {
+    "Id": 203202,
+    "Name": "逆转票局",
+    "Description": "本人换票实际改变放逐对象并放逐内鬼，最终船员阵营获胜；比较时仅关闭本人本次换票，其余实际结算规则不变",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "换票师"
+  },
+  {
+    "Id": 203301,
+    "Name": "特殊会议",
+    "Description": "成功召开仅能投票给指定两名玩家的特殊会议",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "大神官"
+  },
+  {
+    "Id": 203302,
+    "Name": "两人皆有罪",
+    "Description": "本人召开的特殊会议最终按技能规则同时放逐两名不同的邪恶目标，且船员阵营获胜",
+    "Rarity": "Legendary",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "大神官"
+  },
+  {
+    "Id": 203401,
+    "Name": "封锁管道",
+    "Description": "成功封锁一条此前未锁定的通风管道",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "保安"
+  },
+  {
+    "Id": 203402,
+    "Name": "无路可逃",
+    "Description": "同一局由本人封锁至少3条不同管道，且至少一次敌方进入本人封锁管道的尝试被房主明确阻止，最终船员阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "保安"
+  },
+  {
+    "Id": 300101,
+    "Name": "完成涂油",
+    "Description": "成功将一名存活玩家涂油完成",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "纵火犯"
+  },
+  {
+    "Id": 300102,
+    "Name": "焚尽全场",
+    "Description": "将所有符合点火条件的存活玩家全部涂油并成功点火，触发本人的纵火犯专属胜利来源，且本人最终获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "纵火犯"
+  },
+  {
+    "Id": 300201,
+    "Name": "请投我一票",
+    "Description": "在会议中被投票放逐，触发本人的小丑胜利来源且本人最终获胜",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "小丑"
+  },
+  {
+    "Id": 300202,
+    "Name": "开场谢幕",
+    "Description": "在本局第一场实际会议中被放逐，触发本人的小丑胜利来源且本人最终获胜",
+    "Rarity": "Epic",
+    "Hidden": true,
+    "Category": "Neutral",
+    "Role": "小丑"
+  },
+  {
+    "Id": 300301,
+    "Name": "搭上胜利列车",
+    "Description": "存活至结算，并由本人投机者追加胜利规则进入最终赢家名单；仅中立共同胜利不计",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "投机者"
+  },
+  {
+    "Id": 300302,
+    "Name": "夹缝求生",
+    "Description": "本人以投机者身份存活经历至少3次实际会议，其中至少2次会议各有一名其他玩家被放逐，最终由本人的投机者追加胜利规则获胜",
+    "Rarity": "Epic",
+    "Hidden": true,
+    "Category": "Neutral",
+    "Role": "投机者"
+  },
+  {
+    "Id": 300401,
+    "Name": "任务完成后退场",
+    "Description": "完成全部任务后死亡，触发本人的恐怖分子胜利来源且本人最终获胜",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "恐怖分子"
+  },
+  {
+    "Id": 300402,
+    "Name": "危险驱逐",
+    "Description": "完成全部任务后被会议放逐，并由此次放逐触发本人的恐怖分子胜利来源，且本人最终获胜",
+    "Rarity": "Epic",
+    "Hidden": true,
+    "Category": "Neutral",
+    "Role": "恐怖分子"
+  },
+  {
+    "Id": 300501,
+    "Name": "目标出局",
+    "Description": "指定的处刑目标被会议放逐，并由本人处刑人专属胜利规则获胜",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "处刑人"
+  },
+  {
+    "Id": 300502,
+    "Name": "次会定罪",
+    "Description": "处刑目标在本局第二场实际会议结束前被放逐，本人在放逐会议投票给该目标，并由处刑人专属胜利规则获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "处刑人"
+  },
+  {
+    "Id": 300601,
+    "Name": "人数反超",
+    "Description": "触发以豺狼人数优势或平衡人数为依据的基础胜利，且本人最终以豺狼阵营获胜；具体人数关系按当前规则判断，不写死为严格大于",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "豺狼"
+  },
+  {
+    "Id": 300602,
+    "Name": "狼群壮大",
+    "Description": "成功招募一名跟班，本人与该跟班均未离开豺狼阵营，且两人存活到豺狼阵营获胜结算",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "豺狼"
+  },
+  {
+    "Id": 300701,
+    "Name": "忠实副手",
+    "Description": "以跟班身份存活到豺狼阵营获胜结算，且本人在最终赢家名单中",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "跟班"
+  },
+  {
+    "Id": 300702,
+    "Name": "接班人",
+    "Description": "原豺狼死亡后，本人按启用的接班规则实际转为豺狼，并最终取得豺狼阵营胜利；须保留跟班身份历史",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "跟班"
+  },
+  {
+    "Id": 300801,
+    "Name": "知道一切",
+    "Description": "以神身份存活经历一次实际会议，且房主成功向本人提供其他玩家身份信息；不以开局分配角色直接赠送",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "神"
+  },
+  {
+    "Id": 300802,
+    "Name": "最后的胜利者",
+    "Description": "以神身份存活经历至少3次实际会议，随后由本人的神抢夺胜利规则覆盖既有基础胜利，且本人最终获胜；神本身只要求存活，不要求全场只剩自己",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "神"
+  },
+  {
+    "Id": 300901,
+    "Name": "跳管练习",
+    "Description": "同一局有效跳管次数达到房主胜利门槛的一半向上取整",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "马里奥"
+  },
+  {
+    "Id": 300902,
+    "Name": "水管冠军",
+    "Description": "本人有效跳管次数达到房主胜利门槛，并由此触发马里奥专属胜利来源且本人最终获胜",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "马里奥"
+  },
+  {
+    "Id": 301001,
+    "Name": "栽赃成功",
+    "Description": "冤罪师技能实际记录一名有效栽赃目标，且本人因该次栽赃机制死亡",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "冤罪师"
+  },
+  {
+    "Id": 301002,
+    "Name": "即刻定罪",
+    "Description": "本人栽赃记录建立后的下一次实际会议就将对应目标放逐，且由本人的冤罪师专属规则获胜；不要求已死冤罪师投票",
+    "Rarity": "Epic",
+    "Hidden": true,
+    "Category": "Neutral",
+    "Role": "冤罪师"
+  },
+  {
+    "Id": 301101,
+    "Name": "吞下一个",
+    "Description": "成功活吞一名玩家",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "鹈鹕"
+  },
+  {
+    "Id": 301102,
+    "Name": "满腹而归",
+    "Description": "同一局活吞至少3名不同玩家，并最终取得鹈鹕阵营胜利",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "鹈鹕"
+  },
+  {
+    "Id": 301201,
+    "Name": "拉拢成功",
+    "Description": "成功完成对一名玩家的拉拢记录；不等同于目标的主职业或阵营立即转换",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "革命家"
+  },
+  {
+    "Id": 301202,
+    "Name": "革命成功",
+    "Description": "在倒计时结束前达到房主设定拉拢人数并成功跳管，触发本人的革命家胜利来源且本人最终获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "革命家"
+  },
+  {
+    "Id": 301301,
+    "Name": "只拆情侣",
+    "Description": "以FFF团技能成功击杀一名按当前代码允许的恋人或海王目标",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "FFF团"
+  },
+  {
+    "Id": 301302,
+    "Name": "单身的胜利",
+    "Description": "至少成功击杀一名FFF团允许目标，并在结算时由本人FFF团专属追加胜利规则获胜",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "FFF团"
+  },
+  {
+    "Id": 301401,
+    "Name": "血量见底",
+    "Description": "用玩家专属血量机制将一名目标的血量消耗至零并成功击杀",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "玩家"
+  },
+  {
+    "Id": 301402,
+    "Name": "硬碰硬",
+    "Description": "同一局通过血量机制完成至少3次有效击杀，并取得玩家阵营胜利",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "玩家"
+  },
+  {
+    "Id": 301501,
+    "Name": "每杀必停电",
+    "Description": "成功击杀一名玩家，并由潜藏者技能使电力破坏从未生效变为生效",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "潜藏者"
+  },
+  {
+    "Id": 301502,
+    "Name": "黑暗夺权",
+    "Description": "同一局通过击杀实际触发至少3次不同电力破坏实例，并由本人的潜藏者抢夺胜利规则获胜；已停电期间重复触发不计新实例",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "潜藏者"
+  },
+  {
+    "Id": 301601,
+    "Name": "加量任务",
+    "Description": "完成本人工作狂分配任务总数的一半向上取整；以本次任务分配批次记录总数，新增批次另行记录",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "工作狂"
+  },
+  {
+    "Id": 301602,
+    "Name": "永不下班",
+    "Description": "完成工作狂当前全部必需任务，实际触发本人的工作狂胜利来源且本人最终获胜；不虚构“普通任务+额外任务”的独立层次，死亡能否获胜遵循房主选项",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "工作狂"
+  },
+  {
+    "Id": 301701,
+    "Name": "收集选票",
+    "Description": "投票给一名玩家并实际增加本人收集票数",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "集票者"
+  },
+  {
+    "Id": 301702,
+    "Name": "票满即胜",
+    "Description": "在驱逐结算前实际达到集票胜利门槛，由本人的集票者专属胜利来源获胜",
+    "Rarity": "Rare",
+    "Hidden": true,
+    "Category": "Neutral",
+    "Role": "集票者"
+  },
+  {
+    "Id": 301801,
+    "Name": "同命目标",
+    "Description": "使用自爆卡车技能与一名目标同归于尽",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "自爆卡车"
+  },
+  {
+    "Id": 301802,
+    "Name": "同归不同命",
+    "Description": "本人自爆目标不在最终赢家名单中，而本人通过自爆卡车专属追加胜利规则获胜；不根据“目标所在阵营”推断目标个人输赢",
+    "Rarity": "Rare",
+    "Hidden": true,
+    "Category": "Neutral",
+    "Role": "自爆卡车"
+  },
+  {
+    "Id": 301901,
+    "Name": "击杀后护盾",
+    "Description": "一次有效击杀后成功获得嗜血骑士职业护盾",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "嗜血骑士"
+  },
+  {
+    "Id": 301902,
+    "Name": "护盾连击",
+    "Description": "同一局嗜血骑士护盾实际抵消2次不同的常规击杀尝试，并赢得嗜血骑士阵营胜利",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "嗜血骑士"
+  },
+  {
+    "Id": 302001,
+    "Name": "下注完成",
+    "Description": "一次有效下注实际建立目标记录",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "赌徒"
+  },
+  {
+    "Id": 302002,
+    "Name": "身后红利",
+    "Description": "本人死亡后，仍因下注目标获胜而通过赌徒专属追加胜利规则获胜；仅中立共同胜利不计",
+    "Rarity": "Rare",
+    "Hidden": true,
+    "Category": "Neutral",
+    "Role": "赌徒"
+  },
+  {
+    "Id": 302101,
+    "Name": "魅惑成功",
+    "Description": "成功魅惑一名技能允许的非中立玩家，使其实际转入魅魔阵营",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "魅魔"
+  },
+  {
+    "Id": 302102,
+    "Name": "魅惑多数",
+    "Description": "本人成功魅惑至少2名不同玩家，并以魅魔阵营人数规则触发基础胜利，且本人最终获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "魅魔"
+  },
+  {
+    "Id": 302201,
+    "Name": "选择阵营",
+    "Description": "以猫身份遭遇有效攻击，由猫机制阻止本次死亡并实际转换职业；不写作先死亡后加入阵营",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "薛定谔的猫"
+  },
+  {
+    "Id": 302202,
+    "Name": "猫的另一面",
+    "Description": "由猫受击机制完成职业转换后，以该次转换获得的职业或阵营资格进入最终赢家名单；须保留原猫身份及转换来源，不以结束时是否仍为猫判断",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "薛定谔的猫"
+  },
+  {
+    "Id": 302301,
+    "Name": "感染扩散",
+    "Description": "使一名有效目标实际达到疫医感染完成状态",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "疫医"
+  },
+  {
+    "Id": 302302,
+    "Name": "瘟疫终局",
+    "Description": "感染全部符合条件的存活玩家，由本人的疫医专属胜利来源获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "疫医"
+  },
+  {
+    "Id": 302401,
+    "Name": "交换身份",
+    "Description": "以连环交换师身份选定目标，且在随后的会议结束处理阶段实际完成职业交换；只选目标不计",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "连环交换师"
+  },
+  {
+    "Id": 302402,
+    "Name": "命运洗牌",
+    "Description": "本人以连环交换师身份完成交换，之后又被其他交换师换回交换师身份，再主动完成第二次交换，两次获得不同主职业，并存活至结算；按同一玩家的身份历史统计，不要求一直持有交换师职业",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "连环交换师"
+  },
+  {
+    "Id": 302501,
+    "Name": "猜测正确",
+    "Description": "一次有效猜测实际获得末日预言家正确记录",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "末日预言家"
+  },
+  {
+    "Id": 302502,
+    "Name": "连猜不败",
+    "Description": "按房主设置完成获胜所需正确猜测，期间没有错误猜测，并由本人的末日预言家专属胜利来源获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "末日预言家"
+  },
+  {
+    "Id": 302601,
+    "Name": "出现情敌",
+    "Description": "一名玩家因在暗恋对象附近停留达到时长而被实际标记为本人的情敌",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "病娇"
+  },
+  {
+    "Id": 302602,
+    "Name": "只剩你我",
+    "Description": "达到病娇代码规定的终局人数与暗恋对象状态要求，触发本人的病娇胜利来源且本人最终获胜",
+    "Rarity": "Epic",
+    "Hidden": true,
+    "Category": "Neutral",
+    "Role": "病娇"
+  },
+  {
+    "Id": 302701,
+    "Name": "退场也开朗",
+    "Description": "本人死亡后，通过阳光开朗大男孩专属追加胜利规则进入最终赢家名单；仅中立共同胜利不计",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "阳光开朗大男孩"
+  },
+  {
+    "Id": 302702,
+    "Name": "谢幕不散场",
+    "Description": "在本局第一场会议开始前死亡，之后又完成至少2场实际会议，最终仍通过本人的阳光开朗大男孩追加胜利规则获胜",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "阳光开朗大男孩"
+  },
+  {
+    "Id": 302801,
+    "Name": "身后代理",
+    "Description": "本人已获分配有效客户，且以律师身份死亡后未转换职业；结算时客户在律师追加胜利检查前已取得赢家资格，本人通过律师规则追加获胜，最终本人和客户均在赢家名单中",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "律师"
+  },
+  {
+    "Id": 302802,
+    "Name": "代理人优先",
+    "Description": "本人以律师身份存活至胜利结算，客户在本人律师追加胜利检查前已取得赢家资格；由本人律师规则实际移除客户赢家资格并追加本人，且最终本人获胜、客户不在赢家名单；中立共同胜利或恋人规则把客户重新加入时不满足",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "律师"
+  },
+  {
+    "Id": 302901,
+    "Name": "空包有用",
+    "Description": "由本人消耗次数发放的空包弹状态，实际使对应玩家的下一次非自杀击杀失效；只命中、不触发拦截不计",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "起诉人"
+  },
+  {
+    "Id": 302902,
+    "Name": "两次驳回",
+    "Description": "同一局本人发放的空包弹实际阻止两名不同玩家各一次非自杀击杀，且本人以起诉人身份存活，并通过起诉人专属追加胜利规则最终获胜；配置至少允许两次使用，会议清除未生效空包弹不计次数",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "起诉人"
+  },
+  {
+    "Id": 600101,
+    "Name": "并肩到最后",
+    "Description": "两名恋人都存活到对局结算，并一起获得胜利",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "恋人"
+  },
+  {
+    "Id": 600102,
+    "Name": "生死相随",
+    "Description": "一名恋人实际死亡后，另一名恋人按启用的房间规则实际殉情死亡；向这对恋人各记录一次有效连锁，不以“没有程序错误”作为条件",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "恋人"
+  },
+  {
+    "Id": 600201,
+    "Name": "最后一名内鬼",
+    "Description": "成为内鬼阵营最后一名存活者并实际获得绝境者冷却增益",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "绝境者"
+  },
+  {
+    "Id": 600202,
+    "Name": "绝境反杀",
+    "Description": "绝境增益生效期间完成击杀，并最终以内鬼阵营获胜",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "绝境者"
+  },
+  {
+    "Id": 600301,
+    "Name": "人人的恋人",
+    "Description": "房主通过海王显示规则向至少3名不同玩家提供与本人相关的关系标记；不要求验证客户端画面",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "海王"
+  },
+  {
+    "Id": 600302,
+    "Name": "万花丛中过",
+    "Description": "以海王附加职业身份存活经历至少2次实际会议，并最终随有效所属阵营获胜；“不是真实恋人”是机制说明，不另当挑战",
+    "Rarity": "Rare",
+    "Hidden": true,
+    "Category": "AddOn",
+    "Role": "海王"
+  },
+  {
+    "Id": 600401,
+    "Name": "看清每一票",
+    "Description": "一次实际会议投票结算中，房主向本人应用窥视者的非匿名投票显示规则",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "窥视者"
+  },
+  {
+    "Id": 600402,
+    "Name": "多数的秘密",
+    "Description": "一次非匿名投票结果已向本人提供后，本人在随后实际召开的下一次会议投票给内鬼并将其放逐，最终随有效所属阵营获胜；不把会后显示结果用于解释本次投票",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "窥视者"
+  },
+  {
+    "Id": 600501,
+    "Name": "停电不熄",
+    "Description": "电力破坏生效且执灯人视野规则启用期间，完成一项有效任务",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "执灯人"
+  },
+  {
+    "Id": 600502,
+    "Name": "照亮胜局",
+    "Description": "同一局在电力破坏生效、执灯人视野规则启用期间完成至少3项有效任务，并存活到船员阵营获胜结算",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "执灯人"
+  },
+  {
+    "Id": 600601,
+    "Name": "死亡闪光",
+    "Description": "其他玩家死亡时，房主通过灵媒能力成功向本人发送杀戮闪烁提示",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "灵媒"
+  },
+  {
+    "Id": 600602,
+    "Name": "闪光指凶",
+    "Description": "收到一次灵媒杀戮闪烁后，在下一次会议投票给该死亡事件的实际凶手并将其放逐，最终随有效所属阵营获胜；不要求闪烁本身透露凶手身份",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "灵媒"
+  },
+  {
+    "Id": 600701,
+    "Name": "先人一步",
+    "Description": "在闪电侠速度增益生效时完成一项有效任务",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "闪电侠"
+  },
+  {
+    "Id": 600702,
+    "Name": "快如闪电",
+    "Description": "同一局在闪电侠速度增益生效期间完成5项有效任务，并存活到所属阵营获胜结算",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "闪电侠"
+  },
+  {
+    "Id": 600801,
+    "Name": "打破平票",
+    "Description": "投票平票时，本人破平效果实际使其投票目标被放逐",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "破平者"
+  },
+  {
+    "Id": 600802,
+    "Name": "最后一票",
+    "Description": "本人破平效果实际使一名内鬼被放逐，并最终随所属阵营获胜",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "破平者"
+  },
+  {
+    "Id": 600901,
+    "Name": "不能报告",
+    "Description": "胆小鬼限制生效时，本人进入一名实际死者尸体的有效报告距离；不要求玩家发送必然被禁止的报告请求",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "胆小鬼"
+  },
+  {
+    "Id": 600902,
+    "Name": "缄默目击者",
+    "Description": "同一局胆小鬼限制生效时，本人分别进入3名不同死者尸体的有效报告距离，并存活到所属阵营获胜结算；不把全场所有未报告尸体自动计入",
+    "Rarity": "Rare",
+    "Hidden": true,
+    "Category": "AddOn",
+    "Role": "胆小鬼"
+  },
+  {
+    "Id": 601001,
+    "Name": "视野传染",
+    "Description": "本人被击杀后，迷幻者效果实际向凶手应用视野限制",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "迷幻者"
+  },
+  {
+    "Id": 601002,
+    "Name": "临死反制",
+    "Description": "本人的视野传染生效后，凶手在下一次会议被放逐，且本人所属有效阵营最终获胜；不要求已死本人投票",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "迷幻者"
+  },
+  {
+    "Id": 601101,
+    "Name": "暗中协助",
+    "Description": "以叛徒身份在一次会议投票给实际船员并将其放逐，最终通过内鬼阵营归属获胜；不使用未定义的“有利行动”",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "叛徒"
+  },
+  {
+    "Id": 601102,
+    "Name": "首刀逆转",
+    "Description": "在首刀叛变或自票叛变模式中实际成为叛徒，并最终通过内鬼阵营归属获胜；记录转换原因",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "叛徒"
+  },
+  {
+    "Id": 601201,
+    "Name": "无法维修",
+    "Description": "蠢蛋限制生效时，在本人无法修复的破坏期间完成一项有效任务",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "蠢蛋"
+  },
+  {
+    "Id": 601202,
+    "Name": "各司其职",
+    "Description": "同一局在2次不同的、本人受蠢蛋限制无法修复的破坏实例中各完成至少一项任务，这两次破坏均被其他玩家修复，且本人最终随有效所属阵营获胜",
+    "Rarity": "Rare",
+    "Hidden": true,
+    "Category": "AddOn",
+    "Role": "蠢蛋"
+  },
+  {
+    "Id": 601301,
+    "Name": "第一个交卷",
+    "Description": "本人按本局加班狂授予规则，因最先完成要求任务而实际获得该附加职业",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "加班狂"
+  },
+  {
+    "Id": 601302,
+    "Name": "额外工作也做完",
+    "Description": "完成由本人的加班狂授予事件额外分配的全部任务，并存活到所属阵营获胜结算",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "加班狂"
+  },
+  {
+    "Id": 601401,
+    "Name": "临终带走",
+    "Description": "被常规击杀后，本人复仇者效果实际造成一名其他玩家死亡",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "复仇者"
+  },
+  {
+    "Id": 601402,
+    "Name": "仇人同归",
+    "Description": "本人的复仇效果带走一名事发时敌对阵营玩家，且本人所属有效阵营最终获胜；此项依赖随机目标",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "复仇者"
+  },
+  {
+    "Id": 601501,
+    "Name": "首杀主角",
+    "Description": "成为本局第一个被常规击杀的玩家，实际触发本人的UP主专属胜利来源且本人最终获胜",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "UP主"
+  },
+  {
+    "Id": 601502,
+    "Name": "这次不领盒饭",
+    "Description": "未触发UP主首杀胜利，本人持有UP主附加职业且肉体未死亡地完成对局，并随有效所属阵营获胜",
+    "Rarity": "Rare",
+    "Hidden": true,
+    "Category": "AddOn",
+    "Role": "UP主"
+  },
+  {
+    "Id": 601601,
+    "Name": "胜利独占",
+    "Description": "本人利己主义者规则实际覆盖一次原阵营基础胜利，且本人最终获胜",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "利己主义者"
+  },
+  {
+    "Id": 601602,
+    "Name": "独享终幕",
+    "Description": "本人触发利己主义者抢夺时，覆盖前的赢家集合至少包含3名其他玩家；经过全部追加与共同胜利规则后，最终赢家名单只有本人一人；须保留覆盖前快照",
+    "Rarity": "Epic",
+    "Hidden": true,
+    "Category": "AddOn",
+    "Role": "利己主义者"
+  },
+  {
+    "Id": 601701,
+    "Name": "击杀攒票",
+    "Description": "有效击杀后，因窃票者机制实际增加本人的额外票数",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "窃票者"
+  },
+  {
+    "Id": 601702,
+    "Name": "暗票定局",
+    "Description": "本人的窃票者额外票实际改变放逐结果，并放逐一名事发时敌对阵营玩家；比较时只移除本人额外票，其余结算规则不变",
+    "Rarity": "Epic",
+    "Hidden": true,
+    "Category": "AddOn",
+    "Role": "窃票者"
+  },
+  {
+    "Id": 601801,
+    "Name": "人数算双份",
+    "Description": "一次有效胜负检查中，本人的双重人格额外人数实际计入；不要求一定改变结果",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "双重人格"
+  },
+  {
+    "Id": 601802,
+    "Name": "多出的一人",
+    "Description": "保持同一检查快照及其余规则不变，移除本人额外人数会触发敌对阵营基础胜利，而实际检查未触发；之后本人所属有效阵营获胜，比较检查必须无副作用",
+    "Rarity": "Epic",
+    "Hidden": true,
+    "Category": "AddOn",
+    "Role": "双重人格"
+  },
+  {
+    "Id": 601901,
+    "Name": "遗留情报",
+    "Description": "宝箱怪死亡后，房主向至少一名符合条件的其他内鬼发送本人实际击杀目标的职业信息",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "宝箱怪"
+  },
+  {
+    "Id": 601902,
+    "Name": "死亡清单",
+    "Description": "本人死亡前实际击杀2名不同玩家，其宝箱怪情报均被发送给至少一名有效队友，最终内鬼阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "宝箱怪"
+  },
+  {
+    "Id": 602001,
+    "Name": "超距击杀",
+    "Description": "持枪距离增益生效时，在超过本局移除该增益后的普通击杀距离处成功击杀；记录攻击判定时坐标，不用死亡动画后的距离",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "持枪"
+  },
+  {
+    "Id": 602002,
+    "Name": "远程执法",
+    "Description": "同一局完成2次上述超距有效击杀，并随所属阵营获胜",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "持枪"
+  },
+  {
+    "Id": 602101,
+    "Name": "被迫报案",
+    "Description": "本人被击杀后，诱饵效果实际使凶手报告本人尸体并召开会议",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "诱饵"
+  },
+  {
+    "Id": 602102,
+    "Name": "把凶手叫回来",
+    "Description": "本人的诱饵强制报告所召开的会议成功放逐该次死亡的实际凶手，且本人随有效所属阵营最终获胜；不要求已死本人投票",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "诱饵"
+  },
+  {
+    "Id": 602201,
+    "Name": "困住凶手",
+    "Description": "本人被击杀后，陷阱师效果实际限制凶手移动",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "陷阱师"
+  },
+  {
+    "Id": 602202,
+    "Name": "陷阱反制",
+    "Description": "本人的陷阱效果生效后，凶手在下一次会议被放逐，且本人随有效所属阵营最终获胜；不要求已死本人投票",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "陷阱师"
+  },
+  {
+    "Id": 602301,
+    "Name": "颜色失真",
+    "Description": "从正式开局到结算一直持有色盲附加职业，且本人肉体未死亡地完成对局；以房主状态为准，不验证客户端是否真正渲染颜色差异",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "色盲"
+  },
+  {
+    "Id": 602302,
+    "Name": "无色辨敌",
+    "Description": "色盲效果规则生效期间，在一次会议中投票给实际内鬼并将其放逐，且随有效所属阵营最终获胜；不推断颜色差异是否影响玩家判断",
+    "Rarity": "Rare",
+    "Hidden": true,
+    "Category": "AddOn",
+    "Role": "色盲"
+  },
+  {
+    "Id": 500101,
+    "Name": "无人识破",
+    "Description": "内鬼阵营获胜，且本局没有玩家以当时有效内鬼阵营身份被会议放逐",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "内鬼阵营"
+  },
+  {
+    "Id": 500102,
+    "Name": "同袍无损",
+    "Description": "内鬼阵营获胜时，所有开局有效内鬼仍存活且未转离阵营；仅有一名开局内鬼时不参与",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "内鬼阵营"
+  },
+  {
+    "Id": 500103,
+    "Name": "暗杀连锁",
+    "Description": "同一局在一次会议结束后、下一次会议开始前，内鬼来源技能累计造成至少3名不同的非内鬼玩家实际死亡，最终内鬼阵营获胜；自杀与重复尸体不计",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "内鬼阵营"
+  },
+  {
+    "Id": 500104,
+    "Name": "破坏专家",
+    "Description": "基础胜利来源为可终结对局的破坏超时，且最终胜利没有被豺狼等转换或被其他角色覆盖，内鬼阵营最终获胜",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "内鬼阵营"
+  },
+  {
+    "Id": 500105,
+    "Name": "尸踪全无",
+    "Description": "内鬼阵营获胜前，其技能对至少3名不同非内鬼玩家造成实际死亡，且这些死亡因对应技能规则未生成可报告尸体；先生成再清理不算“未生成”",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "内鬼阵营"
+  },
+  {
+    "Id": 500106,
+    "Name": "借刀杀人",
+    "Description": "内鬼阵营获胜，且至少一次由内鬼术士或傀儡师等明确操纵来源，使非内鬼执行者造成另一名非内鬼死亡；普通警长误杀不算内鬼借刀",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "内鬼阵营"
+  },
+  {
+    "Id": 500107,
+    "Name": "一人守夜",
+    "Description": "在其他开局内鬼均死亡或被放逐后，本人成为唯一存活内鬼；此后亲自完成至少2次有效击杀，期间没有新内鬼加入，最终内鬼阵营获胜；仅发给该玩家，单内鬼开局不参与",
+    "Rarity": "Legendary",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "内鬼阵营"
+  },
+  {
+    "Id": 500108,
+    "Name": "逆风收网",
+    "Description": "本局一次会议结算后只剩本人一名存活内鬼，至少另一名开局内鬼已被放逐，且有效存活船员至少4人；此后本人完成至少3次有效击杀并最终内鬼阵营获胜；仅发给该玩家，不把普通开局人数差当逆风",
+    "Rarity": "Legendary",
+    "Hidden": false,
+    "Category": "Impostor",
+    "Role": "内鬼阵营"
+  },
+  {
+    "Id": 500201,
+    "Name": "任务闭环",
+    "Description": "任务胜利判定实际生效，计入本局船员总进度的全部有效任务均完成，且最终船员阵营获胜；不要求完成不计总进度的中立或其他专属任务",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "船员阵营"
+  },
+  {
+    "Id": 500202,
+    "Name": "没有误判",
+    "Description": "船员阵营获胜，至少一次会议实际放逐了内鬼，且本局没有有效船员被会议放逐；没有任何放逐的对局不计",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "船员阵营"
+  },
+  {
+    "Id": 500203,
+    "Name": "维修有方",
+    "Description": "本人同一局对至少3次不同破坏实例做出实际有效修复，并最终以船员阵营获胜；每次破坏最多计一次，不计修门或对已修好设备的重复操作",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "船员阵营"
+  },
+  {
+    "Id": 500204,
+    "Name": "正义反击",
+    "Description": "本局至少一名内鬼实际死于有效船员来源的警长、老兵、保镖等技能，最终船员阵营获胜",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "船员阵营"
+  },
+  {
+    "Id": 500205,
+    "Name": "关键会议",
+    "Description": "一次会议放逐内鬼，该会议完整死亡队列处理后的胜负检查实际触发船员基础胜利，且最终船员阵营获胜",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "船员阵营"
+  },
+  {
+    "Id": 500206,
+    "Name": "众志成城",
+    "Description": "船员阵营获胜，且至少3种不同船员主职业各有一次白名单内的有效技能事件；单纯分配职业或加载被动状态不计",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "船员阵营"
+  },
+  {
+    "Id": 500207,
+    "Name": "逆境翻盘",
+    "Description": "一次会议结算后的有效阵营计数中，船员比内鬼少至少2人，房主因明确记录的特殊规则实际延后本应结束的胜负判定，之后船员阵营获胜；仅特殊配置适用，普通模式若已结束则不可能继续计数",
+    "Rarity": "Legendary",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "船员阵营"
+  },
+  {
+    "Id": 500208,
+    "Name": "无人掉队",
+    "Description": "船员阵营获胜时，所有开局有效船员都存活、未断线且未转离船员阵营；开局有效船员至少4人，不通过转阵营缩小统计集合",
+    "Rarity": "Legendary",
+    "Hidden": false,
+    "Category": "Crewmate",
+    "Role": "船员阵营"
+  },
+  {
+    "Id": 500301,
+    "Name": "独立终局",
+    "Description": "本人以中立职业实际触发一次专属基础胜利来源，且最终获胜；不是单纯被共同胜利规则加入",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "中立阵营"
+  },
+  {
+    "Id": 500302,
+    "Name": "多面赢家",
+    "Description": "在3场不同的有效对局中，分别以3种不同中立主职业实际触发其专属基础、抢夺或追加胜利来源并获胜；按职业集合跨局去重，不仅累计次数",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "中立阵营"
+  },
+  {
+    "Id": 500303,
+    "Name": "不靠阵营",
+    "Description": "本人触发中立职业专属基础胜利，且全部追加与共同胜利规则处理后，最终赢家名单仅本人一人；不能只通过内鬼与船员没获胜来推断",
+    "Rarity": "Legendary",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "中立阵营"
+  },
+  {
+    "Id": 500304,
+    "Name": "借势而胜",
+    "Description": "本人死亡后，通过赌徒、律师等目标关联的专属追加胜利规则实际获胜；不计所有中立共享胜利",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "中立阵营"
+  },
+  {
+    "Id": 500305,
+    "Name": "死后成名",
+    "Description": "本人死亡或被放逐是其专属胜利规则的必要触发事件，且该胜利来源实际成立、本人最终获胜；以来源白名单区分普通死后共享胜利",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "中立阵营"
+  },
+  {
+    "Id": 500306,
+    "Name": "一人改变结局",
+    "Description": "本人中立技能引发的死亡、有效阵营计数变化或放逐事件，在完整事件队列后的下一次胜负检查中触发该职业基础胜利，且本人最终获胜；保存触发事件关联，不推断“间接促成”",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "中立阵营"
+  },
+  {
+    "Id": 500307,
+    "Name": "反客为主",
+    "Description": "已生成内鬼或船员基础胜利候选后，本人的中立抢夺规则实际将胜利来源改为自身职业，且最终获胜；须记录覆盖前后来源，不使用“看似即将获胜”",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "中立阵营"
+  },
+  {
+    "Id": 500308,
+    "Name": "目标全清",
+    "Description": "本人作为纵火犯或疫医，在一局内对至少5名不同有效目标分别完成涂油或感染，并完成该职业所需全部剩余目标、触发对应专属胜利且本人最终获胜；目标集合由对应职业适配器提供，不泛化到没有全目标概念的中立",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "Neutral",
+    "Role": "中立阵营"
+  },
+  {
+    "Id": 500401,
+    "Name": "附加效果已触发",
+    "Description": "本人的附加职业实际产生一次5.5白名单内的有效事件；仅加载、被分配职业或向客户端设置皮肤不计",
+    "Rarity": "Common",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "附加职业"
+  },
+  {
+    "Id": 500402,
+    "Name": "改变一次结局",
+    "Description": "本人的附加效果实际阻止一次死亡、强制召开报告会议，或通过票数/破平效果改变放逐结果；按成功事件及无副作用比较结果判定",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "附加职业"
+  },
+  {
+    "Id": 500403,
+    "Name": "双重身份",
+    "Description": "同一局本人主职业与附加职业分别产生至少一次有效技能事件；两者来源必须不同，不能同一事件重复记作双来源",
+    "Rarity": "Rare",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "附加职业"
+  },
+  {
+    "Id": 500404,
+    "Name": "双效协同",
+    "Description": "同一局本人持有的两种不同附加职业各成功产生白名单有效事件，且本人最终获胜；房间只允许单附加职业时不参与",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "附加职业"
+  },
+  {
+    "Id": 500405,
+    "Name": "效果连锁",
+    "Description": "本人持有的恋人连锁实际造成两名恋人死亡，或复仇者死亡连锁造成本人及另一名玩家死亡；共享同一连锁事件ID，每个实际死者仅计一次，不泛算一次视觉同步为多人受影响",
+    "Rarity": "Epic",
+    "Hidden": false,
+    "Category": "AddOn",
+    "Role": "附加职业"
+  },
+  {
+    "Id": 500406,
+    "Name": "隐藏规则",
+    "Description": "本人通过利己主义者抢夺或UP主首杀的专属胜利来源最终获胜，且本人已在此前另一场有效对局通过另一种上述附加职业胜利来源获胜；按两种来源跨局去重，不要求一次比较所有职业规则",
+    "Rarity": "Epic",
+    "Hidden": true,
+    "Category": "AddOn",
+    "Role": "附加职业"
+  }
+]

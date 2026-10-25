@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using TONX.Modules.Achievements.Neutral;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -94,6 +95,8 @@ public sealed class Succubus : RoleBase, IKiller
             CharmLimit--;
             SendRPC();
             target.RpcSetCustomRole(CustomRoles.Charmed);
+            if (target.Is(CustomRoles.Charmed))
+                CharmCompleted.Trigger(Player);
 
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Succubus), GetString("SuccubusCharmedPlayer")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Succubus), GetString("CharmedBySuccubus")));

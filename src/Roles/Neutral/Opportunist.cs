@@ -24,8 +24,10 @@ public sealed class Opportunist : RoleBase, IAdditionalWinner
     )
     { }
 
+    public bool SurvivalWinGranted { get; private set; }
     public bool CheckWin(ref CustomRoles winnerRole)
     {
-        return Player.IsAlive();
+        SurvivalWinGranted = Player.IsAlive();
+        return SurvivalWinGranted;
     }
 }

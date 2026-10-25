@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Crewmate;
 
 namespace TONX.Roles.Crewmate;
 public sealed class SpeedBooster : RoleBase
@@ -35,6 +36,8 @@ public sealed class SpeedBooster : RoleBase
     }
     private static float UpSpeed;
     private static int BoostTimes;
+    private readonly HashSet<int> boostedTasks = new();
+    public int SuccessfulBoosts => boostedTasks.Count;
 
     private static void SetupOptionItem()
     {
@@ -49,6 +52,8 @@ public sealed class SpeedBooster : RoleBase
         if (!MyTaskState.HasCompletedEnoughCountOfTasks(BoostTimes))
         {
             Main.AllPlayerSpeed[playerId] += UpSpeed;
+            if (UpSpeed > 0 && boostedTasks.Add(MyTaskState.CompletedTasksCount))
+                SpeedIncreased.Trigger(Player);
             if (Main.AllPlayerSpeed[playerId] > 3) Player.Notify(GetString("SpeedBoosterSpeedLimit"));
             else Player.Notify(string.Format(GetString("SpeedBoosterTaskDone"), Main.AllPlayerSpeed[playerId].ToString("0.0#####")));
             Logger.Info("增速者触发加速:" + Player.GetNameWithRole(), "SpeedBooster");

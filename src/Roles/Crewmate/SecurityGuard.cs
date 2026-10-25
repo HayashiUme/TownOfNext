@@ -86,7 +86,7 @@ public sealed class SecurityGuard : RoleBase
 
         // 封锁该通风管
         if (LockedVents.Add(ventId))
-            RoleAchievementState.Record<VentLocked>(Player);
+            VentLocked.Trigger(Player);
         SendRPC_SyncLockedVents();
         Player.Notify(string.Format(GetString("SecurityGuardVentLocked"), ventId));
         Logger.Info($"{Player.GetNameWithRole()}: 封锁了通风管 {ventId}，当前已封锁: {LockedVents.Count}", "SecurityGuard");

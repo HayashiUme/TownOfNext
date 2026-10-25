@@ -47,8 +47,8 @@ public static class NameTagManager
         // 无自定义名牌的玩家通常无需重新广播；但若原名字含有已卸下的成就头衔，
         // 仍要走基础名字重建路径，以清掉旧前缀。
         bool hasOldAchievementTitle = TONX.Modules.Achievements.Core.AchievementRegistry.GetAll()
-            .Any(achievement => !string.IsNullOrEmpty(achievement.TitleDisplay) &&
-                                player.name.Contains($"[{achievement.TitleDisplay}]", StringComparison.Ordinal));
+            .Any(achievement => !string.IsNullOrEmpty(achievement.Name) &&
+                                player.name.Contains($"[{GetString(achievement.Name)}]", StringComparison.Ordinal));
         if (!player.AmOwner
             && !AllNameTags.ContainsKey(player.FriendCode)
             && TONX.Modules.Achievements.Core.AchievementTitleService.GetWearedTitleId(player.FriendCode) <= 0

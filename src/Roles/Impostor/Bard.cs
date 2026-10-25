@@ -1,5 +1,4 @@
 ﻿using AmongUs.GameOptions;
-using TONX.Modules.Achievements.Core;
 using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 
@@ -31,6 +30,13 @@ public sealed class Bard : RoleBase, IImpostor
     { }
 
     private float KillCooldown;
+    public int CooldownReductions { get; private set; }
+    public bool KilledAfterSecondReduction { get; private set; }
+    public void OnMurderPlayerAsKiller(MurderInfo info)
+    {
+        if (CooldownReductions >= 2 && !info.IsSuicide && info.AttemptTarget.Data.IsDead)
+            KilledAfterSecondReduction = true;
+    }
     public override void Add() => KillCooldown = Options.DefaultKillCooldown;
     public float CalculateKillCooldown() => KillCooldown;
     public override void OnExileWrapUp(NetworkedPlayerInfo exiled, ref bool DecidedWinner)
@@ -40,6 +46,9 @@ public sealed class Bard : RoleBase, IImpostor
         var previousCooldown = KillCooldown;
         KillCooldown /= 2;
         if (KillCooldown < previousCooldown)
-            RoleAchievementState.Record<VerseWritten>(Player);
+        {
+            CooldownReductions++;
+            if (CooldownReductions == 1) VerseWritten.Trigger(Player);
+        }
     }
 }

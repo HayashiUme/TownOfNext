@@ -161,7 +161,7 @@ public static class NameTagPanel
         //头衔以云端为准，主菜单里没有 LocalPlayer，用本地好友码读缓存
         var equippedId = TONX.Modules.Achievements.Core.AchievementTitleService.GetWearedTitleId(TONX.Modules.Achievements.Core.CustomAchievementDataManager.LocalFriendCode);
         var equipped = TONX.Modules.Achievements.Core.AchievementRegistry.GetById(equippedId);
-        titlePreview.text = equipped != null ? equipped.TitleDisplay : GetString("Achievement.NoTitleEquipped");
+        titlePreview.text = equipped != null ? GetString(equipped.Name) : GetString("Achievement.NoTitleEquipped");
         Items.Add("AchievementTitle", titleEntry);
 
         foreach (var nameTag in AllNameTags.Where(t => !t.Value.Isinternal))

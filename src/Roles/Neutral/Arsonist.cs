@@ -1,6 +1,5 @@
 using AmongUs.GameOptions;
 using Hazel;
-using TONX.Modules.Achievements.Core;
 using TONX.Modules.Achievements.Neutral;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
@@ -58,6 +57,7 @@ public sealed class Arsonist : RoleBase, IKiller
 
     private TimerInfo TargetInfo;
     public Dictionary<byte, bool> IsDoused;
+    public bool IgnitionWinTriggered { get; private set; }
     public bool IsKiller { get; private set; } = false;
     public bool CanKill { get; private set; } = false;
     private static void SetupOptionItem()
@@ -155,7 +155,7 @@ public sealed class Arsonist : RoleBase, IKiller
                     Player.SetKillCooldown();
                     TargetInfo = null;//塗が完了したのでTupleから削除
                     IsDoused[ar_target.PlayerId] = true;//塗り完了
-                    RoleAchievementState.Record<DouseCompleted>(Player);
+                    DouseCompleted.Trigger(Player);
                     SendRPC(RPC_type.SetDousedPlayer, ar_target.PlayerId, true);
                     Utils.NotifyRoles();//名前変更
                     SendRPC(RPC_type.SetCurrentDousingTarget);
@@ -200,6 +200,7 @@ public sealed class Arsonist : RoleBase, IKiller
             }
             CustomWinnerHolder.ShiftWinnerAndSetWinner(CustomWinner.Arsonist); //焼殺で勝利した人も勝利させる
             CustomWinnerHolder.WinnerIds.Add(Player.PlayerId);
+            IgnitionWinTriggered = true;
             return true;
         }
         return false;

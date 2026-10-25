@@ -533,7 +533,7 @@ public class ChatCommand(List<string> keywords, Func<CommandAccess> access, Func
                 => string.Format(GetString("Achievement.Command.NoBelong"), titleId),
             TONX.Modules.Achievements.Core.TitleChangeResult.Ok => def == null
                 ? GetString("Achievement.Command.UnWear")
-                : string.Format(GetString("Achievement.Command.Wear"), def.TitleColorHex, def.TitleDisplay),
+                : string.Format(GetString("Achievement.Command.Wear"), def.TitleColorHex, GetString(def.Name)),
             _ => string.Format(GetString("Achievement.Command.Fail"), titleId),
         };
 

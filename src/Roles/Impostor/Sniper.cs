@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using TONX.Modules;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -62,6 +63,17 @@ public sealed class Sniper : RoleBase, IImpostor
     bool AimAssistOneshot;
 
     bool MeetingReset;
+    private PlayerControl rayTarget;
+    private readonly HashSet<(byte, string)> rayVictims = new();
+    public int SuccessfulSnipes => rayVictims.Count;
+
+    private void RecordSnipeAchievement(MurderInfo info)
+    {
+        if (info.AttemptTarget == rayTarget && !info.IsSuicide && info.AttemptTarget.Data.IsDead
+            && !info.AttemptTarget.Data.Disconnected
+            && rayVictims.Add((info.AttemptTarget.PlayerId, info.AttemptTarget.FriendCode)))
+            SnipeCompleted.Trigger(Player);
+    }
     public static void SetupOptionItem()
     {
         SniperBulletCount = IntegerOptionItem.Create(RoleInfo, 10, OptionName.SniperBulletCount, new(1, 5, 1), 2, false)
@@ -119,6 +131,7 @@ public sealed class Sniper : RoleBase, IImpostor
     /// <param name="info"></param>
     public void OnMurderPlayerAsKiller(MurderInfo info)
     {
+        RecordSnipeAchievement(info);
         //AttemptKillerは自分確定
         //スナイパーがAppearanceKillerだった場合は狙撃じゃない
         //ターゲットが自殺扱いなら狙撃
@@ -226,11 +239,13 @@ public sealed class Sniper : RoleBase, IImpostor
             //一番正確な対象がターゲット
             var snipedTarget = targets.OrderBy(c => c.Value).First().Key;
             var killed = false;
-            CustomRoleManager.OnCheckMurder(
-                Player, snipedTarget,       // sniperがsnipedTargetを打ち抜く
-                snipedTarget, snipedTarget,  // 表示上はsnipedTargetの自爆
-                () => killed = true
-            );
+            rayTarget = snipedTarget;
+            try
+            {
+                CustomRoleManager.OnCheckMurder(Player, snipedTarget, snipedTarget, snipedTarget,
+                    () => killed = true);
+            }
+            finally { rayTarget = null; }
 
             //あたった通知
             Player.RPCPlayCustomSound("AWP");

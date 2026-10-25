@@ -1,5 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using TONX.Attributes;
+using TONX.Modules.Achievements.Neutral;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Neutral;
@@ -35,6 +37,18 @@ public sealed class Shifter : RoleBase, IKiller, IDeathReasonSeeable
         ShifterSkillCooldown,
     }
     private byte TargetPlayer;
+    private sealed class SwapHistory
+    {
+        public readonly HashSet<CustomRoles> ObtainedRoles = new();
+        public bool Returned;
+        public bool SwappedAfterReturn;
+    }
+    private static readonly Dictionary<(byte, string), SwapHistory> SwapHistories = new();
+    [GameModuleInitializer]
+    public static void Init() => SwapHistories.Clear();
+    public static bool CompletedDistinctSwaps(PlayerControl player) =>
+        player.IsAlive() && SwapHistories.TryGetValue((player.PlayerId, player.FriendCode), out var history)
+        && history.SwappedAfterReturn && history.ObtainedRoles.Count >= 2;
     public static void SetupOptionItem()
     {
         OptionShiftCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.ShifterSkillCooldown, new(2.5f, 180f, 2.5f), 20f, false)
@@ -71,8 +85,19 @@ public sealed class Shifter : RoleBase, IKiller, IDeathReasonSeeable
         var player = Player;
         if (target == null || (target.Data?.IsDead ?? true) || (Player.Data?.IsDead ?? true)) return;
 
-        player.RpcChangeRole(target.GetCustomRole());
+        var obtainedRole = target.GetCustomRole();
+        player.RpcChangeRole(obtainedRole);
         target.RpcChangeRole(CustomRoles.Shifter);
+        if (player.GetCustomRole() == obtainedRole && target.Is(CustomRoles.Shifter))
+        {
+            var key = (player.PlayerId, player.FriendCode);
+            if (!SwapHistories.TryGetValue(key, out var history)) SwapHistories[key] = history = new();
+            history.ObtainedRoles.Add(obtainedRole);
+            history.SwappedAfterReturn |= history.Returned;
+            if (SwapHistories.TryGetValue((target.PlayerId, target.FriendCode), out var returned))
+                returned.Returned = true;
+            IdentitySwapped.Trigger(player);
+        }
         Logger.Info($"连环交换师{player?.Data?.PlayerName}与{target?.Data?.PlayerName}交换了职业", "Shifter");
         Utils.NotifyRoles();
     }

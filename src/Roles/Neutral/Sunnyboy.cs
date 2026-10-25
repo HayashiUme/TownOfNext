@@ -32,8 +32,10 @@ public sealed class Sunnyboy : RoleBase, IAdditionalWinner
 
     public override void ApplyGameOptions(IGameOptions opt) => opt.SetVision(false);
 
+    public bool DeathWinGranted { get; private set; }
     public bool CheckWin(ref CustomRoles winnerRole)
     {
-        return !Player.IsAlive();
+        DeathWinGranted = !Player.IsAlive();
+        return DeathWinGranted;
     }
 }

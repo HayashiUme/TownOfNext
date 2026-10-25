@@ -34,6 +34,7 @@ public sealed class Executioner : RoleBase, IAdditionalWinner
         TargetExiled = false;
     }
     public static byte WinnerID;
+    public bool ExileWinTriggered { get; private set; }
 
     private static OptionItem OptionCanTargetImpostor;
     private static OptionItem OptionCanTargetNeutralKiller;
@@ -140,6 +141,7 @@ public sealed class Executioner : RoleBase, IAdditionalWinner
         {
             CustomWinnerHolder.SetWinnerOrAdditonalWinner(CustomWinner.Executioner);
             CustomWinnerHolder.WinnerIds.Add(Player.PlayerId);
+            ExileWinTriggered = true;
         };
     }
     public bool CheckWin(ref CustomRoles winnerRole)
