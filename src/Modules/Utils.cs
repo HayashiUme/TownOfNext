@@ -915,7 +915,7 @@ public static class Utils
     public static string ColorToHex(Color color)
     {
         Color32 color32 = color;
-        return $"{color32.r:X2}{color32.g:X2}{color32.b:X2}{color32.a:X2}";
+        return $"#{color32.r:X2}{color32.g:X2}{color32.b:X2}";
     }
 
     public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "<Default>", bool removeTags = false, bool allowOverride = false, string dead = "")
