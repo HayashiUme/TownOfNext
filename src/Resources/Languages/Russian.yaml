@@ -1824,6 +1824,8 @@ Achievement.Search: "Поиск достижений"
 Achievement.Progress: "Прогресс"
 Achievement.EquipConfirm: "Надеть этот титул?\n{0}"
 Achievement.UnequipConfirm: "Этот титул надет. Снять его?"
+Achievement.9002.Name: "Тест клавиш"
+Achievement.9002.Description: "Нажмите F5+A"
 
 # 轮抽选角 / Role Draft
 RoleDraft: "Выбор ролей"

@@ -60,7 +60,8 @@ public static class AchievementRegistry
             return;
         }
 
-        if (achievement.Id <= 0 || achievement.RequiredValue <= 0 || achievement.RequiredValue > 1_000_000 ||
+        if (achievement.Id <= 0 || achievement.Id > 1_000_000 ||
+            achievement.RequiredValue <= 0 || achievement.RequiredValue > 1_000_000 ||
             string.IsNullOrWhiteSpace(achievement.Name) ||
             string.IsNullOrWhiteSpace(achievement.Description) ||
             string.IsNullOrWhiteSpace(achievement.TitleDisplay) ||
@@ -76,10 +77,17 @@ public static class AchievementRegistry
             return;
         }
 
+        foreach (var key in new[] { achievement.Name, achievement.Description })
+        {
+            if (!Translator.translateMaps.Values.Any(map =>
+                    map.TryGetValue(key, out var text) && !string.IsNullOrWhiteSpace(text)))
+                Logger.Warn($"Missing achievement translation: {key}", "AchievementRegistry");
+        }
+
         All[achievement.Id] = achievement;
         ByType[achievement.GetType()] = achievement;
         if (!ByCategory.ContainsKey(achievement.Category)) ByCategory[achievement.Category] = new();
         ByCategory[achievement.Category].Add(achievement);
-        Logger.Info($"Registry successfully [{achievement.Id}] {achievement.Name}", "AchievementRegistry");
+        Logger.Info($"Registry successfully [{achievement.Id}] nameKey={achievement.Name}", "AchievementRegistry");
     }
 }

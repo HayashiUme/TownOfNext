@@ -201,16 +201,18 @@ public sealed class CustomAchievementData
 
     private AchievementRecord EnsureRecord(AchievementBase definition)
     {
-        if (_records.TryGetValue(definition.Id, out var record)) return record;
-
-        record = new AchievementRecord
+        if (!_records.TryGetValue(definition.Id, out var record))
         {
-            Id = definition.Id,
-            Name = definition.Name ?? "",
-            Description = definition.Description ?? "",
-            Required = Math.Max(1, definition.RequiredValue),
-        };
-        _records[definition.Id] = record;
+            record = new AchievementRecord
+            {
+                Id = definition.Id,
+                Required = Math.Max(1, definition.RequiredValue),
+            };
+            _records[definition.Id] = record;
+        }
+
+        record.Name = GetString(definition.Name);
+        record.Description = GetString(definition.Description);
         return record;
     }
 }

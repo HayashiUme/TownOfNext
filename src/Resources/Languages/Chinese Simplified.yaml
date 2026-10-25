@@ -1818,6 +1818,8 @@ Achievement.Search: "搜索成就"
 Achievement.Progress: "成就进度"
 Achievement.EquipConfirm: "是否佩戴此头衔？\n{0}"
 Achievement.UnequipConfirm: "当前已佩戴此头衔，是否取消佩戴？"
+Achievement.9002.Name: "按键测试"
+Achievement.9002.Description: "按下 F5+A"
 
 # 轮抽选角 / Role Draft
 RoleDraft: "轮抽选角"

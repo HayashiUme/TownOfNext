@@ -345,7 +345,7 @@ public static class AchievementPanel
 
             var description = MakeText(inner, "Achievement Row Description " + achievement.Id, titleY - lineGap, 0.72f * Unit, TextAlignmentOptions.Left, new Color(1f, 1f, 1f, 0.6f));
             description.text = visible
-                ? $"{achievement.Description}{(achievement.IsProgressAchievement ? $"  <size=80%>{GetString("Achievement.Progress")}（{GetProgress(achievement, localData)}/{achievement.RequiredValue}）</size>" : "")}"
+                ? $"{GetString(achievement.Description)}{(achievement.IsProgressAchievement ? $"  <size=80%>{GetString("Achievement.Progress")}（{GetProgress(achievement, localData)}/{achievement.RequiredValue}）</size>" : "")}"
                 : GetString("Achievement.HiddenDescription");
             Items.Add(description.gameObject);
 
@@ -365,7 +365,7 @@ public static class AchievementPanel
         => data == null ? 0 : data.GetProgress(achievement.Id);
 
     private static string GetAchievementName(AchievementBase achievement, CustomAchievementData data)
-        => IsUnlocked(achievement, data) || !achievement.Hidden ? achievement.Name : GetString("Achievement.HiddenName");
+        => IsUnlocked(achievement, data) || !achievement.Hidden ? GetString(achievement.Name) : GetString("Achievement.HiddenName");
 
     private static bool Matches(AchievementBase achievement, CustomAchievementData data)
     {
@@ -378,7 +378,7 @@ public static class AchievementPanel
         };
         if (!passFilter) return false;
         if (string.IsNullOrEmpty(SearchText)) return true;
-        return achievement.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+        return GetString(achievement.Name).Contains(SearchText, StringComparison.OrdinalIgnoreCase)
             || achievement.TitleDisplay.Contains(SearchText, StringComparison.OrdinalIgnoreCase);
     }
 

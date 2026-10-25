@@ -6,8 +6,8 @@ namespace TONX.Modules.Achievements.Core;
 public abstract class AchievementBase : IAchievement
 {
     public abstract int Id { get; }
-    public abstract string Name { get; }
-    public abstract string Description { get; }
+    public virtual string Name => $"Achievement.{Id}.Name";
+    public virtual string Description => $"Achievement.{Id}.Description";
     public abstract string TitleDisplay { get; }
     public abstract Color TitleColor { get; }
 

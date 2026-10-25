@@ -24,7 +24,7 @@ public static class AchievementNotificationService
         {
             message.Append("\n<color=").Append(achievement.Rarity.GetColorCode()).Append(">★</color> ")
                 .Append("<color=").Append(achievement.TitleColorHex).Append(">【")
-                .Append(achievement.Name).Append("】</color> <size=70%>")
+                .Append(GetString(achievement.Name)).Append("】</color> <size=70%>")
                 .Append(achievement.Rarity.GetDisplayName()).Append("</size>");
         }
 

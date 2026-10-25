@@ -1771,6 +1771,8 @@ Achievement.Search: "Search achievements"
 Achievement.Progress: "Progress"
 Achievement.EquipConfirm: "Equip this title?\n{0}"
 Achievement.UnequipConfirm: "This title is equipped. Unequip it?"
+Achievement.9002.Name: "Key Test"
+Achievement.9002.Description: "Press F5+A"
 # 轮抽选角 / Role Draft
 RoleDraft: "Role Draft"
 RoleDraft.StartDraft: "Role Draft starts. You are <b>Player {0}</b>."

@@ -92,7 +92,8 @@ public static class AchievementManager
             var progress = definition?.IsProgressAchievement == true
                 ? $" <size=70%>({record.Progress}/{definition.RequiredValue})</size>"
                 : "";
-            message.AppendLine($"<color={color}>【{record.Id}】{record.Name}</color>{progress}");
+            var name = definition != null ? GetString(definition.Name) : record.Name;
+            message.AppendLine($"<color={color}>【{record.Id}】{name}</color>{progress}");
             message.AppendLine($"<size=70%>{string.Format(GetString("Achievement.Info.UnlockedAt"), record.UnlockedAt)}</size>");
         }
 

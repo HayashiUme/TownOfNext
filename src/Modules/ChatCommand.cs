@@ -302,8 +302,8 @@ public class ChatCommand(List<string> keywords, Func<CommandAccess> access, Func
                 if (achievement == null)
                     return (MsgRecallMode.Block, string.Format(GetString("Achievement.NotFound"), achId));
 
-                string msg = $"<color={achievement.TitleColorHex}>【{achievement.Name}】</color>\n" +
-                             $"{achievement.Description}";
+                string msg = $"<color={achievement.TitleColorHex}>【{GetString(achievement.Name)}】</color>\n" +
+                             GetString(achievement.Description);
                 return (MsgRecallMode.Block, msg);
             }),
             new(["qq","dc"], () => CommandAccess.Host, mc =>

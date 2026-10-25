@@ -1774,6 +1774,8 @@ Achievement.Search: "Buscar conquistas"
 Achievement.Progress: "Progresso"
 Achievement.EquipConfirm: "Equipar este título?\n{0}"
 Achievement.UnequipConfirm: "Este título está equipado. Desequipar?"
+Achievement.9002.Name: "Teste de Teclas"
+Achievement.9002.Description: "Pressione F5+A"
 # 轮抽选角 / Role Draft
 RoleDraft: "Seleção de Funções"
 RoleDraft.StartDraft: "Seleção de Funções iniciada. Você é o <b>Jogador {0}</b>."
