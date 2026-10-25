@@ -153,8 +153,8 @@ public static class NameTagPanel
         var titlePreview = Object.Instantiate(titleEntry.transform.GetChild(0).GetComponent<TextMeshPro>(), titleEntry.transform);
         titlePreview.transform.SetLocalX(1.9f);
         titlePreview.fontSize = 1f;
-        var localPlayer = PlayerControl.LocalPlayer;
-        var equippedId = localPlayer == null ? 0 : PlayerAchievementData.GetEquippedTitle(localPlayer.PlayerId);
+        //头衔以云端为准，主菜单里没有 LocalPlayer，用本地好友码读缓存
+        var equippedId = TONX.Modules.Achievements.Core.AchievementTitleService.GetWearedTitleId(TONX.Modules.Achievements.Core.CustomAchievementDataManager.LocalFriendCode);
         var equipped = TONX.Modules.Achievements.Core.AchievementRegistry.GetById(equippedId);
         titlePreview.text = equipped != null ? equipped.TitleDisplay : GetString("Achievement.NoTitleEquipped");
         Items.Add("AchievementTitle", titleEntry);

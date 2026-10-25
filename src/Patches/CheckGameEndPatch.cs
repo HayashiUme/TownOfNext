@@ -78,7 +78,10 @@ class GameEndChecker
         CustomWinnerHolder.WriteTo(winnerWriter);
         AmongUsClient.Instance.FinishRpcImmediately(winnerWriter);
         
-        _ = TONX.Modules.Achievements.Core.AchievementManager.FlushAllAsync();
+        var settleTask = TONX.Modules.Achievements.Core.AchievementManager.SettleGameAsync();
+        while (!settleTask.IsCompleted) yield return null;
+        yield return null;
+
 
         // 蘇生を確実にゴーストロール設定の後に届けるための遅延
         yield return new WaitForSeconds(EndGameDelay);
@@ -99,6 +102,9 @@ class GameEndChecker
             // ゲーム終了を確実に最後に届けるための遅延
             yield return new WaitForSeconds(EndGameDelay);
         }
+
+        //结算消息只是入队，实际每帧发一条；等队列发完再结束对局
+        for (int i = 0; i < 60 && Main.MessagesToSend.Count > 0; i++) yield return null;
 
         // ゲーム終了
         GameManager.Instance.RpcEndGame(reason, false);

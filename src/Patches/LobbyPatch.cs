@@ -1,7 +1,7 @@
 ﻿using TONX.Modules.Achievements.Titles;
 using UnityEngine;
 using Object = UnityEngine.Object;
-using AchManager = TONX.Modules.Achievements.Core.AchievementManager;
+using TONX.Modules.Achievements.Core;
 
 namespace TONX;
 
@@ -24,8 +24,12 @@ public class LobbyStartPatch
         
         if (_wasInGame)
         {
-            _ = AchManager.FlushAllAsync();
             _wasInGame = false;
+            if (AmongUsClient.Instance?.AmHost == true)
+            {
+                AchievementRoomSyncService.ResetSession();
+                _ = AchievementRoomSyncService.SyncRoomAsync();
+            }
         }
     }
 

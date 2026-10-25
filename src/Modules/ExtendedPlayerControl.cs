@@ -870,9 +870,6 @@ static class ExtendedPlayerControl
         var data = player.GetAchievementInfo();
         if (data == null) return null;
 
-        if (fetchIfMissing && !data.HasData)
-            _ = TONX.Modules.Achievements.Core.AchievementApiClient.EnsureFetchedAsync(data);
-
         return data;
     }
 }

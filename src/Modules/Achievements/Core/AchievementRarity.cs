@@ -21,7 +21,7 @@ public static class AchievementRarityUtils
     };
 
     public static string GetColorCode(this AchievementRarity rarity)
-        => $"#{ColorUtility.ToHtmlStringRGB(rarity.GetColor())}";
+        => Utils.ColorToHex(rarity.GetColor());
 
     public static string GetDisplayName(this AchievementRarity rarity)
         => GetString(rarity switch

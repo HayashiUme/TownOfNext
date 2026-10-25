@@ -57,9 +57,20 @@ public static class AchievementPanel
             return;
         }
 
-        //NameTagInterface.NameTagPanel.Hide();
+        BootstrapLocalData();
         RefreshList();
         Menu.SetActive(true);
+    }
+
+    private static void BootstrapLocalData()
+    {
+        if (string.IsNullOrEmpty(CustomAchievementDataManager.LocalFriendCode))
+            CustomAchievementDataManager.SetLocalFriendCode(EOSManager.Instance?.friendCode);
+
+        var friendCode = CustomAchievementDataManager.LocalFriendCode;
+        if (string.IsNullOrEmpty(friendCode)) return;
+
+        CustomAchievementDataManager.GetOrCreate(friendCode, true);
     }
 
     public static void Update()
@@ -278,8 +289,7 @@ public static class AchievementPanel
         var mask = Slider.transform.FindChild("Mask") ?? Slider.transform;
         var inner = scroller.Inner;
 
-        var localPlayer = PlayerControl.LocalPlayer;
-        var equippedId = localPlayer == null ? 0 : PlayerAchievementData.GetEquippedTitle(localPlayer.PlayerId);
+        var equippedId = TONX.Modules.Achievements.Core.AchievementManager.GetWearedTitleId(CustomAchievementDataManager.LocalFriendCode);
         var localData = CustomAchievementDataManager.GetLocal();
 
         var list = AchievementRegistry.GetAll()
@@ -342,7 +352,6 @@ public static class AchievementPanel
         scroller.SetYBoundsMax(Mathf.Max(0f, rowPitch * rows - ListHeight));
     }
 
-    /// <summary>该成就是否已解锁</summary>
     private static bool IsUnlocked(AchievementBase achievement, CustomAchievementData data)
         => data != null && data.Has(achievement.Id);
 
@@ -392,25 +401,32 @@ public static class AchievementPanel
         var localData = CustomAchievementDataManager.GetLocal();
         if (!IsUnlocked(achievement, localData)) return;
 
-        var localPlayer = PlayerControl.LocalPlayer;
-        var equippedId = localPlayer == null ? 0 : PlayerAchievementData.GetEquippedTitle(localPlayer.PlayerId);
+        var equippedId = TONX.Modules.Achievements.Core.AchievementManager.GetWearedTitleId(CustomAchievementDataManager.LocalFriendCode);
         var equipped = equippedId == achievement.Id;
 
         var body = equipped
             ? GetString("Achievement.UnequipConfirm")
             : string.Format(GetString("Achievement.EquipConfirm"), $"<color={achievement.TitleColorHex}>{achievement.TitleDisplay}</color>");
 
-        CustomPopup.Show(GetString("Achievement.EquipTitle"), body, new()
-        {
-            (GetString(StringNames.PlainYes), () => Wear(achievement, !equipped)),
-            (GetString(StringNames.PlainNo), null)
-        }, -727f);
+        AchievementConfirmWindow.Open(body, () => Wear(achievement, !equipped));
     }
 
-    private static void Wear(AchievementBase achievement, bool equip)
+        private static void Wear(AchievementBase achievement, bool equip)
+        => _ = WearAsync(achievement, equip);
+
+    private static async Task WearAsync(AchievementBase achievement, bool equip)
     {
-        _ = TONX.Modules.Achievements.Core.AchievementManager.WearTitleAsync(PlayerControl.LocalPlayer, equip ? achievement.Id : 0);
-        _ = new LateTask(RefreshList, 0.6f, "RefreshAchievementPanel");
+        var friendCode = CustomAchievementDataManager.LocalFriendCode;
+        int titleId = equip ? achievement.Id : 0;
+
+        if (!await TONX.Modules.Achievements.Core.AchievementManager.WearPendingAchievementTitle(friendCode, titleId))
+            Logger.Warn($"头衔上传失败：{friendCode} -> {titleId}", "AchievementPanel");
+
+        if (NameTagInterface.NameTagPanel.Slider != null) NameTagInterface.NameTagPanel.RefreshTagList();
+        _ = new LateTask(()=>
+        {
+            RefreshList();
+        }, 0f, "RefreshAchievementPanel");
     }
     
     private static Vector2 VisibleSize(SpriteRenderer renderer)

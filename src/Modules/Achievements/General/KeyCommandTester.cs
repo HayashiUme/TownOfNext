@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace TONX.Modules.Achievements.General;
 
-//仅用于测试成就
 public sealed class KeyCommandTester : SingleUnlockAchievement<KeyCommandTester>
 {
     public const int AchievementId = 9002;

@@ -25,12 +25,16 @@ class OnGameJoinedPatch
         GameStates.InGame = false;
         ErrorText.Instance.Clear();
         ServerAddManager.SetServerName(HttpMatchmakerManagerPatch.CurrentGameRegion ?? null);
-
-        
         TONX.Modules.Achievements.Core.CustomAchievementDataManager.SetLocalFriendCode(EOSManager.Instance?.friendCode);
-        TONX.Modules.Achievements.Core.CustomAchievementDataManager.Clear();
-        
+        TONX.Modules.Achievements.Core.AchievementRoomSyncService.ResetSession();
         TONX.Modules.Achievements.Core.AchievementManager.OnLocalJoined();
+        if (AmongUsClient.Instance.AmHost)
+        {
+            _ = new LateTask(() =>
+            {
+                _ = TONX.Modules.Achievements.Core.AchievementRoomSyncService.SyncRoomAsync();
+            }, 1f, "InitialAchievementRoomSync");
+        }
 
         if (AmongUsClient.Instance.AmHost) //以下、ホストのみ実行
         {
@@ -78,10 +82,6 @@ class DisconnectInternalPatch
 
         CustomRoleManager.Dispose();
         CustomGameModeManager.Dispose();
-
-        // 成就：断链前最后收尾——房主把在场所有人的成就增量一次性上传
-        if (AmongUsClient.Instance.AmHost)
-            _ = TONX.Modules.Achievements.Core.AchievementManager.FlushAllAsync();
     }
 }
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerJoined))]
@@ -119,7 +119,6 @@ class OnPlayerJoinedPatch
             // if (Main.NewLobby && Options.ShareLobby.GetBool()) Cloud.ShareLobby();
         }
 
-        // 房主侧：拉取该玩家的成就数据，并把"云端有但还没告知过他"的成就私聊告诉他
         TONX.Modules.Achievements.Core.AchievementManager.OnPlayerJoined(client.FriendCode);
     }
 }
@@ -168,6 +167,9 @@ class OnPlayerLeftPatch
             }
             else
             {
+                if (AmongUsClient.Instance.AmHost && !string.IsNullOrEmpty(data.FriendCode))
+                    TONX.Modules.Achievements.Core.AchievementRoomSyncService.ForgetPlayer(data.FriendCode);
+
                 if (GameStates.IsInGame)
                 {
                     if (data.Character.Is(CustomRoles.Lovers) && !data.Character.Data.IsDead)
@@ -201,12 +203,6 @@ class OnPlayerLeftPatch
             {
                 Main.SayStartTimes.Remove(__instance.ClientId);
                 Main.SayBanwordsTimes.Remove(__instance.ClientId);
-
-                // 成就：趁数据还在，上传该玩家的成就增量，并清掉他的头衔与容器
-                // （按 PlayerId 逐个移除，避免 PlayerId 被复用后错戴）
-                var leftPlayerId = data?.Character?.PlayerId ?? byte.MaxValue;
-                TONX.Modules.Achievements.Titles.PlayerAchievementData.RemovePlayer(leftPlayerId);
-                _ = TONX.Modules.Achievements.Core.AchievementManager.FlushAsync(data?.FriendCode);
 
                 // 附加描述掉线原因
                 switch (reason)

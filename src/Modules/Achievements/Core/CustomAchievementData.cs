@@ -9,75 +9,85 @@ public sealed class AchievementRecord
     public bool Unlocked { get; set; }
     public int Progress { get; set; }
     public int Required { get; set; }
+
+    public AchievementRecord Clone() => new()
+    {
+        Id = Id,
+        Name = Name,
+        Description = Description,
+        UnlockedAt = UnlockedAt,
+        Unlocked = Unlocked,
+        Progress = Progress,
+        Required = Required,
+    };
 }
 
 public sealed class CustomAchievementData
 {
     private readonly object _lock = new();
-
     private readonly Dictionary<int, AchievementRecord> _records = new();
-    private readonly Dictionary<int, AchievementRecord> _dirty = new();
-    private readonly HashSet<int> _announced = new();
+    private readonly HashSet<int> _pendingIds = new();
+    private HashSet<int> _roundStartUnlocked = new();
 
     public string FriendCode { get; }
     public bool IsLocal { get; }
-
     public bool HasData { get; private set; }
-
     public DateTime LoadedAt { get; private set; }
+    public bool HasRoundSnapshot { get; private set; }
+    public int WearedTitleId { get; private set; }
 
     public CustomAchievementData(string friendCode, bool isLocal = false)
     {
-        FriendCode = NormalizeFriendCode(friendCode);
+        FriendCode = friendCode;
         IsLocal = isLocal;
     }
 
-    public static string NormalizeFriendCode(string friendCode)
-        => (friendCode ?? "").Trim().ToLowerInvariant();
-
     public IReadOnlyList<AchievementRecord> Records
     {
-        get { lock (_lock) return _records.Values.ToList(); }
+        get { lock (_lock) return _records.Values.Select(x => x.Clone()).ToList(); }
+    }
+
+    public IReadOnlyCollection<int> RoundStartUnlocked
+    {
+        get { lock (_lock) return _roundStartUnlocked.ToArray(); }
     }
 
     public bool HasPendingChanges
     {
-        get { lock (_lock) return _dirty.Count > 0; }
+        get { lock (_lock) return _pendingIds.Count > 0; }
     }
 
     public int UnlockedCount
     {
-        get { lock (_lock) return _records.Values.Count(r => IsUnlocked(r)); }
+        get { lock (_lock) return _records.Values.Count(IsUnlocked); }
     }
 
     public int TotalCount => AchievementRegistry.GetAll().Count;
 
     public static bool IsUnlocked(AchievementRecord record)
-        => record != null
-           && (record.Unlocked || (record.Required > 0 && record.Progress >= record.Required));
+        => record != null && (record.Unlocked || (record.Required > 0 && record.Progress >= record.Required));
 
-    public bool Has(int id) => IsUnlocked(Get(id));
-
-    public AchievementRecord Get(int id)
+    public bool Has(int id)
     {
-        lock (_lock) return _records.TryGetValue(id, out var r) ? r : null;
+        lock (_lock) return _records.TryGetValue(id, out var record) && IsUnlocked(record);
     }
 
     public int GetProgress(int id)
     {
-        lock (_lock) return _records.TryGetValue(id, out var r) ? r.Progress : 0;
+        lock (_lock) return _records.TryGetValue(id, out var record) ? record.Progress : 0;
     }
 
-    internal void MarkLoaded()
+    public AchievementRecord Get(int id)
     {
-        lock (_lock)
-        {
-            HasData = true;
-            LoadedAt = DateTime.UtcNow;
-        }
+        lock (_lock) return _records.TryGetValue(id, out var record) ? record.Clone() : null;
     }
 
-    public void MergeServer(IEnumerable<AchievementRecord> records)
+    public void SetWearedTitle(int achievementId)
+    {
+        lock (_lock) WearedTitleId = Math.Max(0, achievementId);
+    }
+
+    public void MergeCloud(IEnumerable<AchievementRecord> records)
     {
         if (records == null) return;
 
@@ -87,33 +97,18 @@ public sealed class CustomAchievementData
             {
                 if (incoming == null || incoming.Id <= 0) continue;
 
-                if (_records.TryGetValue(incoming.Id, out var existing))
+                if (!_records.TryGetValue(incoming.Id, out var current))
                 {
-                    existing.Progress = Math.Max(existing.Progress, incoming.Progress);
-                    existing.Required = incoming.Required > 0 ? incoming.Required : existing.Required;
-                    if (incoming.Unlocked)
-                    {
-                        existing.Unlocked = true;
-                        if (string.IsNullOrEmpty(existing.UnlockedAt)) existing.UnlockedAt = incoming.UnlockedAt;
-                    }
-                    if (string.IsNullOrEmpty(existing.Name) && !string.IsNullOrEmpty(incoming.Name))
-                        existing.Name = incoming.Name;
-                    if (string.IsNullOrEmpty(existing.Description) && !string.IsNullOrEmpty(incoming.Description))
-                        existing.Description = incoming.Description;
+                    _records[incoming.Id] = incoming.Clone();
+                    continue;
                 }
-                else
-                {
-                    _records[incoming.Id] = new AchievementRecord
-                    {
-                        Id = incoming.Id,
-                        Name = incoming.Name ?? "",
-                        Description = incoming.Description ?? "",
-                        UnlockedAt = incoming.UnlockedAt ?? "",
-                        Unlocked = incoming.Unlocked,
-                        Progress = incoming.Progress,
-                        Required = incoming.Required,
-                    };
-                }
+
+                current.Progress = Math.Max(current.Progress, incoming.Progress);
+                if (incoming.Required > 0) current.Required = incoming.Required;
+                if (incoming.Unlocked) current.Unlocked = true;
+                if (string.IsNullOrEmpty(current.UnlockedAt)) current.UnlockedAt = incoming.UnlockedAt ?? "";
+                if (string.IsNullOrEmpty(current.Name)) current.Name = incoming.Name ?? "";
+                if (string.IsNullOrEmpty(current.Description)) current.Description = incoming.Description ?? "";
             }
 
             HasData = true;
@@ -121,103 +116,88 @@ public sealed class CustomAchievementData
         }
     }
 
-    public bool ApplyUnlock(AchievementBase def)
+    public bool RecordUnit(AchievementBase definition)
     {
-        if (def == null) return false;
+        if (definition == null) return false;
 
         lock (_lock)
         {
-            var record = EnsureRecord(def.Id);
+            var record = EnsureRecord(definition);
             if (IsUnlocked(record)) return false;
 
-            record.Unlocked = true;
-            record.Progress = def.RequiredValue;
-            record.Required = def.RequiredValue;
-            record.Name = def.Name;
-            record.Description = def.Description;
-            record.UnlockedAt = DateTime.UtcNow.ToString("o");
+            record.Required = Math.Max(1, definition.RequiredValue);
+            record.Progress = definition.IsProgressAchievement
+                ? Math.Min(record.Progress + 1, record.Required)
+                : record.Required;
+            record.Unlocked = record.Progress >= record.Required;
+            if (record.Unlocked && string.IsNullOrEmpty(record.UnlockedAt))
+                record.UnlockedAt = DateTime.UtcNow.ToString("o");
 
-            _dirty[def.Id] = Clone(record);
-            Logger.Info($"{FriendCode} unlocked [{def.Id}]{def.Name}", "CustomAchievementData");
+            _pendingIds.Add(definition.Id);
             return true;
         }
     }
 
-    public bool ApplyProgress(AchievementBase def, int value)
-    {
-        if (def == null || value <= 0) return false;
-
-        lock (_lock)
-        {
-            var record = EnsureRecord(def.Id);
-            if (IsUnlocked(record)) return false;
-            if (value <= record.Progress) return false;
-
-            record.Progress = Math.Min(value, def.RequiredValue);
-            record.Required = def.RequiredValue;
-            if (string.IsNullOrEmpty(record.Name)) record.Name = def.Name;
-            if (string.IsNullOrEmpty(record.Description)) record.Description = def.Description;
-
-            var reached = IsUnlocked(record);
-            if (reached)
-            {
-                record.Unlocked = true;
-                if (string.IsNullOrEmpty(record.UnlockedAt)) record.UnlockedAt = DateTime.UtcNow.ToString("o");
-                Logger.Info($"{FriendCode} unlocked [{def.Id}]{def.Name}", "CustomAchievementData");
-            }
-
-            _dirty[def.Id] = Clone(record);
-            return reached;
-        }
-    }
-
-    public List<AchievementRecord> TakeUnannounced()
+    public IReadOnlyList<AchievementRecord> GetPendingRecords()
     {
         lock (_lock)
         {
-            var result = _records.Values
-                .Where(IsUnlocked)
-                .Where(r => !_announced.Contains(r.Id))
-                .Select(Clone)
+            return _pendingIds
+                .Where(_records.ContainsKey)
+                .Select(id => _records[id].Clone())
                 .ToList();
-
-            foreach (var record in result) _announced.Add(record.Id);
-            return result;
         }
     }
 
-    public List<AchievementRecord> PeekDirty()
+    public void MarkUploaded(int id)
     {
-        lock (_lock) return _dirty.Values.Select(Clone).ToList();
+        lock (_lock) _pendingIds.Remove(id);
     }
 
-    public void CommitDirty()
+    public IReadOnlyList<int> GetNewlyUnlockedIds()
     {
-        lock (_lock) _dirty.Clear();
+        lock (_lock)
+        {
+            if (!HasRoundSnapshot) return Array.Empty<int>();
+            return _records.Values
+                .Where(IsUnlocked)
+                .Select(x => x.Id)
+                .Where(id => !_roundStartUnlocked.Contains(id))
+                .ToList();
+        }
     }
 
-    public void DiscardDirty()
+    public void StartRound()
     {
-        lock (_lock) _dirty.Clear();
+        lock (_lock)
+        {
+            _roundStartUnlocked = _records.Values.Where(IsUnlocked).Select(x => x.Id).ToHashSet();
+            HasRoundSnapshot = true;
+        }
     }
 
-    private AchievementRecord EnsureRecord(int id)
+    public void CompleteRound()
     {
-        if (_records.TryGetValue(id, out var record)) return record;
+        lock (_lock)
+        {
+            if (_pendingIds.Count > 0) return;
+            _roundStartUnlocked = _records.Values.Where(IsUnlocked).Select(x => x.Id).ToHashSet();
+            HasRoundSnapshot = true;
+        }
+    }
 
-        record = new AchievementRecord { Id = id };
-        _records[id] = record;
+    private AchievementRecord EnsureRecord(AchievementBase definition)
+    {
+        if (_records.TryGetValue(definition.Id, out var record)) return record;
+
+        record = new AchievementRecord
+        {
+            Id = definition.Id,
+            Name = definition.Name ?? "",
+            Description = definition.Description ?? "",
+            Required = Math.Max(1, definition.RequiredValue),
+        };
+        _records[definition.Id] = record;
         return record;
     }
-
-    private static AchievementRecord Clone(AchievementRecord record) => new()
-    {
-        Id = record.Id,
-        Name = record.Name,
-        Description = record.Description,
-        UnlockedAt = record.UnlockedAt,
-        Unlocked = record.Unlocked,
-        Progress = record.Progress,
-        Required = record.Required,
-    };
 }

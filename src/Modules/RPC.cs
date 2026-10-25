@@ -75,9 +75,6 @@ public enum CustomRPC
     //SyncKBPlayer,
     //SyncKBBackCountdown,
     //SyncKBNameNotify,
-
-    //Achievements
-    SyncAchievementTitle,
 }
 public enum Sounds
 {
@@ -92,7 +89,7 @@ public enum Sounds
 internal class RPCHandlerPatch
 {
     public static bool TrustedRpc(byte id)
-    => (CustomRPC)id is CustomRPC.VersionCheck or CustomRPC.RequestRetryVersionCheck or CustomRPC.AntiBlackout or CustomRPC.Guess or CustomRPC.OnClickMeetingButton or CustomRPC.SyncAchievementTitle;
+    => (CustomRPC)id is CustomRPC.VersionCheck or CustomRPC.RequestRetryVersionCheck or CustomRPC.AntiBlackout or CustomRPC.Guess or CustomRPC.OnClickMeetingButton;
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
         var rpcType = (RpcCalls)callId;
@@ -299,9 +296,6 @@ internal class RPCHandlerPatch
                 playerState.DeathReason = CustomDeathReason.etc;
                 playerState.IsDead = false;
                 playerState.RealKiller = (DateTime.MinValue, byte.MaxValue);
-                break;
-            case CustomRPC.SyncAchievementTitle:
-                TONX.Modules.Achievements.Titles.AchievementTitleHandler.ReceiveTitleSyncRpc(reader, __instance);
                 break;
         }
     }

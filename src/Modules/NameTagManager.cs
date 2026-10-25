@@ -18,7 +18,7 @@ public static class NameTagManager
     public static IReadOnlyDictionary<string, NameTag> AllNameTags => NameTags;
     public static IReadOnlyDictionary<string, NameTag> AllInternalNameTags => AllNameTags.Where(t => t.Value.Isinternal).ToDictionary(x => x.Key, x => x.Value);
     public static IReadOnlyDictionary<string, NameTag> AllExternalNameTags => AllNameTags.Where(t => !t.Value.Isinternal).ToDictionary(x => x.Key, x => x.Value);
-    
+
     private static readonly List<INameTagProvider> TagProviders = new();
     public static NameTag DeepClone(NameTag tag)
     {
@@ -44,7 +44,11 @@ public static class NameTagManager
     public static void ApplyFor(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost || player == null) return;
-        if (!player.AmOwner && !AllNameTags.ContainsKey(player.FriendCode)) return;
+        //没有自定义名札时只处理"自己"和"云端查到有头衔"的玩家（头衔来自 TONX 云端，原版玩家也会有）
+        if (!player.AmOwner
+            && !AllNameTags.ContainsKey(player.FriendCode)
+            && TONX.Modules.Achievements.Core.AchievementTitleService.GetWearedTitleId(player.FriendCode) <= 0)
+            return;
 
         string name = player.GetTrueName();
         if (Main.HostNickName != "" && player.AmOwner) name = Main.HostNickName;
@@ -79,7 +83,7 @@ public static class NameTagManager
                 name = upper + "</size>\r\n" + name;
             }
         }
-        
+
         //这个Lobby的判定条件也许可以扬了
         if (GameStates.IsLobby)
         {
@@ -326,7 +330,7 @@ public static class NameTagManager
     public interface INameTagProvider
     {
         /// <summary>
-        /// 添加头衔，很何意味吧。
+        /// 添加头衔的统一接口
         /// </summary>
         /// <param name="player">添加对象</param>
         /// <returns></returns>

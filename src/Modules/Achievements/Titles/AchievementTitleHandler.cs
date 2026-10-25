@@ -1,61 +1,14 @@
-using Hazel;
-using TONX.Attributes;
 using TONX.Modules.Achievements.Core;
 
 namespace TONX.Modules.Achievements.Titles;
 
 public static class AchievementTitleHandler
 {
-    public static void SendTitleSyncRpc(byte playerId, int achievementId)
-    {
-        _ = new LateTask(() =>
-        {
-            ApplyTitleLocally(playerId, achievementId);
-
-            if (!AmongUsClient.Instance.AmConnected) return;
-
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
-                PlayerControl.LocalPlayer.NetId,
-                (byte)CustomRPC.SyncAchievementTitle,
-                SendOption.Reliable,
-                -1);
-            writer.Write(playerId);
-            writer.Write(achievementId);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
-
-        }, 0f, $"AchievementTitleSyncRpc p{playerId}");
-    }
-
-    public static void ReceiveTitleSyncRpc(MessageReader reader, PlayerControl sender)
-    {
-        byte playerId = reader.ReadByte();
-        int achievementId = reader.ReadInt32();
-
-        if (sender == null || !sender.AmOwner) return;
-
-        ApplyTitleLocally(playerId, achievementId);
-    }
-
-    private static void ApplyTitleLocally(byte playerId, int achievementId)
-    {
-        PlayerAchievementData.SetEquippedTitle(playerId, achievementId);
-        Logger.Info($"Player {playerId} Title change → ID={achievementId}", "TitleHandler");
-
-        if (!GameStates.IsLobby) return;
-
-        var player = Utils.GetPlayerById(playerId);
-        if (player == null) return;
-
-        _ = new LateTask(() => NameTagManager.ApplyFor(player),
-            0.15f, $"RefreshNameForTitle p{playerId}");
-    }
-
-    // 实现接口
     public class AchievementTitleProvider : NameTagManager.INameTagProvider
     {
         public string GetPrefix(PlayerControl player)
         {
-            int titleId = PlayerAchievementData.GetEquippedTitle(player.PlayerId);
+            int titleId = AchievementTitleService.GetWearedTitleId(player.FriendCode);
             if (titleId <= 0) return null;
 
             var achievement = AchievementRegistry.GetById(titleId);

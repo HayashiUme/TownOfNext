@@ -1,60 +1,22 @@
 using System.Text;
-using TONX.Modules.Achievements.Titles;
 
 namespace TONX.Modules.Achievements.Core;
 
-/// <summary>
-/// 成就系统的事件分发与生命周期管理。
-/// </summary>
+public enum TitleChangeResult
+{
+    Ok,
+    Unknown,
+    NotOwned,
+    UploadFailed,
+    NotHost,
+}
+
 public static class AchievementManager
 {
-    /// <summary>拉取某玩家的成就数据</summary>
-    public static async Task FetchAsync(string friendCode)
-    {
-        var data = CustomAchievementDataManager.GetOrCreate(friendCode);
-        if (data == null) return;
-
-        await AchievementApiClient.EnsureFetchedAsync(data);
-    }
-
-    /// <summary>拉取在场的所有玩家</summary>
-    public static async Task FetchAllAsync()
-    {
-        if (!AmongUsClient.Instance.AmHost) return;
-
-        foreach (var player in Main.AllPlayerControls)
-        {
-            if (player == null || string.IsNullOrEmpty(player.FriendCode)) continue;
-            await FetchAsync(player.FriendCode);
-        }
-    }
-
-    /// <summary>上传所有有增量的玩家。对局结束 / 房主断链时调用</summary>
-    public static async Task<bool> FlushAllAsync()
-    {
-        if (!AmongUsClient.Instance.AmHost) return false;
-
-        var all = CustomAchievementDataManager.GetAll();
-        return await AchievementApiClient.SyncBatchAsync(all);
-    }
-
-    /// <summary>上传指定玩家的增量。玩家断链时调用</summary>
-    public static async Task<bool> FlushAsync(string friendCode)
-    {
-        if (!AmongUsClient.Instance.AmHost) return false;
-
-        var data = CustomAchievementDataManager.Get(friendCode);
-        if (data == null || !data.HasPendingChanges) return true;
-
-        return await AchievementApiClient.SyncBatchAsync(new[] { data });
-    }
-    
     public static void OnPlayerJoined(string friendCode)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
-        if (string.IsNullOrEmpty(friendCode)) return;
-
-        _ = FetchAndAnnounceAsync(friendCode);
+        if (AmongUsClient.Instance?.AmHost != true) return;
+        _ = AchievementRoomSyncService.SyncPlayerAsync(friendCode);
     }
 
     public static void OnLocalJoined()
@@ -62,127 +24,93 @@ public static class AchievementManager
         var friendCode = CustomAchievementDataManager.LocalFriendCode;
         if (string.IsNullOrEmpty(friendCode))
         {
-            Logger.Warn("LocalJoined: no local friend code, skip achievement fetch", "Achievement");
+            Logger.Warn("Local achievement sync skipped: friend code unavailable", "Achievement");
             return;
         }
 
-        _ = FetchAndAnnounceAsync(friendCode);
+        if (AmongUsClient.Instance?.AmHost != true)
+            _ = SyncLocalAsync(friendCode);
     }
 
-    private static async Task FetchAndAnnounceAsync(string friendCode)
+    public static void TryUpdateUnit(string friendCode, int achievementId)
+        => AchievementProgressService.RecordUnit(friendCode, achievementId);
+
+    public static int GetWearedTitleId(string friendCode)
+        => AchievementTitleService.GetWearedTitleId(friendCode);
+
+    public static Task<bool> WearPendingAchievementTitle(string friendCode, int achievementId)
+        => AchievementTitleService.SetAsync(friendCode, achievementId);
+
+    public static async Task<TitleChangeResult> WearAchievementTitle(string friendCode, int achievementId)
     {
-        var data = CustomAchievementDataManager.GetOrCreate(friendCode);
-        if (data == null) return;
+        if (AmongUsClient.Instance?.AmHost != true) return TitleChangeResult.NotHost;
+        if (string.IsNullOrEmpty(friendCode)) return TitleChangeResult.NotOwned;
+        if (achievementId > 0 && AchievementRegistry.GetById(achievementId) == null)
+            return TitleChangeResult.Unknown;
 
-        await AchievementApiClient.EnsureFetchedAsync(data);
+        if (!await AchievementTitleService.SetAsync(friendCode, achievementId))
+            return TitleChangeResult.UploadFailed;
 
-        
-        _ = new LateTask(() =>
-        {
-            var player = Main.AllPlayerControls.FirstOrDefault(p => p.FriendCode == friendCode);
-            if (player == null) return;
-
-            AnnounceUnlocked(data, player);
-        }, 0f, $"Achievement Announce {friendCode}");
-    }
-    
-    private static void AnnounceUnlocked(CustomAchievementData data, PlayerControl player)
-    {
-        foreach (var record in data.TakeUnannounced())
-        {
-            var def = AchievementRegistry.GetById(record.Id);
-            string colorHex = def?.TitleColorHex ?? "#FFD700";
-            string name = string.IsNullOrEmpty(record.Name) ? def?.Name ?? record.Id.ToString() : record.Name;
-            string msg = string.Format(GetString("Achievement.Unlocked"), colorHex, name);
-            Utils.SendMessage(msg, player.PlayerId, $"<color=#FFD700>{GetString("Achievement.ChatTitle")}</color>");
-        }
-    }
-    
-    public static async Task FetchAndDisplayAchievementsAsync(PlayerControl player)
-    {
-        if (player == null) return;
-        string friendCode = player.FriendCode;
-
-        Utils.SendMessage(GetString("Achievement.LoadingFromServer"), player.PlayerId, $"<color=#FFD700>{GetString("Achievement.ChatTitle")}</color>");
-
-        var (records, status) = await AchievementApiClient.GetRecordsWithStatusAsync(friendCode);
-        if (records == null)
-        {
-            string failText = status > 0
-                ? string.Format(GetString("Achievement.LoadingFromServer.Fail"), status)
-                : GetString("Achievement.LoadingFromServer.ServerBomb");
-            _ = new LateTask(() => Utils.SendMessage(failText,
-                player.PlayerId, $"<color=#FF4444>{GetString("Achievement.ChatTitle")}</color>"), 0f, "Ach Display Fail");
-            return;
-        }
-
-        var data = CustomAchievementDataManager.GetOrCreate(friendCode);
-        data?.MergeServer(records);
-        data?.MarkLoaded();
-
-        _ = new LateTask(() =>
-        {
-            if (!records.Any())
-            {
-                Utils.SendMessage(GetString("Achievement.LoadingFromServer.Empty"), player.PlayerId, $"<color=#FFD700>{GetString("Achievement.ChatTitle")}</color>");
-                return;
-            }
-
-            var sb = new StringBuilder();
-            sb.AppendLine($"{string.Format(GetString("Achievement.Info.AllCount"), records.Count)}\n");
-            foreach (var r in records)
-            {
-                var def = AchievementRegistry.GetById(r.Id);
-                string colorHex = def?.TitleColorHex ?? "#FFFFFF";
-                string progressText = def != null && def.IsProgressAchievement ? $" <size=70%>({r.Progress}/{def.RequiredValue})</size>" : "";
-                sb.AppendLine($"<color={colorHex}>【{r.Id}】{r.Name}</color>{progressText}");
-                sb.AppendLine($"<size=70%>{string.Format(GetString("Achievement.Info.UnlockedAt"), r.UnlockedAt)}</size>\n");
-            }
-            sb.AppendLine($"\n{GetString("Achievement.Tip1")}");
-
-            Utils.SendMessage(sb.ToString().TrimEnd(), player.PlayerId, $"<color=#FFD700>{GetString("Achievement.ChatTitle")}</color>");
-        }, 0f, $"Ach Display {friendCode}");
+        AchievementTitleService.RefreshNameTags(friendCode);
+        return TitleChangeResult.Ok;
     }
 
-    
-    public static async Task WearTitleAsync(PlayerControl player, int achievementId)
+    public static async Task<bool> SettleGameAsync()
     {
-        if (player == null) return;
+        if (!await AchievementSettlement.SettleAsync()) return false;
+        return true;
+    }
 
-        if (achievementId <= 0)
+    public static Task DisplayAchievements(PlayerControl player)
+    {
+        if (player == null) return Task.CompletedTask;
+
+        var data = CustomAchievementDataManager.Get(player.FriendCode);
+        if (data == null || !data.HasData)
         {
-            AchievementTitleHandler.SendTitleSyncRpc(player.PlayerId, 0);
-            Utils.SendMessage(GetString("Achievement.Command.UnWear"), player.PlayerId, $"<color=#FFD700>{GetString("Achievement.ChatTitle")}</color>");
-            return;
+            Utils.SendMessage(GetString("Achievement.LoadingFromServer.ServerBomb"), player.PlayerId,
+                $"<color=#FF4444>{GetString("Achievement.ChatTitle")}</color>");
+            return Task.CompletedTask;
         }
 
-        var def = AchievementRegistry.GetById(achievementId);
-        if (def == null)
+        var records = data.Records.Where(CustomAchievementData.IsUnlocked).ToList();
+        if (records.Count == 0)
         {
-            Utils.SendMessage(string.Format(GetString("Achievement.Command.Fail"), achievementId), player.PlayerId, $"<color=#FFD700>{GetString("Achievement.ChatTitle")}</color>");
-            return;
+            Utils.SendMessage(GetString("Achievement.LoadingFromServer.Empty"), player.PlayerId,
+                $"<color=#FFD700>{GetString("Achievement.ChatTitle")}</color>");
+            return Task.CompletedTask;
         }
 
-        var data = player.GetAchievementInfo(fetchIfMissing: true);
-        if (data == null || !data.Has(achievementId))
+        var message = new StringBuilder()
+            .AppendLine(string.Format(GetString("Achievement.Info.AllCount"), records.Count))
+            .AppendLine();
+
+        foreach (var record in records)
         {
-            var records = await AchievementApiClient.GetRecordsAsync(player.FriendCode);
-            if (records != null)
-            {
-                var refreshed = CustomAchievementDataManager.GetOrCreate(player.FriendCode);
-                refreshed?.MergeServer(records);
-                data = refreshed;
-            }
+            var definition = AchievementRegistry.GetById(record.Id);
+            var color = definition?.TitleColorHex ?? "#FFFFFF";
+            var progress = definition?.IsProgressAchievement == true
+                ? $" <size=70%>({record.Progress}/{definition.RequiredValue})</size>"
+                : "";
+            message.AppendLine($"<color={color}>【{record.Id}】{record.Name}</color>{progress}");
+            message.AppendLine($"<size=70%>{string.Format(GetString("Achievement.Info.UnlockedAt"), record.UnlockedAt)}</size>");
         }
 
-        if (data == null || !data.Has(achievementId))
-        {
-            Utils.SendMessage(string.Format(GetString("Achievement.Command.NoBelong"), def.Id), player.PlayerId, $"<color=#FFD700>{GetString("Achievement.ChatTitle")}</color>");
-            return;
-        }
+        message.AppendLine().Append(GetString("Achievement.Tip1"));
+        Utils.SendMessage(message.ToString().TrimEnd(), player.PlayerId,
+            $"<color=#FFD700>{GetString("Achievement.ChatTitle")}</color>");
+        return Task.CompletedTask;
+    }
 
-        AchievementTitleHandler.SendTitleSyncRpc(player.PlayerId, achievementId);
-        Utils.SendMessage(string.Format(GetString("Achievement.Command.Wear"), def.TitleColorHex, def.TitleDisplay),
-            player.PlayerId, $"<color=#FFD700>{GetString("Achievement.ChatTitle")}</color>");
+    private static async Task SyncLocalAsync(string friendCode)
+    {
+        var data = CustomAchievementDataManager.GetOrCreate(friendCode, true);
+        var (records, _) = await AchievementApiClient.GetRecordsWithStatusAsync(friendCode);
+        if (records == null) return;
+
+        data.MergeCloud(records);
+        var title = await AchievementApiClient.GetWearedTitleAsync(friendCode);
+        if (title is int titleId) data.SetWearedTitle(titleId);
+        data.StartRound();
     }
 }

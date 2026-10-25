@@ -379,6 +379,7 @@ public static class Options
     public static OptionItem SendRoleDescriptionFirstMeeting;
     public static OptionItem HideGameSettings;
     public static OptionItem DIYGameSettings;
+    public static OptionItem EnableAchievemntObtainer;
 
     // 个性化相关设定
     public static OptionItem SuffixMode;
@@ -764,6 +765,9 @@ public static class Options
             .SetGameMode(CustomGameMode.All)
             .SetColor(new Color32(246, 250, 112, byte.MaxValue));
         DIYGameSettings = BooleanOptionItem.Create(2_002_006, "DIYGameSettings", false, TabGroup.SystemSettings, false)
+            .SetGameMode(CustomGameMode.All)
+            .SetColor(new Color32(246, 250, 112, byte.MaxValue));
+        EnableAchievemntObtainer = BooleanOptionItem.Create(2_002_007, "EnableAchievementObtainer", true, TabGroup.SystemSettings, false)
             .SetGameMode(CustomGameMode.All)
             .SetColor(new Color32(246, 250, 112, byte.MaxValue));
 

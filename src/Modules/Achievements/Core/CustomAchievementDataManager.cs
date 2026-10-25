@@ -21,15 +21,14 @@ public static class CustomAchievementDataManager
 
     public static void SetLocalFriendCode(string friendCode)
     {
-        LocalFriendCode = CustomAchievementData.NormalizeFriendCode(friendCode);
+        LocalFriendCode = friendCode;
     }
 
     public static CustomAchievementData Get(string friendCode)
     {
-        var key = CustomAchievementData.NormalizeFriendCode(friendCode);
-        if (string.IsNullOrEmpty(key)) return null;
+        if (string.IsNullOrEmpty(friendCode)) return null;
 
-        lock (_lock) return ByFriendCode.TryGetValue(key, out var data) ? data : null;
+        lock (_lock) return ByFriendCode.TryGetValue(friendCode, out var data) ? data : null;
     }
 
     public static CustomAchievementData GetLocal() => Get(LocalFriendCode);
@@ -39,15 +38,14 @@ public static class CustomAchievementDataManager
 
     public static CustomAchievementData GetOrCreate(string friendCode, bool isLocal = false)
     {
-        var key = CustomAchievementData.NormalizeFriendCode(friendCode);
-        if (string.IsNullOrEmpty(key)) return null;
+        if (string.IsNullOrEmpty(friendCode)) return null;
 
         lock (_lock)
         {
-            if (ByFriendCode.TryGetValue(key, out var data)) return data;
+            if (ByFriendCode.TryGetValue(friendCode, out var data)) return data;
 
-            data = new CustomAchievementData(key, isLocal);
-            ByFriendCode[key] = data;
+            data = new CustomAchievementData(friendCode, isLocal);
+            ByFriendCode[friendCode] = data;
             return data;
         }
     }
@@ -57,14 +55,14 @@ public static class CustomAchievementDataManager
 
     public static void Remove(string friendCode)
     {
-        var key = CustomAchievementData.NormalizeFriendCode(friendCode);
-        if (string.IsNullOrEmpty(key)) return;
+        if (string.IsNullOrEmpty(friendCode)) return;
 
-        lock (_lock) ByFriendCode.Remove(key);
+        lock (_lock) ByFriendCode.Remove(friendCode);
     }
 
     public static void Clear()
     {
         lock (_lock) ByFriendCode.Clear();
     }
+
 }

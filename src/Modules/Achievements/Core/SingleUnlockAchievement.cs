@@ -5,7 +5,7 @@ public abstract class SingleUnlockAchievement<TSelf> : AchievementBase
 {
     public sealed override int RequiredValue => 1;
 
-    public void TryUnlock() => TryProgress(1);
+    public void TryUnlock(PlayerControl player = null) => _ = new StaticAchievementToken(Id, player);
 
     public static void Trigger(PlayerControl player = null) => TriggerFor<TSelf>(player);
 }
