@@ -14,6 +14,8 @@ public static class AchievementSettlement
         if (AmongUsClient.Instance?.AmHost != true || !GameStates.IsInGame)
             return Task.FromResult(false);
 
+        RoleAchievementState.Commit();
+
         var players = Main.AllPlayerControls
             .Where(x => x != null && !string.IsNullOrEmpty(x.FriendCode))
             .ToList();

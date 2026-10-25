@@ -1,4 +1,6 @@
 ﻿using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Core;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Impostor;
@@ -33,6 +35,11 @@ public sealed class Bard : RoleBase, IImpostor
     public float CalculateKillCooldown() => KillCooldown;
     public override void OnExileWrapUp(NetworkedPlayerInfo exiled, ref bool DecidedWinner)
     {
-        if (exiled != null) KillCooldown /= 2;
+        if (exiled == null) return;
+
+        var previousCooldown = KillCooldown;
+        KillCooldown /= 2;
+        if (KillCooldown < previousCooldown)
+            RoleAchievementState.Record<VerseWritten>(Player);
     }
 }

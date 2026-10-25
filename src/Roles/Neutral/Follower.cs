@@ -1,6 +1,8 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using TONX.Modules;
+using TONX.Modules.Achievements.Core;
+using TONX.Modules.Achievements.Neutral;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -108,6 +110,7 @@ public sealed class Follower : RoleBase, IKiller, IAdditionalWinner
         if (beforeTarget != null) Utils.NotifyRoles(beforeTarget);
 
         BetTarget = target.PlayerId;
+        RoleAchievementState.Record<BetPlaced>(Player);
         SendRPC();
 
         killer.ResetKillCooldown();

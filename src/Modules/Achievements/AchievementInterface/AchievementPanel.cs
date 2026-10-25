@@ -378,6 +378,8 @@ public static class AchievementPanel
         };
         if (!passFilter) return false;
         if (string.IsNullOrEmpty(SearchText)) return true;
+        if (!unlocked && achievement.Hidden)
+            return GetString("Achievement.HiddenName").Contains(SearchText, StringComparison.OrdinalIgnoreCase);
         return GetString(achievement.Name).Contains(SearchText, StringComparison.OrdinalIgnoreCase)
             || achievement.TitleDisplay.Contains(SearchText, StringComparison.OrdinalIgnoreCase);
     }

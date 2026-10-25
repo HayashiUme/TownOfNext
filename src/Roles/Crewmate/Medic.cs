@@ -1,6 +1,8 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using TONX.Modules;
+using TONX.Modules.Achievements.Core;
+using TONX.Modules.Achievements.Crewmate;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -114,6 +116,7 @@ public sealed class Medic : RoleBase, IKiller
         ProtectLimit--;
         SendRPC_SyncLimit();
         ProtectList.Add(target.PlayerId);
+        RoleAchievementState.Record<ShieldGranted>(Player);
         SendRPC_SyncList();
 
         killer.SetKillCooldownV2(target: target);

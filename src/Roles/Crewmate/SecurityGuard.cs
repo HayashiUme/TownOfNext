@@ -1,6 +1,8 @@
 using AmongUs.GameOptions;
 using Hazel;
 using TONX.Modules;
+using TONX.Modules.Achievements.Core;
+using TONX.Modules.Achievements.Crewmate;
 
 namespace TONX.Roles.Crewmate;
 
@@ -83,7 +85,8 @@ public sealed class SecurityGuard : RoleBase
         }
 
         // 封锁该通风管
-        LockedVents.Add(ventId);
+        if (LockedVents.Add(ventId))
+            RoleAchievementState.Record<VentLocked>(Player);
         SendRPC_SyncLockedVents();
         Player.Notify(string.Format(GetString("SecurityGuardVentLocked"), ventId));
         Logger.Info($"{Player.GetNameWithRole()}: 封锁了通风管 {ventId}，当前已封锁: {LockedVents.Count}", "SecurityGuard");

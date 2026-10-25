@@ -1,5 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using TONX.Modules.Achievements.Core;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -79,6 +81,7 @@ public sealed class QuickShooter : RoleBase, IImpostor
         if (Player.killTimer < 1 && shapeshifting)
         {
             ShotLimit++;
+            RoleAchievementState.Record<BulletStored>(Player);
             SendRPC();
             Storaging = true;
             Player.ResetKillCooldown();

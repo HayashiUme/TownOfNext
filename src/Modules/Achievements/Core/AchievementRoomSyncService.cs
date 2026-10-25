@@ -10,6 +10,7 @@ public static class AchievementRoomSyncService
 
     public static void ResetSession()
     {
+        RoleAchievementState.Discard();
         lock (SyncLock)
         {
             SessionVersion++;

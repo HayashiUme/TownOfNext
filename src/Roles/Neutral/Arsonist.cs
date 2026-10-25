@@ -1,5 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
+using TONX.Modules.Achievements.Core;
+using TONX.Modules.Achievements.Neutral;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -153,6 +155,7 @@ public sealed class Arsonist : RoleBase, IKiller
                     Player.SetKillCooldown();
                     TargetInfo = null;//塗が完了したのでTupleから削除
                     IsDoused[ar_target.PlayerId] = true;//塗り完了
+                    RoleAchievementState.Record<DouseCompleted>(Player);
                     SendRPC(RPC_type.SetDousedPlayer, ar_target.PlayerId, true);
                     Utils.NotifyRoles();//名前変更
                     SendRPC(RPC_type.SetCurrentDousingTarget);
