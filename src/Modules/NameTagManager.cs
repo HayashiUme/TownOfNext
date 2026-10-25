@@ -44,10 +44,15 @@ public static class NameTagManager
     public static void ApplyFor(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost || player == null) return;
-        //没有自定义名札时只处理"自己"和"云端查到有头衔"的玩家（头衔来自 TONX 云端，原版玩家也会有）
+        // 无自定义名牌的玩家通常无需重新广播；但若原名字含有已卸下的成就头衔，
+        // 仍要走基础名字重建路径，以清掉旧前缀。
+        bool hasOldAchievementTitle = TONX.Modules.Achievements.Core.AchievementRegistry.GetAll()
+            .Any(achievement => !string.IsNullOrEmpty(achievement.TitleDisplay) &&
+                                player.name.Contains($"[{achievement.TitleDisplay}]", StringComparison.Ordinal));
         if (!player.AmOwner
             && !AllNameTags.ContainsKey(player.FriendCode)
-            && TONX.Modules.Achievements.Core.AchievementTitleService.GetWearedTitleId(player.FriendCode) <= 0)
+            && TONX.Modules.Achievements.Core.AchievementTitleService.GetWearedTitleId(player.FriendCode) <= 0
+            && !hasOldAchievementTitle)
             return;
 
         string name = player.GetTrueName();

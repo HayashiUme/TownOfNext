@@ -51,6 +51,12 @@ public class Main : BasePlugin
     public static readonly string DiscordInviteUrl = "https://dsc.gg/tonext";
     public static readonly bool ShowGithubUrl = true;
     public static readonly string GithubRepoUrl = "https://github.com/TownOfNext/TownOfNext";
+    public static readonly string CloudBaseUrl =
+#if DEBUG
+        "http://127.0.0.1:5051";
+#else 
+        "https://record.tonx.cc";
+#endif
     // ==========
 
     public Harmony Harmony { get; } = new Harmony(PluginGuid);

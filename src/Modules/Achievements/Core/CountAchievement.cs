@@ -7,6 +7,9 @@ public abstract class CountAchievement<TSelf> : AchievementBase
 
     public void Increment(int count = 1, PlayerControl player = null)
     {
+        if (count <= 0) return;
+        count = Math.Min(count, Math.Max(1, RequiredValue));
+
         for (int i = 0; i < count; i++) _ = new StaticAchievementToken(Id, player);
     }
 

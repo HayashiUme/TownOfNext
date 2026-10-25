@@ -28,13 +28,17 @@ public sealed class CustomAchievementData
     private readonly Dictionary<int, AchievementRecord> _records = new();
     private readonly HashSet<int> _pendingIds = new();
     private HashSet<int> _roundStartUnlocked = new();
+    private bool _hasData;
+    private DateTime _loadedAt;
+    private bool _hasRoundSnapshot;
+    private int _wearedTitleId;
 
     public string FriendCode { get; }
     public bool IsLocal { get; }
-    public bool HasData { get; private set; }
-    public DateTime LoadedAt { get; private set; }
-    public bool HasRoundSnapshot { get; private set; }
-    public int WearedTitleId { get; private set; }
+    public bool HasData { get { lock (_lock) return _hasData; } }
+    public DateTime LoadedAt { get { lock (_lock) return _loadedAt; } }
+    public bool HasRoundSnapshot { get { lock (_lock) return _hasRoundSnapshot; } }
+    public int WearedTitleId { get { lock (_lock) return _wearedTitleId; } }
 
     public CustomAchievementData(string friendCode, bool isLocal = false)
     {
@@ -84,7 +88,7 @@ public sealed class CustomAchievementData
 
     public void SetWearedTitle(int achievementId)
     {
-        lock (_lock) WearedTitleId = Math.Max(0, achievementId);
+        lock (_lock) _wearedTitleId = Math.Max(0, achievementId);
     }
 
     public void MergeCloud(IEnumerable<AchievementRecord> records)
@@ -111,8 +115,8 @@ public sealed class CustomAchievementData
                 if (string.IsNullOrEmpty(current.Description)) current.Description = incoming.Description ?? "";
             }
 
-            HasData = true;
-            LoadedAt = DateTime.UtcNow;
+            _hasData = true;
+            _loadedAt = DateTime.UtcNow;
         }
     }
 
@@ -149,16 +153,25 @@ public sealed class CustomAchievementData
         }
     }
 
-    public void MarkUploaded(int id)
+    public void MarkUploaded(AchievementRecord uploaded)
     {
-        lock (_lock) _pendingIds.Remove(id);
+        if (uploaded == null) return;
+
+        lock (_lock)
+        {
+            if (!_records.TryGetValue(uploaded.Id, out var current)) return;
+            if (current.Progress == uploaded.Progress &&
+                current.Required == uploaded.Required &&
+                current.Unlocked == uploaded.Unlocked)
+                _pendingIds.Remove(uploaded.Id);
+        }
     }
 
     public IReadOnlyList<int> GetNewlyUnlockedIds()
     {
         lock (_lock)
         {
-            if (!HasRoundSnapshot) return Array.Empty<int>();
+            if (!_hasRoundSnapshot) return Array.Empty<int>();
             return _records.Values
                 .Where(IsUnlocked)
                 .Select(x => x.Id)
@@ -172,7 +185,7 @@ public sealed class CustomAchievementData
         lock (_lock)
         {
             _roundStartUnlocked = _records.Values.Where(IsUnlocked).Select(x => x.Id).ToHashSet();
-            HasRoundSnapshot = true;
+            _hasRoundSnapshot = true;
         }
     }
 
@@ -182,7 +195,7 @@ public sealed class CustomAchievementData
         {
             if (_pendingIds.Count > 0) return;
             _roundStartUnlocked = _records.Values.Where(IsUnlocked).Select(x => x.Id).ToHashSet();
-            HasRoundSnapshot = true;
+            _hasRoundSnapshot = true;
         }
     }
 

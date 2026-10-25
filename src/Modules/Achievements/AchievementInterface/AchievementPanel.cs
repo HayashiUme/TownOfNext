@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using TMPro;
 using TONX.Modules.Achievements.Core;
 using TONX.Modules.Achievements.Titles;
@@ -32,6 +33,8 @@ public static class AchievementPanel
     private static readonly List<GameObject> Items = new();
     private static readonly List<ToggleButtonBehaviour> FilterButtons = new();
     private static readonly Color UnlockedColor = new(0.33f, 0.78f, 0.35f, 1f);
+    private static readonly SemaphoreSlim WearGate = new(1, 1);
+    private static int refreshVersion;
 
     private static OptionsMenuBehaviour OptionsMenu;
 
@@ -272,13 +275,16 @@ public static class AchievementPanel
         if (Slider == null || Menu == null) return;
 
         var scroller = Slider.GetComponent<Scroller>();
+        if (scroller == null || scroller.Inner == null || AccountManager.Instance == null) return;
         scroller.Inner.gameObject.ForEachChild((Action<GameObject>)(DestroyObj));
         static void DestroyObj(GameObject obj)
         {
             if (obj.name.StartsWith("Achievement Item") || obj.name.StartsWith("Achievement Row")) Object.Destroy(obj);
         }
 
-        var numberSetter = AccountManager.Instance.transform.FindChild("DOBEnterScreen/EnterAgePage/MonthMenu/Months").GetComponent<NumberSetter>();
+        var numberSetterObject = AccountManager.Instance.transform.FindChild("DOBEnterScreen/EnterAgePage/MonthMenu/Months");
+        if (numberSetterObject == null || !numberSetterObject.TryGetComponent<NumberSetter>(out var numberSetter) || numberSetter.ButtonPrefab == null)
+            return;
         var buttonPrefab = numberSetter.ButtonPrefab.gameObject;
         var rowPrefabSize = VisibleSize(buttonPrefab.GetComponent<SpriteRenderer>());
 
@@ -411,22 +417,39 @@ public static class AchievementPanel
         AchievementConfirmWindow.Open(body, () => Wear(achievement, !equipped));
     }
 
-        private static void Wear(AchievementBase achievement, bool equip)
+    private static void Wear(AchievementBase achievement, bool equip)
         => _ = WearAsync(achievement, equip);
 
     private static async Task WearAsync(AchievementBase achievement, bool equip)
     {
-        var friendCode = CustomAchievementDataManager.LocalFriendCode;
-        int titleId = equip ? achievement.Id : 0;
-
-        if (!await TONX.Modules.Achievements.Core.AchievementManager.WearPendingAchievementTitle(friendCode, titleId))
-            Logger.Warn($"头衔上传失败：{friendCode} -> {titleId}", "AchievementPanel");
-
-        if (NameTagInterface.NameTagPanel.Slider != null) NameTagInterface.NameTagPanel.RefreshTagList();
-        _ = new LateTask(()=>
+        await WearGate.WaitAsync();
+        try
         {
-            RefreshList();
-        }, 0f, "RefreshAchievementPanel");
+            var friendCode = CustomAchievementDataManager.LocalFriendCode;
+            int titleId = equip ? achievement.Id : 0;
+
+            if (!await TONX.Modules.Achievements.Core.AchievementManager.WearPendingAchievementTitle(friendCode, titleId))
+                Logger.Warn($"头衔上传失败：{friendCode} -> {titleId}", "AchievementPanel");
+
+            // Unity UI 只能在主线程刷新；同时合并同一帧内的旧刷新任务，避免
+            // 多次快速确认时交错销毁和重建同一批对象。
+            var version = Interlocked.Increment(ref refreshVersion);
+            _ = new LateTask(() =>
+            {
+                if (version != refreshVersion) return;
+                if (NameTagInterface.NameTagPanel.Slider != null)
+                    NameTagInterface.NameTagPanel.RefreshTagList();
+                RefreshList();
+            }, 0f, "RefreshAchievementPanel");
+        }
+        catch (Exception ex)
+        {
+            Logger.Warn($"头衔刷新失败：{ex.Message}", "AchievementPanel");
+        }
+        finally
+        {
+            WearGate.Release();
+        }
     }
     
     private static Vector2 VisibleSize(SpriteRenderer renderer)

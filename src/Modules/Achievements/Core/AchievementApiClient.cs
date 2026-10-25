@@ -5,8 +5,6 @@ namespace TONX.Modules.Achievements.Core;
 
 public static class AchievementApiClient
 {
-    public static string ServerBaseUrl { get; set; } = "https://record.tonx.cc";
-
     private static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(8) };
     private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
     private static bool TitleApiUnavailable;
@@ -17,7 +15,7 @@ public static class AchievementApiClient
 
         try
         {
-            using var response = await Http.GetAsync($"{ServerBaseUrl}/api/achievements/{Uri.EscapeDataString(friendCode)}");
+            using var response = await Http.GetAsync($"{Main.CloudBaseUrl}/api/achievements/{Uri.EscapeDataString(friendCode)}");
             if (!response.IsSuccessStatusCode)
             {
                 Logger.Warn($"Fetch failed: HTTP {(int)response.StatusCode} ({friendCode})", "AchievementApi");
@@ -70,7 +68,7 @@ public static class AchievementApiClient
                 friend_code = friendCode,
                 currentWearedAchievementId = achievementId,
             });
-            using var response = await Http.PostAsync($"{ServerBaseUrl}/api/achievements/title", content);
+            using var response = await Http.PostAsync($"{Main.CloudBaseUrl}/api/achievements/title", content);
             if ((int)response.StatusCode == 404)
             {
                 TitleApiUnavailable = true;
@@ -99,7 +97,7 @@ public static class AchievementApiClient
 
         try
         {
-            using var response = await Http.GetAsync($"{ServerBaseUrl}/api/achievements/title/{Uri.EscapeDataString(friendCode)}");
+            using var response = await Http.GetAsync($"{Main.CloudBaseUrl}/api/achievements/title/{Uri.EscapeDataString(friendCode)}");
             if ((int)response.StatusCode == 404)
             {
                 TitleApiUnavailable = true;
@@ -126,7 +124,7 @@ public static class AchievementApiClient
         try
         {
             using var content = JsonContent(body);
-            using var response = await Http.PostAsync($"{ServerBaseUrl}/api/achievements/{route}", content);
+            using var response = await Http.PostAsync($"{Main.CloudBaseUrl}/api/achievements/{route}", content);
             if (!response.IsSuccessStatusCode)
             {
                 Logger.Warn($"Achievement upload failed: HTTP {(int)response.StatusCode}", "AchievementApi");

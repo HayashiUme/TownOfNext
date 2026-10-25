@@ -5,8 +5,6 @@ namespace TONX.Modules;
 
 public static class VerifyHelper
 {
-    private static readonly string ApiBase = "https://record.tonx.cc";
-
     public static (MsgRecallMode, string) OnVerifyCommand(MessageControl mc)
     {
         if (!mc.IsFromSelf)
@@ -29,7 +27,7 @@ public static class VerifyHelper
             var body = new StringContent(
                 $"{{\"friend_code\":\"{friendCode}\"}}",
                 Encoding.UTF8, "application/json");
-            var url = $"{ApiBase}/api/verify/request?token={Uri.EscapeDataString(token)}";
+            var url = $"{Main.CloudBaseUrl}/api/verify/request?token={Uri.EscapeDataString(token)}";
             var resp = await client.PostAsync(url, body).ConfigureAwait(false);
 
             string msg = resp.IsSuccessStatusCode

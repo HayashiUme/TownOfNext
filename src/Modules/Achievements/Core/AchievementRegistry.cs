@@ -54,6 +54,22 @@ public static class AchievementRegistry
 
     private static void Register(AchievementBase achievement)
     {
+        if (achievement == null)
+        {
+            Logger.Error("Attempted to register a null achievement", "AchievementRegistry");
+            return;
+        }
+
+        if (achievement.Id <= 0 || achievement.RequiredValue <= 0 || achievement.RequiredValue > 1_000_000 ||
+            string.IsNullOrWhiteSpace(achievement.Name) ||
+            string.IsNullOrWhiteSpace(achievement.Description) ||
+            string.IsNullOrWhiteSpace(achievement.TitleDisplay) ||
+            string.IsNullOrWhiteSpace(achievement.Category))
+        {
+            Logger.Error($"Invalid achievement definition: {achievement.GetType().Name}", "AchievementRegistry");
+            return;
+        }
+
         if (All.ContainsKey(achievement.Id))
         {
             Logger.Error($"Checked the same id：{achievement.Id}({achievement.Name}), Skip.", "AchievementRegistry");

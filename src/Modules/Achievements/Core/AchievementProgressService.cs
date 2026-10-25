@@ -1,7 +1,11 @@
+using System.Collections.Concurrent;
+
 namespace TONX.Modules.Achievements.Core;
 
 public static class AchievementProgressService
 {
+    private static readonly ConcurrentDictionary<string, SemaphoreSlim> UploadGates = new();
+
     public static void RecordUnit(string friendCode, int achievementId)
     {
         if (AmongUsClient.Instance == null || !AmongUsClient.Instance.AmHost || !GameStates.IsInGame) return;
@@ -17,17 +21,26 @@ public static class AchievementProgressService
     {
         if (data == null) return false;
 
-        var success = true;
-        foreach (var record in data.GetPendingRecords())
+        var gate = UploadGates.GetOrAdd(data.FriendCode, _ => new SemaphoreSlim(1, 1));
+        await gate.WaitAsync();
+        try
         {
-            var uploaded = CustomAchievementData.IsUnlocked(record)
-                ? await AchievementApiClient.TriggerUnlockAsync(data.FriendCode, record)
-                : await AchievementApiClient.ReportProgressAsync(data.FriendCode, record);
+            var success = true;
+            foreach (var record in data.GetPendingRecords())
+            {
+                var uploaded = CustomAchievementData.IsUnlocked(record)
+                    ? await AchievementApiClient.TriggerUnlockAsync(data.FriendCode, record)
+                    : await AchievementApiClient.ReportProgressAsync(data.FriendCode, record);
 
-            if (uploaded) data.MarkUploaded(record.Id);
-            else success = false;
+                if (uploaded) data.MarkUploaded(record);
+                else success = false;
+            }
+
+            return success;
         }
-
-        return success;
+        finally
+        {
+            gate.Release();
+        }
     }
 }

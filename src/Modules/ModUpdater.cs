@@ -18,11 +18,12 @@ public class ModUpdater
     {
 #if DEBUG && Windows
         "file:///D:/Desktop/TONX/info.json",
-        "file:///D:/Desktop/info.json"
+        "file:///D:/Desktop/info.json",
+        "http://localhost:5051/api/version.json"
 #else
         "https://raw.githubusercontent.com/TownOfNext/TownOfNext/main/info.json",
         "https://download.hayashiume.top/https://raw.githubusercontent.com/TownOfNext/TownOfNext/main/info.json",
-        "https://record.tonx.cc/api/version.json",
+        $"{Main.CloudBaseUrl}/api/version.json",
 #endif
     };
     private static IReadOnlyList<string> GetInfoFileUrlList()
@@ -333,7 +334,7 @@ public class ModUpdater
     {
         try
         {
-            var (_, succeed) = await RemoteHelper.GetRemoteStringAsync("https://record.tonx.cc/api/stats/visit").ConfigureAwait(false);
+            var (_, succeed) = await RemoteHelper.GetRemoteStringAsync($"{Main.CloudBaseUrl}/api/stats/visit").ConfigureAwait(false);
             return succeed;
         }
         catch (Exception ex)
@@ -351,7 +352,7 @@ public class ModUpdater
     {
         try
         {
-            var (count, success) = await RemoteHelper.GetRemoteStringAsync("https://record.tonx.cc/api/stats/visitor").ConfigureAwait(false);
+            var (count, success) = await RemoteHelper.GetRemoteStringAsync($"{Main.CloudBaseUrl}/api/stats/visitor").ConfigureAwait(false);
             return success ? int.Parse(count) : 0;
         }
         catch (Exception ex)

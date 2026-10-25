@@ -102,10 +102,10 @@ public static class NameTagPanel
             helpTextTMP.text = GetString("CustomNameTagHelp");
             helpText.gameObject.GetComponent<RectTransform>().sizeDelta = new(2.45f, 1f);
 
-            var sliderTemplate = AccountManager.Instance.transform.FindChild("MainSignInWindow/SignIn/AccountsMenu/Accounts/Slider").gameObject;
-            if (sliderTemplate != null && Slider == null)
+            var sliderTemplateObject = AccountManager.Instance.transform.FindChild("MainSignInWindow/SignIn/AccountsMenu/Accounts/Slider");
+            if (sliderTemplateObject != null && Slider == null)
             {
-                Slider = Object.Instantiate(sliderTemplate, CustomBackground.transform);
+                Slider = Object.Instantiate(sliderTemplateObject.gameObject, CustomBackground.transform);
                 Slider.name = "Name Tags Slider";
                 Slider.transform.localPosition = new Vector3(0f, 0.5f, -1f);
                 Slider.transform.localScale = new Vector3(1f, 1f, 1f);
@@ -122,20 +122,25 @@ public static class NameTagPanel
     }
     public static void RefreshTagList()
     {
+        if (Slider == null || AccountManager.Instance == null) return;
         var scroller = Slider.GetComponent<Scroller>();
+        if (scroller == null || scroller.Inner == null) return;
         scroller.Inner.gameObject.ForEachChild((Action<GameObject>)(DestroyObj));
         static void DestroyObj(GameObject obj)
         {
             if (obj.name.StartsWith("AccountButton")) Object.Destroy(obj);
         }
 
-        var numberSetter = AccountManager.Instance.transform.FindChild("DOBEnterScreen/EnterAgePage/MonthMenu/Months").GetComponent<NumberSetter>();
+        var numberSetterObject = AccountManager.Instance.transform.FindChild("DOBEnterScreen/EnterAgePage/MonthMenu/Months");
+        if (numberSetterObject == null || !numberSetterObject.TryGetComponent<NumberSetter>(out var numberSetter) || numberSetter.ButtonPrefab == null)
+            return;
         var buttonPrefab = numberSetter.ButtonPrefab.gameObject;
 
         Items?.Values?.Do(Object.Destroy);
         Items = new();
 
-        
+        numItems = 0;
+
         // 置顶成就头衔
         numItems++;
         var titleEntry = Object.Instantiate(buttonPrefab, scroller.Inner);
