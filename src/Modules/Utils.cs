@@ -1257,7 +1257,7 @@ public static class Utils
     {
 #if Windows
         string f = $"{Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)}/TONX-logs/";
-#elif Android
+#elif Android || iOS
         string f = $"{Application.persistentDataPath}/TONX-logs/";
 #endif
         string t = DateTime.Now.ToString("yyyy-MM-dd_HH.mm.ss");
@@ -1265,7 +1265,7 @@ public static class Utils
         if (!Directory.Exists(f)) Directory.CreateDirectory(f);
 #if Windows
         FileInfo file = new(@$"{Environment.CurrentDirectory}/BepInEx/LogOutput.log");
-#elif Android
+#elif Android || iOS
         FileInfo file = new(@$"/data/data/dev.allofus.starlight/files/BepInEx/LogOutput.log");
 #endif
 

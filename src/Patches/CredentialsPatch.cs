@@ -317,7 +317,7 @@ internal class ResolutionManagerPatch
         mainButtons.transform.position = new Vector3(-3.4f * ratio, mainButtons.transform.position.y, mainButtons.transform.position.z);
         MainMenuButtonHoverAnimation.RefreshButtons(mainButtons);
         VersionShowerStartPatch.VersionShower.GetComponent<AspectPosition>().DistanceFromEdge = 
-#if Android
+#if Android || iOS
             new(2.2f * ratio, 0.1f);
 #elif Windows
             new(2.0f * ratio, 0.1f);

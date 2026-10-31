@@ -11,7 +11,7 @@ namespace TONX;
 public static class Translator
 {
     public static Dictionary<int, Dictionary<string, string>> translateMaps = new();
-#if Android
+#if Android || iOS
     public static string LANGUAGE_FOLDER_NAME = $"{Application.persistentDataPath}/Language";
 #elif Windows
     public static string LANGUAGE_FOLDER_NAME = "Language";
@@ -70,7 +70,7 @@ public static class Translator
         {
 #if Windows
             if (File.Exists(@$"./{LANGUAGE_FOLDER_NAME}/{lang}.dat"))
-#elif Android
+#elif Android || iOS
             if (File.Exists(@$"{LANGUAGE_FOLDER_NAME}/{lang}.dat"))
 #endif
                 LoadCustomTranslation($"{lang}.dat", lang);
@@ -168,7 +168,7 @@ public static class Translator
     {
 #if Windows
         string path = @$"./{LANGUAGE_FOLDER_NAME}/{filename}";
-#elif Android
+#elif Android || iOS
         string path = @$"/{LANGUAGE_FOLDER_NAME}/{filename}";
 #endif
 

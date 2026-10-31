@@ -1,4 +1,4 @@
-using AmongUs.Data;
+﻿using AmongUs.Data;
 using Newtonsoft.Json.Linq;
 using System.Text;
 using TONX.Attributes;
@@ -11,7 +11,7 @@ public static class NameTagManager
 {
 #if Windows
     public static readonly string TAGS_DIRECTORY_PATH = @"./TONX_Data/NameTags/";
-#elif Android
+#elif Android || iOS
     public static readonly string TAGS_DIRECTORY_PATH = $"{Application.persistentDataPath}/TONX_Data/NameTags/";
 #endif
     private static Dictionary<string, NameTag> NameTags = new();
