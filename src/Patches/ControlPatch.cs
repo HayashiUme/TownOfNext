@@ -72,16 +72,6 @@ internal class ControllerManagerUpdatePatch
             ExportCustomTranslation();
             Logger.SendInGame("Exported Custom Translation File");
         }
-        if (GetKeysDown(KeyCode.F5, KeyCode.A))
-        {
-            Logger.Info("解锁按键测试成就", "KeyCommand");
-            KeyCommandTester.Trigger();
-        }
-        if (GetKeysDown(KeyCode.F5, KeyCode.S))
-        {
-            Logger.Info("解锁按键测试2成就", "KeyCommand");
-            KeyCommandTester2.Trigger();
-        }
         //日志文件转储
         if (GetKeysDown(KeyCode.F1, KeyCode.LeftControl))
         {
