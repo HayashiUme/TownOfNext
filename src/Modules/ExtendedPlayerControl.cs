@@ -6,6 +6,7 @@ using TONX.Modules;
 using TONX.Roles.AddOns;
 using TONX.Roles.AddOns.Impostor;
 using TONX.Roles.Core.Interfaces;
+using TONX.Roles.Crewmate;
 using TONX.Roles.Impostor;
 using TONX.Roles.Neutral;
 using UnityEngine;
@@ -684,7 +685,11 @@ static class ExtendedPlayerControl
         // 役職による仕分け
         if (seer.GetRoleClass() is IDeathReasonSeeable deathReasonSeeable)
         {
-            return deathReasonSeeable.CheckSeeDeathReason(seen);
+            var canSee = deathReasonSeeable.CheckSeeDeathReason(seen);
+            if (canSee && AmongUsClient.Instance.AmHost && seer.Is(CustomRoles.Doctor)
+                && seer.GetRoleClass() is Doctor doctor && doctor.RecordDeathReason(seen))
+            { }
+            return canSee;
         }
         return false;
     }

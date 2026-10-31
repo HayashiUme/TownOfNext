@@ -77,6 +77,9 @@ public class MeetingTimeManager
         int TotalMeetingTime = DiscussionTime + VotingTime;
         //時間の下限、上限で刈り込み
         BonusMeetingTime = Math.Clamp(TotalMeetingTime + BonusMeetingTime, MeetingTimeMin, MeetingTimeMax) - TotalMeetingTime;
+        foreach (var role in CustomRoleManager.AllActiveRoles.Values.ToList())
+            if (role is TimeManager timeManager)
+                timeManager.RecordAppliedExtension(Math.Max(0, Math.Min(timeManager.CalculateMeetingTimeDelta(), BonusMeetingTime)));
         if (BonusMeetingTime > 0)
         {
             foreach (var role in CustomRoleManager.AllActiveRoles.Values.ToList())

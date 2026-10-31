@@ -89,6 +89,9 @@ public static class GuesserHelper
 
         if (!gc.OnGuessing(guesser, target, role, guesserSuicide, ref reason)) return false;
 
+        if (guesser.GetRoleClass() is NiceGuesser niceGuesser)
+            niceGuesser.RecordGuess(target, !guesserSuicide && guesser != target && target.Is(role));
+
         var dp = guesserSuicide ? guesser : target;
         target = dp;
 
@@ -105,6 +108,8 @@ public static class GuesserHelper
             state.DeathReason = CustomDeathReason.Gambled;
             dp.RpcSuicideWithAnime();
             dp.SetRealKiller(guesser);
+            if (dp != guesser && guesser.GetRoleClass() is NiceGuesser successfulGuesser)
+                successfulGuesser.RecordSuccessfulTarget(dp.PlayerId);
 
             //死者检查
             Utils.NotifyRoles(isForMeeting: true, NoCache: true);

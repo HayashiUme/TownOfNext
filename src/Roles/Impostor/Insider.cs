@@ -45,6 +45,15 @@ public sealed class Insider : RoleBase, IImpostor
     private static bool canSeeMadmates;
     private static int killCountToSeeMadmates;
 
+    public bool RevealedRoleInfo { get; private set; }
+    public bool IdentifiedMadmate { get; private set; }
+
+    public override void Add()
+    {
+        RevealedRoleInfo = false;
+        IdentifiedMadmate = false;
+    }
+
     private static void SetupOptionItem()
     {
         optionCanSeeAllGhostsRoles = BooleanOptionItem.Create(RoleInfo, 10, OptionName.InsiderCanSeeAllGhostsRoles, false, false);
@@ -88,11 +97,22 @@ public sealed class Insider : RoleBase, IImpostor
 
     public override void OverrideDisplayRoleNameAsSeer(PlayerControl seen, ref bool enabled, ref Color roleColor, ref string roleText)
     {
-        enabled |= KnowTargetRole(seen);
+        var known = KnowTargetRole(seen);
+        enabled |= known;
+        NoteReveal(seen, known, KnowAllyRole(seen));
     }
     public override void OverrideProgressTextAsSeer(PlayerControl seen, ref bool enabled, ref string text)
     {
-        enabled |= KnowAllyRole(seen);
+        var known = KnowAllyRole(seen);
+        enabled |= known;
+        NoteReveal(seen, known, known);
+    }
+    /// <summary>记录一次成功向本人提供的身份/技能信息（含叛徒识别）</summary>
+    private void NoteReveal(PlayerControl seen, bool revealed, bool allyKnown)
+    {
+        if (seen == null) return;
+        if (revealed) RevealedRoleInfo = true;
+        if (allyKnown && seen.Is(CustomRoles.Madmate)) IdentifiedMadmate = true;
     }
     public override string GetProgressText(bool isComms = false)
     {

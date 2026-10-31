@@ -28,6 +28,15 @@ public sealed class Innocent : RoleBase
     }
     private bool IsKilled;
     public bool HasKilled => IsKilled;
+    public bool FrameWinTriggered { get; private set; }
+    public bool BaseWinTriggered { get; private set; }
+    public bool NextMeetingFrameExile { get; private set; }
+    private int MeetingsAfterFrame;
+    private byte FramedTargetId = byte.MaxValue;
+    public override void OnStartMeeting()
+    {
+        if (IsKilled) MeetingsAfterFrame++;
+    }
     public override void Add()
     {
         var playerId = Player.PlayerId;
@@ -56,19 +65,24 @@ public sealed class Innocent : RoleBase
         target.RpcMurderPlayerV2(killer);
         killer.SetRealKiller(target);
         IsKilled = true;
+        FramedTargetId = target.PlayerId;
+        MeetingsAfterFrame = 0;
         SendRPC();
         return false;
     }
     public override Action CheckExile(NetworkedPlayerInfo exiled, ref bool DecidedWinner, ref List<string> WinDescriptionText)
     {
-        if (!AmongUsClient.Instance.AmHost || Player.GetRealKiller().PlayerId != exiled.PlayerId ||!IsKilled) return null;
+        if (!AmongUsClient.Instance.AmHost || Player.GetRealKiller()?.PlayerId != exiled.PlayerId || !IsKilled) return null;
 
         DecidedWinner = true;
         WinDescriptionText.Add(GetString("ExiledInnocentTarget"));
         return () =>
         {
+            BaseWinTriggered = CustomWinnerHolder.WinnerTeam == CustomWinner.Default;
             CustomWinnerHolder.SetWinnerOrAdditonalWinner(CustomWinner.Innocent);
             CustomWinnerHolder.WinnerIds.Add(Player.PlayerId);
+            FrameWinTriggered = true;
+            NextMeetingFrameExile = MeetingsAfterFrame == 1 && FramedTargetId == exiled.PlayerId;
         };
     }
 }

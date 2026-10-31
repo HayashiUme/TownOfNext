@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using TONX.Modules;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Neutral;
@@ -35,6 +36,10 @@ public sealed class Executioner : RoleBase, IAdditionalWinner
     }
     public static byte WinnerID;
     public bool ExileWinTriggered { get; private set; }
+    public bool BaseWinTriggered { get; private set; }
+    public bool EarlyTargetExileVote { get; private set; }
+    private int MeetingsStarted;
+    public override void OnStartMeeting() => MeetingsStarted++;
 
     private static OptionItem OptionCanTargetImpostor;
     private static OptionItem OptionCanTargetNeutralKiller;
@@ -134,11 +139,15 @@ public sealed class Executioner : RoleBase, IAdditionalWinner
         if (exiled.PlayerId != TargetId) return null;
 
         TargetExiled = true;
+        EarlyTargetExileVote = MeetingsStarted is > 0 and <= 2
+            && MeetingVoteManager.Instance?.AllVotes.TryGetValue(Player.PlayerId, out var vote) == true
+            && vote.VotedFor == TargetId && vote.NumVotes > 0;
         WinDescriptionText.Add(GetString("ExiledExeTarget"));
         DecidedWinner = true;
 
         return () =>
         {
+            BaseWinTriggered = CustomWinnerHolder.WinnerTeam == CustomWinner.Default;
             CustomWinnerHolder.SetWinnerOrAdditonalWinner(CustomWinner.Executioner);
             CustomWinnerHolder.WinnerIds.Add(Player.PlayerId);
             ExileWinTriggered = true;

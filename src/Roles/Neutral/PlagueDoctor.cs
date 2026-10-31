@@ -95,6 +95,7 @@ public sealed class PlagueDoctor : RoleBase, IKiller
     }
 
     private int InfectCount;
+    public bool InfectionWinTriggered { get; private set; }
     private static Dictionary<byte, float> InfectInfos;
     private static bool InfectActive;
     private static bool LateCheckWin;
@@ -318,7 +319,10 @@ public sealed class PlagueDoctor : RoleBase, IKiller
             }
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.PlagueDoctor);
             foreach (var plagueDoctor in Main.AllPlayerControls.Where(p => p.Is(CustomRoles.PlagueDoctor)))
+            {
+                if (plagueDoctor.GetRoleClass() is PlagueDoctor role) role.InfectionWinTriggered = true;
                 CustomWinnerHolder.WinnerIds.Add(plagueDoctor.PlayerId);
+            }
         }
     }
 }

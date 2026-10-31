@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using TONX.Modules;
 using TONX.Modules.Achievements.Crewmate;
 
 namespace TONX.Roles.Crewmate;
@@ -35,6 +36,8 @@ public sealed class FortuneTeller : RoleBase
 
     private int CheckLimit;
     private bool DidVote;
+    public bool CompletedTaskImpostorExile { get; private set; }
+    private byte DivinedTargetId = byte.MaxValue;
     private static void SetupOptionItem()
     {
         OptionCheckNums = IntegerOptionItem.Create(RoleInfo, 10, OptionName.FortuneTellerSkillLimit, new(1, 15, 1), 5, false)
@@ -43,7 +46,19 @@ public sealed class FortuneTeller : RoleBase
         Options.OverrideTasksData.Create(RoleInfo, 20);
     }
     public override void Add() => CheckLimit = OptionCheckNums.GetInt();
-    public override void OnStartMeeting() => DidVote = CheckLimit < 1;
+    public override void OnStartMeeting()
+    {
+        DidVote = CheckLimit < 1;
+        DivinedTargetId = byte.MaxValue;
+    }
+    public override void OnVotingComplete(MeetingVoteManager.VoteResult voteResult)
+    {
+        if (DivinedTargetId != byte.MaxValue && voteResult.Exiled?.PlayerId == DivinedTargetId
+            && voteResult.Exiled.Object?.GetCustomRole().IsImpostor() == true
+            && MeetingVoteManager.Instance.AllVotes.TryGetValue(Player.PlayerId, out var ownVote)
+            && ownVote.VotedFor == DivinedTargetId)
+            CompletedTaskImpostorExile = true;
+    }
     public override bool CheckVoteAsVoter(PlayerControl votedFor)
     {
         if (!Player.IsAlive() || DidVote || CheckLimit < 1) return true;
@@ -61,6 +76,8 @@ public sealed class FortuneTeller : RoleBase
         }
 
         CheckLimit--;
+        if (Player.AllTasksCompleted() && votedFor.GetCustomRole().IsImpostor())
+            DivinedTargetId = votedFor.PlayerId;
         string msg;
 
         if (Player.AllTasksCompleted() || OptionAccurateCheck.GetBool())

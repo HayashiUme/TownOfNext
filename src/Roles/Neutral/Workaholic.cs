@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Neutral;
 using UnityEngine;
 
 namespace TONX.Roles.Neutral;
@@ -30,6 +31,14 @@ public sealed class Workaholic : RoleBase
     private static OptionItem OptionVisibleToEveryone;
     private static Options.OverrideTasksData Tasks;
     public bool TaskWinTriggered { get; private set; }
+    public bool BaseWinTriggered { get; private set; }
+    private int AssignedBatchTasks;
+    private int BatchCompletedBaseline;
+    public void RecordTaskBatch(int count, int completedBaseline)
+    {
+        AssignedBatchTasks = count;
+        BatchCompletedBaseline = completedBaseline;
+    }
     enum OptionName
     {
         WorkaholicCannotWinAtDeath,
@@ -56,6 +65,9 @@ public sealed class Workaholic : RoleBase
         => enabled |= OptionVisibleToEveryone.GetBool();
     public override bool OnCompleteTask(out bool cancel)
     {
+        if (AssignedBatchTasks > 0
+            && MyTaskState.CompletedTasksCount - BatchCompletedBaseline >= (AssignedBatchTasks + 1) / 2)
+            WorkaholicHalfTasks.Trigger(Player);
         if (MyTaskState.IsTaskFinished && (Player.IsAlive() || !OptionNoWinAtDeath.GetBool()))
         {
             Logger.Info("Workaholic completed all tasks", "Workaholic");
@@ -74,6 +86,7 @@ public sealed class Workaholic : RoleBase
             playerState.DeathReason = CustomDeathReason.Ashamed;
             playerState.SetDead();
         }
+        BaseWinTriggered = CustomWinnerHolder.WinnerTeam == CustomWinner.Default;
         CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Workaholic);
         CustomWinnerHolder.WinnerIds.Add(Player.PlayerId);
         TaskWinTriggered = true;

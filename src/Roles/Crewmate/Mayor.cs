@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using TONX.Modules;
 using TONX.Modules.Achievements.Crewmate;
 
 namespace TONX.Roles.Crewmate;
@@ -45,6 +46,7 @@ public sealed class Mayor : RoleBase
     public static bool HideVote;
 
     public int LeftButtonCount;
+    public bool ExtraVoteChangedImpostorExile { get; private set; }
     private static void SetupOptionItem()
     {
         OptionAdditionalVote = IntegerOptionItem.Create(RoleInfo, 10, OptionName.MayorAdditionalVote, new(1, 15, 1), 4, false)
@@ -92,6 +94,17 @@ public sealed class Mayor : RoleBase
             if (isIntentional && numVotes > 1) MayorExtraVote.Trigger(Player);
         }
         return (votedForId, numVotes, doVote);
+    }
+    public override void OnVotingComplete(MeetingVoteManager.VoteResult voteResult)
+    {
+        var exileId = voteResult.Exiled?.PlayerId;
+        if (exileId == null || Utils.GetPlayerById(exileId.Value)?.GetCustomRole().IsImpostor() != true
+            || !MeetingVoteManager.Instance.AllVotes.TryGetValue(Player.PlayerId, out var ownVote)
+            || ownVote.VotedFor != exileId.Value || ownVote.NumVotes <= 1) return;
+
+        var withoutExtra = voteResult.VotedCounts[exileId.Value] - (ownVote.NumVotes - 1);
+        if (voteResult.VotedCounts.Any(vote => vote.Key != exileId.Value && vote.Value >= withoutExtra))
+            ExtraVoteChangedImpostorExile = true;
     }
     public override int OverrideAbilityButtonUsesRemaining() => LeftButtonCount;
     private void SendRpc()

@@ -189,6 +189,8 @@ public class TaskState
         AllTasksCount = Utils.HasTasks(player.Data, false) ? player.Data.Tasks.Count : 0;
         CompletedTasksCount = 0;
         RPC.SyncTaskState(player.PlayerId, AllTasksCount, CompletedTasksCount, hasTasks);
+        if (AmongUsClient.Instance.AmHost && player.GetRoleClass() is TONX.Roles.Neutral.Workaholic workaholic)
+            workaholic.RecordTaskBatch(AllTasksCount, 0);
         Logger.Info($"{player.GetNameWithRole()}: TaskCounts = {CompletedTasksCount}/{AllTasksCount}", "TaskState.Init");
     }
     public void Update(PlayerControl player)

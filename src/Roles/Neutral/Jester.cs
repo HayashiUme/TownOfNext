@@ -25,6 +25,7 @@ public sealed class Jester : RoleBase
     static OptionItem OptionCanUseButton;
     public bool ExileWinTriggered { get; private set; }
     public bool WonInFirstMeeting { get; private set; }
+    public bool BaseWinTriggered { get; private set; }
     enum OptionName
     {
         JesterCanUseButton
@@ -43,6 +44,7 @@ public sealed class Jester : RoleBase
         var wasFirstMeeting = MeetingStates.FirstMeeting;
         return () =>
         {
+            BaseWinTriggered = CustomWinnerHolder.WinnerTeam == CustomWinner.Default;
             CustomWinnerHolder.SetWinnerOrAdditonalWinner(CustomWinner.Jester);
             CustomWinnerHolder.WinnerIds.Add(Player.PlayerId);
             ExileWinTriggered = true;

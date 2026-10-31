@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Crewmate;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Crewmate;
@@ -55,6 +56,13 @@ public sealed class Repairman : RoleBase, ISystemTypeUpdateHook
     private bool FixesComms;
     private bool FixesElectrical;
     public int UsedSkillCount;
+    public bool UsedQuickRepair { get; private set; }
+
+    private void RecordQuickRepair()
+    {
+        UsedQuickRepair = true;
+        RepairmanOneClickFix.Trigger(Player);
+    }
 
     private bool DoorsProgressing = false;
     private bool fixedSabotage;
@@ -83,6 +91,7 @@ public sealed class Repairman : RoleBase, ISystemTypeUpdateHook
             //片方を直したタイミング
             ShipStatus.Instance.UpdateSystem((MapNames)Main.NormalOptions.MapId == MapNames.Polus ? SystemTypes.Laboratory : SystemTypes.Reactor, Player, ReactorSystemType.ClearCountdown);
             UsedSkillCount++;
+            RecordQuickRepair();
         }
         return true;
     }
@@ -99,6 +108,7 @@ public sealed class Repairman : RoleBase, ISystemTypeUpdateHook
             ShipStatus.Instance.UpdateSystem(SystemTypes.HeliSabotage, Player, (byte)(consoleId | (int)HeliSabotageSystem.Tags.FixBit));
             ShipStatus.Instance.UpdateSystem(SystemTypes.HeliSabotage, Player, (byte)(otherConsoleId | (int)HeliSabotageSystem.Tags.FixBit));
             UsedSkillCount++;
+            RecordQuickRepair();
         }
         return true;
     }
@@ -111,6 +121,7 @@ public sealed class Repairman : RoleBase, ISystemTypeUpdateHook
             //片方の入力が正解したタイミング
             ShipStatus.Instance.UpdateSystem(SystemTypes.LifeSupp, Player, LifeSuppSystemType.ClearCountdown);
             UsedSkillCount++;
+            RecordQuickRepair();
         }
         return true;
     }
@@ -138,6 +149,7 @@ public sealed class Repairman : RoleBase, ISystemTypeUpdateHook
             var otherConsoleId = (consoleId + 1) % 2;
             //もう一方のパネルの完了報告
             UsedSkillCount++;
+            RecordQuickRepair();
         }
         return true;
     }
@@ -152,6 +164,7 @@ public sealed class Repairman : RoleBase, ISystemTypeUpdateHook
         var fixbit = 1 << amount;
         switchSystem.ActualSwitches = (byte)(switchSystem.ExpectedSwitches ^ fixbit);
         UsedSkillCount++;
+        RecordQuickRepair();
         return true;
     }
     bool ISystemTypeUpdateHook.UpdateDoorsSystem(DoorsSystemType doorsSystem, byte amount)

@@ -38,6 +38,12 @@ public sealed class Sidekick : RoleBase, IKiller
     public static bool CanVent;
     public static bool CanUseSabotage;
     private static bool HasImpostorVision;
+    public Jackal Recruiter { get; set; }
+    public bool IsSucceeding { get; set; }
+    public override void OnDestroy()
+    {
+        if (!IsSucceeding) Recruiter?.ForgetRecruit(Player.PlayerId);
+    }
 
     public bool CanUseKillButton() => CanKill;
     public float CalculateKillCooldown() => CanUseKillButton() ? KillCooldown : 255f;

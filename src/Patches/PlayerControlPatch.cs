@@ -794,6 +794,7 @@ class CoEnterVentPatch
         // 保安封锁的管道检测
         if (Roles.Crewmate.SecurityGuard.IsVentLocked(id))
         {
+            Roles.Crewmate.SecurityGuard.RecordBlockedEntry(id, user);
             _ = new LateTask(() =>
             {
                 if (!GameStates.IsMeeting)

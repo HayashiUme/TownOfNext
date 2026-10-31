@@ -300,6 +300,9 @@ public static class Utils
         //seer側による変更
         seer.GetRoleClass()?.OverrideDisplayRoleNameAsSeer(seen, ref enabled, ref roleColor, ref roleText);
 
+        if (enabled && AmongUsClient.Instance.AmHost && seer.AmOwner
+            && seer.GetRoleClass() is God god && !string.IsNullOrWhiteSpace(roleText))
+            god.RecordRoleInformationProvided(seen);
         return enabled ? ColorString(roleColor, roleText) : "";
     }
     /// <summary>
@@ -1005,6 +1008,7 @@ public static class Utils
 
             var sender = CustomRpcSender.Create("NotifyRoles", SendOption.Reliable);
             sender.StartMessage(seer.GetClientId());
+            PlayerControl godInformationTarget = null;
 
             // 会議じゃなくて，キノコカオス中で，seerが生きていてdesyncインポスターの場合に自身の名前を消す
             if (!isForMeeting && isMushroomMixupActive && seer.IsAlive() && !seer.Is(CustomRoleTypes.Impostor) && seer.GetCustomRole().GetRoleInfo()?.IsDesyncImpostor == true)
@@ -1111,6 +1115,7 @@ public static class Utils
                     //他人の役職とタスクは幽霊が他人の役職を見れるようになっていてかつ、seerが死んでいる場合のみ表示されます。それ以外の場合は空になります。
                     var targetRoleData = GetRoleNameAndProgressTextData(seer, target);
                     var TargetRoleText = targetRoleData.enabled ? $"<size={fontSize}>{targetRoleData.text}</size>\r\n" : "";
+                    if (seerRole is God && targetRoleData.enabled) godInformationTarget = target;
 
                     TargetSuffix.Clear();
                     //seerに関わらず発動するLowerText
@@ -1159,6 +1164,8 @@ public static class Utils
                 logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":END");
             }
             sender.SendMessage(); // 统一发送以防止误触原版反作弊
+            if (seerRole is God informedGod && godInformationTarget != null)
+                informedGod.RecordRoleInformationProvided(godInformationTarget);
             logger.Info("NotifyRoles-Loop1-" + seer.GetNameWithRole() + ":END");
         }
     }

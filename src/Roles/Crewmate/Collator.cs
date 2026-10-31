@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using TONX.Modules.Achievements.Crewmate;
+using TONX.Modules;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -44,6 +45,8 @@ public sealed class Collator : RoleBase, IKiller
     public int CollateLimit = 0;
     public float CurrentKillCooldown = 30;
     public List<(byte PlayerId, CustomRoleTypes CustomRoleType)> Samples = new(); 
+    public bool SampledImpostorExiled { get; private set; }
+    private byte SampledImpostorId = byte.MaxValue;
     public static readonly string[] madTeamType =
     {
         "TeamImpostor",
@@ -127,6 +130,7 @@ public sealed class Collator : RoleBase, IKiller
         killer.SetKillCooldownV2();
 
         Samples.Add((target.PlayerId, team));
+        if (team == CustomRoleTypes.Impostor) SampledImpostorId = target.PlayerId;
         SendRPC_SetCollated();
         if (secondCollate) CollatorTwoSamples.Trigger(killer);
 
@@ -157,6 +161,14 @@ public sealed class Collator : RoleBase, IKiller
     {
         Samples = new();
         SendRPC_SetCollated();
+    }
+    public override void OnVotingComplete(MeetingVoteManager.VoteResult voteResult)
+    {
+        if (SampledImpostorId != byte.MaxValue && voteResult.Exiled?.PlayerId == SampledImpostorId
+            && MeetingVoteManager.Instance.AllVotes.TryGetValue(Player.PlayerId, out var vote)
+            && vote.VotedFor == SampledImpostorId)
+            SampledImpostorExiled = true;
+        SampledImpostorId = byte.MaxValue;
     }
     public bool OverrideKillButtonText(out string text)
     {

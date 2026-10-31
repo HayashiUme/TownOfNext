@@ -38,6 +38,7 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable, ISpecial
     public List<byte> SelectedPlayes;
     public bool IsSpecialMeetingActive { get; set; }
     public List<byte> SpecialMeetingPlayers { get; set; }
+    public bool DoubleEvilExile { get; private set; }
     public bool AllowSkip => false;
     public bool RevertOnDie => true;
 
@@ -70,6 +71,10 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable, ISpecial
     {
         if (!voteResult.IsTie || !voteResult.NoVotes) return false;
         var (target1, target2) = (SpecialMeetingPlayers[0], SpecialMeetingPlayers[1]);
+        var firstRole = Utils.GetPlayerById(target1)?.GetCustomRole();
+        var secondRole = Utils.GetPlayerById(target2)?.GetCustomRole();
+        if (firstRole?.IsImpostorTeam() == true && secondRole?.IsImpostorTeam() == true)
+            DoubleEvilExile = true;
         MeetingHudPatch.TryAddAfterMeetingDeathPlayers(CustomDeathReason.Vote, target1);
         MeetingHudPatch.TryAddAfterMeetingDeathPlayers(CustomDeathReason.Vote, target2);
         Logger.Info($"Double Exile => {Utils.GetPlayerById(target1)?.GetNameWithRole()} & {Utils.GetPlayerById(target2)?.GetNameWithRole()}", "Justice");

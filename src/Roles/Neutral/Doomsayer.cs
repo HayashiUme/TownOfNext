@@ -57,6 +57,9 @@ public sealed class Doomsayer : RoleBase, IKiller, IMeetingButton, IGuesser
     private bool HasWrongGuess;
     private int CorrectGuesses;
     private int HintLimit;
+    public bool EverGuessedWrong { get; private set; }
+    public bool GuessWinTriggered { get; private set; }
+    public bool BaseWinTriggered { get; private set; }
     private static void SetupOptionItem()
     {
         OptionGuessNums = IntegerOptionItem.Create(RoleInfo, 10, OptionName.GuesserCanGuessTimes, new(1, 15, 1), 15, false)
@@ -193,7 +196,11 @@ public sealed class Doomsayer : RoleBase, IKiller, IMeetingButton, IGuesser
     }
     public bool OnGuessing(PlayerControl guesser, PlayerControl target, CustomRoles role, bool guesserSuicide, ref string reason)
     {
-        if (guesserSuicide) HasWrongGuess = true;
+        if (guesserSuicide)
+        {
+            HasWrongGuess = true;
+            EverGuessedWrong = true;
+        }
         else
         {
             CorrectGuesses++;
@@ -215,8 +222,10 @@ public sealed class Doomsayer : RoleBase, IKiller, IMeetingButton, IGuesser
     {
         if (CorrectGuesses >= OptionGuessNumsToWin.GetInt())
         {
+            BaseWinTriggered = CustomWinnerHolder.WinnerTeam == CustomWinner.Default;
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Doomsayer);
             CustomWinnerHolder.WinnerIds.Add(guesser.PlayerId);
+            GuessWinTriggered = true;
         }
     }
 }

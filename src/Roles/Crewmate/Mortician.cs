@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using TONX.Modules;
 using TONX.Modules.Achievements.Crewmate;
 using UnityEngine;
 
@@ -29,7 +30,11 @@ public sealed class Mortician : RoleBase
     }
 
     private static Dictionary<byte, string> LastPlayerName;
+    private static Dictionary<byte, byte> LastContactId = new();
     private string MsgToSend;
+    public bool KillerExiledAfterContact { get; private set; }
+    private byte ContactedKillerId = byte.MaxValue;
+    private int ContactMeetingsRemaining;
     private void SendRPC(bool add, Vector3 loc = new())
     {
         using var sender = CreateSender();
@@ -54,6 +59,7 @@ public sealed class Mortician : RoleBase
         var pos = target.GetTruePosition();
         float minDis = float.MaxValue;
         string minName = string.Empty;
+        byte minPlayerId = byte.MaxValue;
         foreach (var pc in Main.AllAlivePlayerControls)
         {
             if (pc.PlayerId == target.PlayerId) continue;
@@ -62,10 +68,12 @@ public sealed class Mortician : RoleBase
             {
                 minDis = dis;
                 minName = pc.GetRealName();
+                minPlayerId = pc.PlayerId;
             }
         }
 
         LastPlayerName.TryAdd(target.PlayerId, minName);
+        LastContactId[target.PlayerId] = minPlayerId;
         LocateArrow.Add(Player.PlayerId, target.transform.position);
         SendRPC(true, target.GetTruePosition());
     }
@@ -74,9 +82,26 @@ public sealed class Mortician : RoleBase
         LocateArrow.RemoveAllTarget(Player.PlayerId);
         SendRPC(false);
     }
+    public override void OnVotingComplete(MeetingVoteManager.VoteResult voteResult)
+    {
+        if (ContactedKillerId != byte.MaxValue && voteResult.Exiled?.PlayerId == ContactedKillerId
+            && MeetingVoteManager.Instance.AllVotes.TryGetValue(Player.PlayerId, out var ownVote)
+            && ownVote.VotedFor == ContactedKillerId)
+            KillerExiledAfterContact = true;
+        else if (ContactMeetingsRemaining > 0 && --ContactMeetingsRemaining == 0)
+            ContactedKillerId = byte.MaxValue;
+    }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         if (reporter == null || !Is(reporter) || target == null || reporter.PlayerId == target.PlayerId) return;
+        var targetObject = target.Object;
+        var killer = targetObject?.GetRealKiller();
+        if (killer != null && LastContactId.TryGetValue(target.PlayerId, out var lastContactId)
+            && lastContactId == killer.PlayerId)
+        {
+            ContactedKillerId = killer.PlayerId;
+            ContactMeetingsRemaining = 2;
+        }
         MsgToSend = LastPlayerName.TryGetValue(target.PlayerId, out var name)
             ? string.Format(GetString("MorticianGetInfo"), target.PlayerName, name)
             : string.Format(GetString("MorticianGetNoInfo"), target.PlayerName);

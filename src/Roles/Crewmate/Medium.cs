@@ -36,6 +36,9 @@ public sealed class Medium : RoleBase
 
     private int ContactLimit;
     private byte ContactPlayer;
+    public bool AnsweredGhostKillerExiled { get; private set; }
+    private byte AnsweredGhostId = byte.MaxValue;
+    private byte AnsweredKillerId = byte.MaxValue;
     private static void SetupOptionItem()
     {
         OptionContactNums = IntegerOptionItem.Create(RoleInfo, 10, OptionName.MediumContactLimit, new(1, 15, 1), 15, false)
@@ -101,7 +104,20 @@ public sealed class Medium : RoleBase
             Utils.SendMessage(GetString("MediumshipDone"), player.PlayerId, Utils.ColorString(RoleInfo.RoleColor, GetString("MediumshipTitle")));
 
             MediumAnswerReceived.Trigger(medium);
+            roleClass.AnsweredGhostId = player.PlayerId;
+            roleClass.AnsweredKillerId = player.GetRealKiller()?.PlayerId ?? byte.MaxValue;
             roleClass.ContactPlayer = byte.MaxValue;
         }
+    }
+    public override void OnVotingComplete(MeetingVoteManager.VoteResult voteResult)
+    {
+        if (AnsweredGhostId != byte.MaxValue && AnsweredKillerId != byte.MaxValue
+            && voteResult.Exiled?.PlayerId == AnsweredKillerId
+            && voteResult.Exiled.Object?.GetCustomRole().IsImpostorTeam() == true
+            && MeetingVoteManager.Instance.AllVotes.TryGetValue(Player.PlayerId, out var vote)
+            && vote.VotedFor == AnsweredKillerId)
+            AnsweredGhostKillerExiled = true;
+        AnsweredGhostId = byte.MaxValue;
+        AnsweredKillerId = byte.MaxValue;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TONX.Modules;
 using TONX.Modules.Achievements.Crewmate;
 
 namespace TONX.Roles.Crewmate;
@@ -23,6 +24,7 @@ public sealed class Celebrity : RoleBase
     )
     {
         MsgToSend = new();
+        RetaliationKillerId = byte.MaxValue;
     }
 
     public static OptionItem OptionImpKnow;
@@ -36,6 +38,9 @@ public sealed class Celebrity : RoleBase
     }
 
     private List<(string, byte, string)> MsgToSend;
+    public bool RetaliationExiledKiller { get; private set; }
+    private byte RetaliationKillerId;
+    private bool RetaliationMeetingActive;
     private static void SetupOptionItem()
     {
         OptionImpKnow = BooleanOptionItem.Create(RoleInfo, 10, OptionName.ImpKnowCelebrityDead, false, false);
@@ -54,6 +59,9 @@ public sealed class Celebrity : RoleBase
     {
         if (!Is(player)) return;
 
+        RetaliationKillerId = player.GetRealKiller()?.PlayerId ?? byte.MaxValue;
+        RetaliationMeetingActive = false;
+
         var notified = false;
         foreach (var pc in Main.AllPlayerControls.Where(x => CanSeeKillFlash(x) || player.Is(CustomRoles.Madmate)))
         {
@@ -70,6 +78,19 @@ public sealed class Celebrity : RoleBase
         }
         if (notified) CelebrityDeathNotice.Trigger(player);
     }
+    public override void OnVotingComplete(MeetingVoteManager.VoteResult voteResult)
+    {
+        if (RetaliationMeetingActive && RetaliationKillerId != byte.MaxValue
+            && voteResult.Exiled?.PlayerId == RetaliationKillerId)
+            RetaliationExiledKiller = true;
+        if (RetaliationMeetingActive)
+        {
+            RetaliationKillerId = byte.MaxValue;
+            RetaliationMeetingActive = false;
+        }
+    }
+    public override void OnStartMeeting()
+        => RetaliationMeetingActive = RetaliationKillerId != byte.MaxValue;
     public override void NotifyOnMeetingStart(ref List<(string, byte, string)> msgToSend)
     {
         if (MsgToSend?.Any() ?? false)

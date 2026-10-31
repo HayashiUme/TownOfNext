@@ -37,6 +37,18 @@ public sealed class SecurityGuard : RoleBase
     }
 
     public static HashSet<int> LockedVents = new();
+    private readonly HashSet<int> PersonallyLockedVents = new();
+    public int DistinctVentsLocked => PersonallyLockedVents.Count;
+    public bool EnemyBlockedByLock { get; private set; }
+
+    public static void RecordBlockedEntry(int ventId, PlayerControl player)
+    {
+        if (player?.GetCustomRole().IsImpostorTeam() != true) return;
+        foreach (var guard in Main.AllPlayerControls.Where(pc => pc.Is(CustomRoles.SecurityGuard)))
+            if (guard.GetRoleClass() is SecurityGuard securityGuard
+                && LockedVents.Contains(ventId) && securityGuard.PersonallyLockedVents.Contains(ventId))
+                securityGuard.EnemyBlockedByLock = true;
+    }
 
     private static void SetupOptionItem()
     {
@@ -86,7 +98,10 @@ public sealed class SecurityGuard : RoleBase
 
         // 封锁该通风管
         if (LockedVents.Add(ventId))
+        {
+            PersonallyLockedVents.Add(ventId);
             VentLocked.Trigger(Player);
+        }
         SendRPC_SyncLockedVents();
         Player.Notify(string.Format(GetString("SecurityGuardVentLocked"), ventId));
         Logger.Info($"{Player.GetNameWithRole()}: 封锁了通风管 {ventId}，当前已封锁: {LockedVents.Count}", "SecurityGuard");

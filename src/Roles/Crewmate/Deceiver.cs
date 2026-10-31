@@ -45,6 +45,7 @@ public sealed class Deceiver : RoleBase, IKiller
     private int SellLimit;
     private Dictionary<byte, bool> Customers;
     public bool IsKiller { get; private set; } = false;
+    public bool CounterfeitMisfireWin { get; private set; }
     private static void SetupOptionItem()
     {
         OptionSellCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.DeceiverSkillCooldown, new(2.5f, 180f, 2.5f), 20f, false)
@@ -110,6 +111,8 @@ public sealed class Deceiver : RoleBase, IKiller
             if (deceiver.GetRoleClass() is not Deceiver roleClass) continue;
             if (roleClass.Customers.TryGetValue(killer.PlayerId, out var x) && x)
             {
+                if (roleClass.Player?.Data != null && roleClass.Player.IsAlive())
+                    roleClass.CounterfeitMisfireWin = true;
                 killer.SetRealKiller(deceiver);
                 killer.SetDeathReason(CustomDeathReason.Misfire);
                 killer.RpcMurderPlayerV2(killer);

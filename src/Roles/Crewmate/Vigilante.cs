@@ -30,6 +30,7 @@ public sealed class Vigilante : RoleBase, IKiller
     { }
 
     private bool IsKilled;
+    public bool ImpostorKillWon { get; private set; }
     public override void Add()
     {
         var playerId = Player.PlayerId;
@@ -57,10 +58,15 @@ public sealed class Vigilante : RoleBase, IKiller
             if (IsKilled) return false;
             IsKilled = true;
             SendRPC();
-            if (info.AttemptTarget.GetCustomRole().IsImpostor()) VigilanteEvilKill.Trigger(Player);
             Player.ResetKillCooldown();
         }
         return true;
+    }
+    public void OnMurderPlayerAsKiller(MurderInfo info)
+    {
+        if (!info.AttemptTarget.GetCustomRole().IsImpostor()) return;
+        ImpostorKillWon = true;
+        VigilanteEvilKill.Trigger(Player);
     }
     public override string GetProgressText(bool comms = false) => Utils.ColorString(CanUseKillButton() ? Color.yellow : Color.gray, $"({(CanUseKillButton() ? 1 : 0)})");
 }

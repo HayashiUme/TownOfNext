@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TONX.Modules;
 using TONX.Modules.Achievements.Crewmate;
 
 namespace TONX.Roles.Crewmate;
@@ -32,6 +33,8 @@ public sealed class DetectiveTONX : RoleBase
     }
 
     private string MsgToSend;
+    public int CorrectKillersExiled { get; private set; }
+    private byte CluedKillerId = byte.MaxValue;
     private static void SetupOptionItem()
     {
         OptionKnowKiller = BooleanOptionItem.Create(RoleInfo, 10, OptionName.DetectiveCanknowKiller, true, false);
@@ -47,7 +50,11 @@ public sealed class DetectiveTONX : RoleBase
             {
                 var realKiller = tpc.GetRealKiller();
                 if (realKiller == null) msg += "；" + GetString("DetectiveNoticeKillerNotFound");
-                else msg += "；" + string.Format(GetString("DetectiveNoticeKiller"), realKiller.GetTrueRoleName());
+                else
+                {
+                    CluedKillerId = realKiller.PlayerId;
+                    msg += "；" + string.Format(GetString("DetectiveNoticeKiller"), realKiller.GetTrueRoleName());
+                }
             }
             MsgToSend = msg;
         }
@@ -60,5 +67,14 @@ public sealed class DetectiveTONX : RoleBase
             DetectiveClue.Trigger(Player);
         }
         MsgToSend = null;
+    }
+    public override void OnVotingComplete(MeetingVoteManager.VoteResult voteResult)
+    {
+        if (CluedKillerId != byte.MaxValue && voteResult.Exiled?.PlayerId == CluedKillerId
+            && voteResult.Exiled.Object?.GetCustomRole().IsImpostor() == true
+            && MeetingVoteManager.Instance.AllVotes.TryGetValue(Player.PlayerId, out var ownVote)
+            && ownVote.VotedFor == CluedKillerId)
+            CorrectKillersExiled++;
+        CluedKillerId = byte.MaxValue;
     }
 }
