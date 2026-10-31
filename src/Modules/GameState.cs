@@ -76,6 +76,7 @@ public class PlayerState
                 CustomRoles.GM => CountTypes.OutOfGame,
                 _ => role.IsImpostor() ? CountTypes.Impostor : CountTypes.Crew,
             };
+        SelectRolesPatch.RecordCrewmateAlignment(PlayerId);
     }
     public void SetSubRole(CustomRoles role, bool AllReplace = false, bool recordRole = true)
     {
@@ -108,6 +109,7 @@ public class PlayerState
             SubRoles.Remove(CustomRoles.Madmate);
         }
 
+        SelectRolesPatch.RecordCrewmateAlignment(PlayerId);
         if (recordRole && AmongUsClient.Instance.AmHost) Utils.RecordPlayerRoles(PlayerId);
     }
     public void RemoveSubRole(CustomRoles role, bool recordRole = true)
@@ -145,7 +147,11 @@ public class PlayerState
                 count++;
         return count;
     }
-    public void SetCountType(CountTypes countType) => CountType = countType;
+    public void SetCountType(CountTypes countType)
+    {
+        CountType = countType;
+        SelectRolesPatch.RecordCrewmateAlignment(PlayerId);
+    }
 
     private static Dictionary<byte, PlayerState> allPlayerStates = new(15);
     public static IReadOnlyDictionary<byte, PlayerState> AllPlayerStates => allPlayerStates;

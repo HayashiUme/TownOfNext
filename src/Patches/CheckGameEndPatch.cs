@@ -11,6 +11,9 @@ namespace TONX;
 class GameEndChecker
 {
     private static GameEndPredicate predicate;
+    public static bool TaskWinTriggered { get; private set; }
+    public static bool SabotageWinTriggered { get; private set; }
+    public static Dictionary<byte, CustomWinner> NeutralOverrideSources = new();
     public static bool Prefix()
     {
         if (!AmongUsClient.Instance.AmHost) return true;
@@ -25,7 +28,11 @@ class GameEndChecker
         GameOverReason reason;
 
         //ゲーム終了判定
-        predicate.CheckForEndGame(out reason);
+        var ended = predicate.CheckForEndGame(out reason);
+        TaskWinTriggered = ended && reason == GameOverReason.CrewmatesByTask
+            && CustomWinnerHolder.WinnerTeam == CustomWinner.Crewmate;
+        SabotageWinTriggered = ended && reason == GameOverReason.ImpostorsBySabotage
+            && CustomWinnerHolder.WinnerTeam == CustomWinner.Impostor;
 
         //ゲーム終了時
         Options.CurrentGameMode.GetModeClass()?.AfterCheckForGameEnd(reason, ref predicate);
@@ -111,7 +118,13 @@ class GameEndChecker
     }
     private const float EndGameDelay = 0.2f;
 
-    public static void SetPredicate() => predicate = Options.CurrentGameMode.GetModeClass()?.Predicate();
+    public static void SetPredicate()
+    {
+        TaskWinTriggered = false;
+        SabotageWinTriggered = false;
+        NeutralOverrideSources.Clear();
+        predicate = Options.CurrentGameMode.GetModeClass()?.Predicate();
+    }
 }
 
 public abstract class GameEndPredicate

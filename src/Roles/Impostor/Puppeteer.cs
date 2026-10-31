@@ -33,6 +33,7 @@ public sealed class Puppeteer : RoleBase, IImpostor
     private static Dictionary<byte, Puppeteer> Puppets = new(15);
     public bool IsKiller { get; private set; } = false;
     public int PuppetKills { get; private set; }
+    public bool NonImpostorPuppetKill { get; private set; }
     public override void Add() => PuppetKills = 0;
     public override void OnDestroy()
     {
@@ -117,7 +118,13 @@ public sealed class Puppeteer : RoleBase, IImpostor
             {
                 RPC.PlaySoundRPC(Player.PlayerId, Sounds.KillSound);
                 target.SetRealKiller(Player);
+                var eligiblePuppetKill = !puppet.GetCustomRole().IsImpostorTeam()
+                    && !target.GetCustomRole().IsImpostorTeam()
+                    && !puppet.Is(CustomRoles.Madmate) && !target.Is(CustomRoles.Madmate)
+                    && !puppet.Data.Disconnected && !target.Data.Disconnected;
                 puppet.RpcMurderPlayer(target);
+                if (eligiblePuppetKill && target.Data.IsDead && !target.Data.Disconnected)
+                    NonImpostorPuppetKill = true;
                 PuppetKills++;
                 PuppeteerPuppetKill.Trigger(Player);
                 Utils.MarkEveryoneDirtySettings();

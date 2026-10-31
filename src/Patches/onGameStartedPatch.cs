@@ -119,6 +119,17 @@ internal class ChangeRoleSettings
 internal static class SelectRolesPatch
 {
     public static HashSet<byte> StartingImpostorIds = new();
+    public static Dictionary<byte, string> StartingCrewmates = new();
+    public static HashSet<byte> DepartedStartingCrewmates = new();
+
+    public static void RecordCrewmateAlignment(byte playerId)
+    {
+        if (!StartingCrewmates.ContainsKey(playerId)) return;
+        var state = PlayerState.GetByPlayerId(playerId);
+        if (state == null || !state.MainRole.IsCrewmate() || state.CountType != CountTypes.Crew
+            || state.SubRoles.Contains(CustomRoles.Madmate) || state.SubRoles.Contains(CustomRoles.Charmed))
+            DepartedStartingCrewmates.Add(playerId);
+    }
 
     public static void Prefix()
     {
@@ -126,6 +137,8 @@ internal static class SelectRolesPatch
 
         try
         {
+            StartingCrewmates.Clear();
+            DepartedStartingCrewmates.Clear();
             // 初始化CustomRpcSender和RpcSetRoleReplacer
             Dictionary<byte, CustomRpcSender> senders = new();
             foreach (var pc in Main.AllPlayerControls)
@@ -238,6 +251,11 @@ internal static class SelectRolesPatch
                 .Where(kv => kv.Value != null && kv.Value.MainRole.IsImpostor())
                 .Select(kv => kv.Key)
                 .ToHashSet();
+            StartingCrewmates = Main.AllPlayerControls
+                .Where(pc => pc.Data != null && !pc.Data.Disconnected && pc.GetCustomRole().IsCrewmate()
+                    && pc.GetCountTypes() == CountTypes.Crew
+                    && !pc.Is(CustomRoles.Madmate) && !pc.Is(CustomRoles.Charmed))
+                .ToDictionary(pc => pc.PlayerId, pc => pc.FriendCode);
 
             foreach (var pc in Main.AllPlayerControls)
             {

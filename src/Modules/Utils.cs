@@ -1115,7 +1115,6 @@ public static class Utils
                     //他人の役職とタスクは幽霊が他人の役職を見れるようになっていてかつ、seerが死んでいる場合のみ表示されます。それ以外の場合は空になります。
                     var targetRoleData = GetRoleNameAndProgressTextData(seer, target);
                     var TargetRoleText = targetRoleData.enabled ? $"<size={fontSize}>{targetRoleData.text}</size>\r\n" : "";
-                    if (seerRole is God && targetRoleData.enabled) godInformationTarget = target;
 
                     TargetSuffix.Clear();
                     //seerに関わらず発動するLowerText
@@ -1159,6 +1158,8 @@ public static class Utils
                     if (NoCache || Main.LastNotifyNames[(target.PlayerId, seer.PlayerId)] != TargetName)
                     {
                         sender.RpcSetName(target, TargetName, seer);
+                        if (seerRole is God && targetRoleData.enabled
+                            && !string.IsNullOrWhiteSpace(targetRoleData.text)) godInformationTarget = target;
                     }
                 }
                 logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":END");
