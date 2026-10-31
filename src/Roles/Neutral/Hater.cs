@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Neutral;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Neutral;
@@ -36,6 +37,7 @@ public sealed class Hater : RoleBase, IKiller, IAdditionalWinner
         text = GetString("HaterButtonText");
         return true;
     }
+    public bool HasKilledTarget { get; private set; }
     public void OnMurderPlayerAsKiller(MurderInfo info)
     {
         (var killer, var target) = info.AttemptTuple;
@@ -44,6 +46,11 @@ public sealed class Hater : RoleBase, IKiller, IAdditionalWinner
             killer.RpcMurderPlayer(killer);
             PlayerState.GetByPlayerId(killer.PlayerId).DeathReason = CustomDeathReason.Sacrifice;
             Logger.Info($"{killer.GetRealName()} 击杀了非目标玩家，壮烈牺牲了（bushi）", "FFF");
+        }
+        else if (Is(killer) && !info.IsSuicide)
+        {
+            HasKilledTarget = true;
+            HaterKillCouple.Trigger(killer);
         }
     }
     public bool CheckWin(ref CustomRoles winnerRole)

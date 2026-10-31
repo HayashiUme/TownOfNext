@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Impostor;
@@ -24,6 +25,9 @@ public sealed class Capitalist : RoleBase, IImpostor
     {
         NumShortTasks = new();
         TasksWaitToAdd = new();
+        TaskSource = new();
+        AddedTaskCount = 0;
+        TargetCompletedAddedTask = false;
     }
 
     static OptionItem OptionKillCooldown;
@@ -34,6 +38,9 @@ public sealed class Capitalist : RoleBase, IImpostor
 
     public static Dictionary<byte, int> NumShortTasks;
     public static Dictionary<byte, int> TasksWaitToAdd;
+    private static Dictionary<byte, byte> TaskSource;
+    public int AddedTaskCount { get; private set; }
+    public bool TargetCompletedAddedTask { get; private set; }
     public bool IsKiller { get; private set; } = false;
     private static void SetupOptionItem()
     {
@@ -62,6 +69,10 @@ public sealed class Capitalist : RoleBase, IImpostor
 
         TasksWaitToAdd.Remove(pc.PlayerId);
 
+        if (TaskSource.TryGetValue(pc.PlayerId, out var sourceId)
+            && Utils.GetPlayerById(sourceId)?.GetRoleClass() is Capitalist source)
+            source.TargetCompletedAddedTask = true;
+
         if (AmongUsClient.Instance.AmHost)
         {
             pc.Data.RpcSetTasks(new byte[0]);
@@ -80,9 +91,13 @@ public sealed class Capitalist : RoleBase, IImpostor
 
         TasksWaitToAdd.TryAdd(target.PlayerId, 0);
         TasksWaitToAdd[target.PlayerId]++;
+        TaskSource[target.PlayerId] = Player.PlayerId;
+        AddedTaskCount++;
 
         Player.SetKillCooldownV2();
         RPC.PlaySoundRPC(Player.PlayerId, Sounds.TaskUpdateSound);
+
+        CapitalistExtraTask.Trigger(Player);
 
         return false;
     }

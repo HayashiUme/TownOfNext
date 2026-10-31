@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using TONX.Modules;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -34,6 +35,24 @@ public sealed class Warlock : RoleBase, IImpostor
     PlayerControl CursedPlayer;
     bool IsCursed;
     bool Shapeshifting;
+    private PlayerControl curseKillTarget;
+    private readonly HashSet<(byte, string)> curseVictims = new();
+    public int SuccessfulCurseKills => curseVictims.Count;
+    public bool NonImpostorPuppetKill { get; private set; }
+    private bool curseUsedNonImpostor;
+
+    public void OnMurderPlayerAsKiller(MurderInfo info)
+    {
+        if (info.AttemptTarget == curseKillTarget && curseUsedNonImpostor
+            && !info.IsSuicide && info.AttemptTarget.Data.IsDead
+            && !info.AttemptTarget.Data.Disconnected && info.AppearanceKiller == CursedPlayer
+            && info.AppearanceTarget == info.AttemptTarget && info.AppearanceKiller != info.AttemptTarget)
+            NonImpostorPuppetKill = true;
+        if (info.AttemptTarget == curseKillTarget && !info.IsSuicide && info.AttemptTarget.Data.IsDead
+            && !info.AttemptTarget.Data.Disconnected
+            && curseVictims.Add((info.AttemptTarget.PlayerId, info.AttemptTarget.FriendCode)))
+            CurseKillCompleted.Trigger(Player);
+    }
     private static void SetupOptionItem()
     {
         OptionCanKillAllies = BooleanOptionItem.Create(RoleInfo, 10, GeneralOption.CanKillAllies, false, false);
@@ -131,11 +150,21 @@ public sealed class Warlock : RoleBase, IImpostor
                     var killTarget = nearest.Key;
 
                     var killed = false;
-                    CustomRoleManager.OnCheckMurder(
-                        Player, killTarget,
-                        CursedPlayer, killTarget,
-                        () => killed = true
-                        );
+                    curseKillTarget = killTarget;
+                    curseUsedNonImpostor = !CursedPlayer.GetCustomRole().IsImpostorTeam()
+                        && !killTarget.GetCustomRole().IsImpostorTeam()
+                        && !CursedPlayer.Is(CustomRoles.Madmate) && !killTarget.Is(CustomRoles.Madmate)
+                        && !CursedPlayer.Data.Disconnected && !killTarget.Data.Disconnected;
+                    try
+                    {
+                        CustomRoleManager.OnCheckMurder(Player, killTarget, CursedPlayer, killTarget,
+                            () => killed = true);
+                    }
+                    finally
+                    {
+                        curseKillTarget = null;
+                        curseUsedNonImpostor = false;
+                    }
 
                     if (killed)
                     {

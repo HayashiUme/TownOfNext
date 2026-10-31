@@ -24,8 +24,33 @@ public sealed class Opportunist : RoleBase, IAdditionalWinner
     )
     { }
 
+    public bool SurvivalWinGranted { get; private set; }
+    public int MeetingsSurvived { get; private set; }
+    public int ExileMeetingsSurvived { get; private set; }
+    private bool AliveAtMeetingStart;
+    private bool OtherPlayerExiled;
+    public override void OnStartMeeting()
+    {
+        AliveAtMeetingStart = Player.IsAlive();
+        OtherPlayerExiled = false;
+    }
+    public override void OnExileWrapUp(NetworkedPlayerInfo exiled, ref bool DecidedWinner)
+    {
+        OtherPlayerExiled |= exiled != null && exiled.PlayerId != Player.PlayerId;
+    }
+    public override void AfterMeetingTasks()
+    {
+        if (!AliveAtMeetingStart || !Player.IsAlive()
+            || Main.AfterMeetingDeathPlayers.ContainsKey(Player.PlayerId)) return;
+        MeetingsSurvived++;
+        if (OtherPlayerExiled || Main.AfterMeetingDeathPlayers.Any(pair =>
+                pair.Key != Player.PlayerId && pair.Value == CustomDeathReason.Vote))
+            ExileMeetingsSurvived++;
+        AliveAtMeetingStart = false;
+    }
     public bool CheckWin(ref CustomRoles winnerRole)
     {
-        return Player.IsAlive();
+        SurvivalWinGranted = Player.IsAlive();
+        return SurvivalWinGranted;
     }
 }

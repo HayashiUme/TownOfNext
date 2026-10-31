@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using TONX.Modules;
+using TONX.Modules.Achievements.Crewmate;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -42,6 +43,8 @@ public sealed class JudgeTONX : RoleBase, IMeetingButton
     }
 
     private int TrialLimit;
+    public int SuccessfulTrials { get; private set; }
+    public bool TrialMisfired { get; private set; }
     private static void SetupOptionItem()
     {
         OptionTrialLimitPerMeeting = IntegerOptionItem.Create(RoleInfo, 10, OptionName.TrialLimitPerMeeting, new(1, 99, 1), 1, false)
@@ -108,6 +111,12 @@ public sealed class JudgeTONX : RoleBase, IMeetingButton
         string Name = dp.GetRealName();
 
         TrialLimit--;
+        if (!judgeSuicide)
+        {
+            SuccessfulTrials++;
+            JudgeCorrectTrial.Trigger(Player);
+        }
+        else TrialMisfired = true;
 
         _ = new LateTask(() =>
         {

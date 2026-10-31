@@ -124,7 +124,11 @@ public class ModNewsHistory
 
             var fileNames = Assembly.GetExecutingAssembly().GetManifestResourceNames().Where(x => x.StartsWith($"TONX.Resources.ModNews.{lang}."));
             foreach (var file in fileNames)
+            {
+                // April Fools only announcement
+                if (!Main.IsAprilFools && file.EndsWith("TOHE.v.2.3.6.txt")) continue;
                 AllModNews.Add(GetContentFromRes(file));
+            }
 
             AllModNews.Sort((a1, a2) => { return DateTime.Compare(DateTime.Parse(a2.Date), DateTime.Parse(a1.Date)); });
         }

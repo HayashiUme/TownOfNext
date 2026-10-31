@@ -2,6 +2,7 @@
 using Hazel;
 
 using TONX.Modules;
+using TONX.Modules.Achievements.Neutral;
 
 namespace TONX.Roles.Neutral;
 public sealed class Mario : RoleBase
@@ -34,6 +35,9 @@ public sealed class Mario : RoleBase
     }
 
     private int VentedTimes;
+    public int SuccessfulVents => VentedTimes;
+    public bool VentWinTriggered { get; private set; }
+    public bool BaseWinTriggered { get; private set; }
     private static void SetupOptionItem()
     {
         OptionVentNums = IntegerOptionItem.Create(RoleInfo, 10, OptionName.MarioVentNumWin, new(1, 999, 1), 55, false);
@@ -59,7 +63,7 @@ public sealed class Mario : RoleBase
         text = GetString("MarioVentButtonText");
         return true;
     }
-    public override int OverrideAbilityButtonUsesRemaining() => OptionVentNums.GetInt() - VentedTimes;
+    public override int OverrideAbilityButtonUsesRemaining() => (Main.IsAprilFools ? (236 - VentedTimes) : (OptionVentNums.GetInt() - VentedTimes));
     public override string GetProgressText(bool comms = false) => Utils.ColorString(Utils.ShadeColor(RoleInfo.RoleColor, 0.25f), $"({VentedTimes}/{OptionVentNums.GetInt()})");
     public override bool OnEnterVent(PlayerPhysics physics, int ventId)
     {
@@ -69,13 +73,23 @@ public sealed class Mario : RoleBase
 
         if (VentedTimes % 5 == 0) CustomSoundsManager.Play("MarioCoin");
         else CustomSoundsManager.Play("MarioJump");
-
-        if (VentedTimes >= OptionVentNums.GetInt())
+        if (Main.IsAprilFools && VentedTimes >= 236)
         {
+            BaseWinTriggered |= CustomWinnerHolder.WinnerTeam == CustomWinner.Default;
+            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Mario);
+            CustomWinnerHolder.WinnerIds.Add(Player.PlayerId);
+        }
+        else if (!Main.IsAprilFools && VentedTimes >= OptionVentNums.GetInt())
+        {
+            BaseWinTriggered |= CustomWinnerHolder.WinnerTeam == CustomWinner.Default;
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Mario);
             CustomWinnerHolder.WinnerIds.Add(Player.PlayerId);
         }
 
+        if (VentedTimes >= (Main.IsAprilFools ? 236 : OptionVentNums.GetInt()))
+            VentWinTriggered = true;
+        if (VentedTimes >= ((Main.IsAprilFools ? 236 : OptionVentNums.GetInt()) + 1) / 2)
+            MarioHalfway.Trigger(Player);
         return true;
     }
 }

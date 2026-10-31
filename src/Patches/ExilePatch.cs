@@ -1,13 +1,22 @@
 using AmongUs.Data;
+using TONX.Attributes;
 using TONX.Modules;
 using TONX.Roles.Neutral;
 
 namespace TONX;
 
-class ExileControllerWrapUpPatch
+static partial class ExileControllerWrapUpPatch
 {
     public static List<Action> ActionsOnWrapUp = new();
     public static NetworkedPlayerInfo AntiBlackout_LastExiled;
+    public static int ExiledImpostorCount = 0;
+    public static int ExiledCrewCount = 0;
+    [GameModuleInitializer]
+    public static void Init()
+    {
+        ExiledImpostorCount = 0;
+        ExiledCrewCount = 0;
+    }
     [HarmonyPatch(typeof(ExileController), nameof(ExileController.WrapUp))]
     class BaseExileControllerPatch
     {
@@ -74,6 +83,9 @@ class ExileControllerWrapUpPatch
             exiled.IsDead = true;
             PlayerState.GetByPlayerId(exiled.PlayerId).DeathReason = CustomDeathReason.Vote;
 
+            if (role.IsImpostorTeam()) ExiledImpostorCount++;
+            else if (role.IsCrewmate()) ExiledCrewCount++;
+
             ActionsOnWrapUp.Do(f => f.Invoke());
             ActionsOnWrapUp = new();
 
@@ -133,10 +145,19 @@ class ExileControllerWrapUpPatch
                     var roleClass = CustomRoleManager.GetByPlayerId(x.Key);
                     var requireResetCam = player?.GetCustomRole().GetRoleInfo()?.IsDesyncImpostor == true;
                     var state = PlayerState.GetByPlayerId(x.Key);
+                    var wasPhysicallyAlive = player?.Data != null && !player.Data.IsDead && !player.Data.Disconnected;
                     Logger.Info($"{player.GetNameWithRole()}を{x.Value}で死亡させました", "AfterMeetingDeath");
                     state.DeathReason = x.Value;
                     state.SetDead();
                     player?.RpcExile();
+                    if (x.Value == CustomDeathReason.Vote && wasPhysicallyAlive && player?.Data?.IsDead == true)
+                    {
+                        var role = player.GetCustomRole();
+                        if (role.IsImpostorTeam()) ExiledImpostorCount++;
+                        else if (role.IsCrewmate()) ExiledCrewCount++;
+                        foreach (var activeRole in CustomRoleManager.AllActiveRoles.Values.ToList())
+                            if (activeRole is TONX.Roles.Crewmate.Justice justice) justice.RecordMeetingExile(player);
+                    }
                     if (x.Value == CustomDeathReason.Suicide)
                         player?.SetRealKiller(player, true);
                     if (requireResetCam)

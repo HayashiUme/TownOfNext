@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using TONX.Modules;
+using TONX.Modules.Achievements.Neutral;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -40,6 +41,8 @@ public sealed class Pelican : RoleBase, IKiller
     }
 
     List<byte> EatenPlayers;
+    private readonly HashSet<(byte, string)> swallowedPlayers = new();
+    public int SuccessfulEats => swallowedPlayers.Count;
     Dictionary<byte, float> OriginalSpeed;
     Vector2 MyLastPos;
 
@@ -104,6 +107,8 @@ public sealed class Pelican : RoleBase, IKiller
         Main.AllPlayerSpeed[target.PlayerId] = 0.5f;
         ReportDeadBodyPatch.CanReport[target.PlayerId] = false;
         target.MarkDirtySettings();
+
+        if (swallowedPlayers.Add((target.PlayerId, target.FriendCode))) PlayerSwallowed.Trigger(Player);
 
         Utils.NotifyRoles(target);
         Utils.NotifyRoles(target);

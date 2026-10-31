@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Impostor;
@@ -23,6 +24,11 @@ public sealed class Concealer : RoleBase, IImpostor
     )
     { }
 
+    public bool KilledWhileHidden { get; private set; }
+    public bool MeetingHeldAfterHiddenKill { get; private set; }
+    public bool ExiledAfterHiddenKill { get; private set; }
+    private bool awaitingExileCheck;
+
     static OptionItem OptionShapeshiftCooldown;
     static OptionItem OptionShapeshiftDuration;
 
@@ -45,7 +51,25 @@ public sealed class Concealer : RoleBase, IImpostor
 
         if (!AmongUsClient.Instance.AmHost) return;
 
+        if (Shapeshifting) ConcealerActivate.Trigger(Player);
+
         Camouflage.CheckCamouflage();
+    }
+    public void BeforeMurderPlayerAsKiller(MurderInfo info)
+    {
+        if (Shapeshifting) KilledWhileHidden = true;
+    }
+    public override void OnStartMeeting()
+    {
+        if (!KilledWhileHidden || MeetingHeldAfterHiddenKill) return;
+        MeetingHeldAfterHiddenKill = true;
+        awaitingExileCheck = true;
+    }
+    public override void OnExileWrapUp(NetworkedPlayerInfo exiled, ref bool DecidedWinner)
+    {
+        if (!awaitingExileCheck) return;
+        awaitingExileCheck = false;
+        if (exiled?.Object == Player) ExiledAfterHiddenKill = true;
     }
     public override bool GetAbilityButtonSprite(out string buttonName)
     {

@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using TONX.Modules;
+using TONX.Modules.Achievements.Crewmate;
 
 namespace TONX.Roles.Crewmate;
 public sealed class Grenadier : RoleBase
@@ -21,7 +22,9 @@ public sealed class Grenadier : RoleBase
         RoleInfo,
         player
     )
-    { }
+    {
+        CustomRoleManager.OnCheckMurderPlayerOthers_After.Add(OnCheckMurderPlayerOthers_After);
+    }
 
     static OptionItem OptionSkillCooldown;
     static OptionItem OptionSkillDuration;
@@ -36,6 +39,8 @@ public sealed class Grenadier : RoleBase
     }
 
     private long BlindingStartTime;
+    public bool BlindKillOfImpostor { get; private set; }
+    private int BlindedImpostors;
     private bool IsMadGrenadier => Player.Is(CustomRoles.Madmate);
     private static void SetupOptionItem()
     {
@@ -50,6 +55,8 @@ public sealed class Grenadier : RoleBase
     public override void Add()
     {
         BlindingStartTime = 0;
+        BlindKillOfImpostor = false;
+        BlindedImpostors = 0;
     }
     public override void ApplyGameOptions(IGameOptions opt)
     {
@@ -73,6 +80,8 @@ public sealed class Grenadier : RoleBase
         else
         {
             Main.AllPlayerControls.Where(x => x.IsModClient()).Where(x => x.IsImp() || (x.IsNeutral() && OptionCanAffectNeutral.GetBool())).Do(x => x.RPCPlayCustomSound("FlashBang"));
+            BlindedImpostors = Main.AllAlivePlayerControls.Count(x => x.IsImp());
+            if (Main.AllAlivePlayerControls.Any(x => x.IsImp())) GrenadierFlashImpostor.Trigger(Player);
         }
         if (!Player.IsModClient()) Player.RpcProtectedMurderPlayer();
         Player.RPCPlayCustomSound("FlashBang");
@@ -114,5 +123,19 @@ public sealed class Grenadier : RoleBase
             }
         }
         return false;
+    }
+    private static bool OnCheckMurderPlayerOthers_After(MurderInfo info)
+    {
+        if (!info.CanKill || !info.DoKill || !info.AttemptKiller.GetCustomRole().IsCrewmate()
+            || !info.AttemptTarget.GetCustomRole().IsImpostor()) return true;
+        foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Grenadier)))
+        {
+            if (pc.GetRoleClass() is Grenadier role && role.BlindedImpostors >= 2 && IsBlinding(info.AttemptTarget))
+            {
+                role.BlindKillOfImpostor = true;
+                break;
+            }
+        }
+        return true;
     }
 }

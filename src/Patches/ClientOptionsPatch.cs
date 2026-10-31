@@ -1,4 +1,5 @@
 using BepInEx.Configuration;
+using TONX.Modules.Achievements.AchievementInterface;
 using TONX.Modules.ClientOptions;
 using TONX.Modules.NameTagInterface;
 using UnityEngine;
@@ -21,7 +22,6 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem<bool> VersionCheat;
     private static ClientOptionItem<bool> GodMode;
     private static ClientOptionItem<bool> FastBoot;
-    private static ClientOptionItem<bool> EnableAMCIMode;
     private static ClientOptionItem<bool> DarkTheme;
 
     private static bool reseted;
@@ -31,6 +31,7 @@ public static class OptionsMenuBehaviourStartPatch
         if (__instance.DisableMouseMovement == null) return;
 
         NameTagPanel.Init(__instance);
+        AchievementPanel.Init(__instance);
 
         if (!reseted || !DebugModeManager.AmDebugger)
         {
@@ -58,7 +59,6 @@ public static class OptionsMenuBehaviourStartPatch
         CreateIfNull(ref EnableCustomButton, "EnableCustomButton", Main.EnableCustomButton, instance);
         CreateIfNull(ref EnableCustomSoundEffect, "EnableCustomSoundEffect", Main.EnableCustomSoundEffect, instance);
         CreateIfNull(ref FastBoot, "FastBoot", Main.FastBoot, instance);
-        CreateIfNull(ref EnableAMCIMode, "EnableAmciMode", Main.EnableAMCIMode, instance);
         CreateIfNull(ref DarkTheme, "EnableDarkTheme", Main.DarkTheme, instance);
         return;
 
@@ -117,6 +117,7 @@ public static class OptionsMenuBehaviourClosePatch
         ClientActionItem.CustomBackground?.gameObject?.SetActive(false);
         NameTagPanel.Hide();
         NameTagEditMenu.Hide();
+        AchievementPanel.Hide();
         ModUnloaderScreen.Hide();
     }
 }

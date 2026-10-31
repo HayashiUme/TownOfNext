@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using TONX.Modules.Achievements.Neutral;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -186,6 +187,7 @@ public sealed class Yandere : RoleBase, IKiller, IOverrideWinner
                 if (ProximityTimers[pc.PlayerId] >= RivalTime)
                 {
                     Rivals.Add(pc.PlayerId);
+                    YandereRivalMarked.Trigger(Player);
                     ProximityTimers.Remove(pc.PlayerId);
                     SendRPC_Sync();
                     Utils.NotifyRoles(SpecifySeer: Player);

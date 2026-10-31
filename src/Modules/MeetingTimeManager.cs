@@ -1,5 +1,7 @@
 using AmongUs.GameOptions;
 using TONX.Attributes;
+using TONX.Modules.Achievements.Crewmate;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using TONX.Roles.Crewmate;
 using TONX.Roles.Impostor;
@@ -75,6 +77,16 @@ public class MeetingTimeManager
         int TotalMeetingTime = DiscussionTime + VotingTime;
         //時間の下限、上限で刈り込み
         BonusMeetingTime = Math.Clamp(TotalMeetingTime + BonusMeetingTime, MeetingTimeMin, MeetingTimeMax) - TotalMeetingTime;
+        foreach (var role in CustomRoleManager.AllActiveRoles.Values.ToList())
+            if (role is TimeManager timeManager)
+                timeManager.RecordAppliedExtension(Math.Max(0, Math.Min(timeManager.CalculateMeetingTimeDelta(), BonusMeetingTime)));
+        if (BonusMeetingTime > 0)
+        {
+            foreach (var role in CustomRoleManager.AllActiveRoles.Values.ToList())
+                if (role is TimeManager timeManager && timeManager.Player.IsAlive()
+                    && timeManager.CalculateMeetingTimeDelta() > 0)
+                    TimeManagerMeetingExtended.Trigger(timeManager.Player);
+        }
         if (BonusMeetingTime >= 0)
             VotingTime += BonusMeetingTime; //投票時間を延長
         else
@@ -85,6 +97,13 @@ public class MeetingTimeManager
                 VotingTime += DiscussionTime; //足りない分投票時間を短縮
                 DiscussionTime = 0;
             }
+            foreach (var role in CustomRoleManager.AllActiveRoles.Values.ToList())
+                if (role is TimeThief timeThief && timeThief.Player.IsAlive()
+                    && timeThief.CalculateMeetingTimeDelta() < 0)
+                {
+                    timeThief.MeetingTimeCutApplied = true;
+                    TimeThiefMeetingCut.Trigger(timeThief.Player);
+                }
         }
 
         Options.CurrentGameMode.GetModeClass()?.AlterMeetingTime(ref DiscussionTime, ref VotingTime);

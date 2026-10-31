@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using TONX.Modules.Achievements.Crewmate;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -60,6 +61,9 @@ public sealed class Sheriff : RoleBase, IKiller
     }
     public static Dictionary<CustomRoles, OptionItem> KillTargetOptions = new();
     public int ShotLimit = 0;
+    public int SuccessfulImpostorKills { get; private set; }
+    public bool SheriffMisfired { get; private set; }
+    private HashSet<byte> ImpostorKillTargets = new();
     public float CurrentKillCooldown = 30;
     public static readonly string[] KillOption =
     {
@@ -107,6 +111,9 @@ public sealed class Sheriff : RoleBase, IKiller
         CurrentKillCooldown = KillCooldown.GetFloat();
 
         ShotLimit = ShotLimitOpt.GetInt();
+        SuccessfulImpostorKills = 0;
+        SheriffMisfired = false;
+        ImpostorKillTargets.Clear();
         Logger.Info($"{Utils.GetPlayerById(playerId)?.GetNameWithRole()} : 残り{ShotLimit}発", "Sheriff");
     }
     private void SendRPC()
@@ -148,10 +155,20 @@ public sealed class Sheriff : RoleBase, IKiller
                 return true;
             }
             PlayerState.GetByPlayerId(killer.PlayerId).DeathReason = CustomDeathReason.Misfire;
+            SheriffMisfired = true;
             killer.RpcMurderPlayer(killer);
             if (!MisfireKillsTarget.GetBool()) return false;
         }
         return true;
+    }
+    public void OnMurderPlayerAsKiller(MurderInfo info)
+    {
+        var target = info.AttemptTarget;
+        if (target.GetCustomRole().IsImpostor())
+        {
+            if (ImpostorKillTargets.Add(target.PlayerId)) SuccessfulImpostorKills++;
+            SheriffImpostorKill.Trigger(Player);
+        }
     }
     public override string GetProgressText(bool comms = false) => Utils.ColorString(CanUseKillButton() ? Color.yellow : Color.gray, $"({ShotLimit})");
     public static bool CanBeKilledBy(PlayerControl player)

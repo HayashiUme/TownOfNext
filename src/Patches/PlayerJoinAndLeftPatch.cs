@@ -25,6 +25,16 @@ class OnGameJoinedPatch
         GameStates.InGame = false;
         ErrorText.Instance.Clear();
         ServerAddManager.SetServerName(HttpMatchmakerManagerPatch.CurrentGameRegion ?? null);
+        TONX.Modules.Achievements.Core.CustomAchievementDataManager.SetLocalFriendCode(EOSManager.Instance?.friendCode);
+        TONX.Modules.Achievements.Core.AchievementRoomSyncService.ResetSession();
+        TONX.Modules.Achievements.Core.AchievementManager.OnLocalJoined();
+        if (AmongUsClient.Instance.AmHost)
+        {
+            _ = new LateTask(() =>
+            {
+                _ = TONX.Modules.Achievements.Core.AchievementRoomSyncService.SyncRoomAsync();
+            }, 1f, "InitialAchievementRoomSync");
+        }
 
         if (AmongUsClient.Instance.AmHost) //以下、ホストのみ実行
         {
@@ -108,6 +118,8 @@ class OnPlayerJoinedPatch
             Main.SayBanwordsTimes.Remove(client.Id);
             // if (Main.NewLobby && Options.ShareLobby.GetBool()) Cloud.ShareLobby();
         }
+
+        TONX.Modules.Achievements.Core.AchievementManager.OnPlayerJoined(client.FriendCode);
     }
 }
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerLeft))]
@@ -155,6 +167,9 @@ class OnPlayerLeftPatch
             }
             else
             {
+                if (AmongUsClient.Instance.AmHost && !string.IsNullOrEmpty(data.FriendCode))
+                    TONX.Modules.Achievements.Core.AchievementRoomSyncService.ForgetPlayer(data.FriendCode);
+
                 if (GameStates.IsInGame)
                 {
                     if (data.Character.Is(CustomRoles.Lovers) && !data.Character.Data.IsDead)

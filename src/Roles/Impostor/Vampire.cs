@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using TONX.Modules;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -39,6 +40,17 @@ public sealed class Vampire : RoleBase, IImpostor
 
     public bool CanBeLastImpostor { get; } = false;
     Dictionary<byte, float> BittenPlayers = new(14);
+    private PlayerControl resolvingBite;
+    private readonly HashSet<(byte, string)> biteVictims = new();
+    public int SuccessfulBites => biteVictims.Count;
+
+    public void OnMurderPlayerAsKiller(MurderInfo info)
+    {
+        if (resolvingBite == info.AttemptTarget && !info.IsSuicide && info.AttemptTarget.Data.IsDead
+            && !info.AttemptTarget.Data.Disconnected
+            && biteVictims.Add((info.AttemptTarget.PlayerId, info.AttemptTarget.FriendCode)))
+            BiteCompleted.Trigger(Player);
+    }
 
     private static void SetupOptionItem()
     {
@@ -106,10 +118,12 @@ public sealed class Vampire : RoleBase, IImpostor
         {
             PlayerState.GetByPlayerId(target.PlayerId).DeathReason = CustomDeathReason.Bite;
             target.SetRealKiller(vampire);
-            CustomRoleManager.OnCheckMurder(
-                vampire, target,
-                target, target
-            );
+            resolvingBite = target;
+            try
+            {
+                CustomRoleManager.OnCheckMurder(vampire, target, target, target);
+            }
+            finally { resolvingBite = null; }
             Logger.Info($"Vampireに噛まれている{target.name}を自爆させました。", "Vampire.KillBitten");
             if (!isButton && vampire.IsAlive())
             {

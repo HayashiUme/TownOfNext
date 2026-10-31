@@ -1,4 +1,7 @@
-﻿using TMPro;
+using TMPro;
+using TONX.Modules.Achievements.AchievementInterface;
+using TONX.Modules.Achievements.Core;
+using TONX.Modules.Achievements.Titles;
 using UnityEngine;
 using static TONX.NameTagManager;
 using Object = UnityEngine.Object;
@@ -45,6 +48,7 @@ public static class NameTagPanel
             tagOptionsPassiveButton.OnClick = new();
             tagOptionsPassiveButton.OnClick.AddListener(new Action(() =>
             {
+                AchievementPanel.Hide();
                 CustomBackground.gameObject.SetActive(true);
             }));
         }
@@ -98,10 +102,10 @@ public static class NameTagPanel
             helpTextTMP.text = GetString("CustomNameTagHelp");
             helpText.gameObject.GetComponent<RectTransform>().sizeDelta = new(2.45f, 1f);
 
-            var sliderTemplate = AccountManager.Instance.transform.FindChild("MainSignInWindow/SignIn/AccountsMenu/Accounts/Slider").gameObject;
-            if (sliderTemplate != null && Slider == null)
+            var sliderTemplateObject = AccountManager.Instance.transform.FindChild("MainSignInWindow/SignIn/AccountsMenu/Accounts/Slider");
+            if (sliderTemplateObject != null && Slider == null)
             {
-                Slider = Object.Instantiate(sliderTemplate, CustomBackground.transform);
+                Slider = Object.Instantiate(sliderTemplateObject.gameObject, CustomBackground.transform);
                 Slider.name = "Name Tags Slider";
                 Slider.transform.localPosition = new Vector3(0f, 0.5f, -1f);
                 Slider.transform.localScale = new Vector3(1f, 1f, 1f);
@@ -118,18 +122,47 @@ public static class NameTagPanel
     }
     public static void RefreshTagList()
     {
+        if (Slider == null || AccountManager.Instance == null) return;
         var scroller = Slider.GetComponent<Scroller>();
+        if (scroller == null || scroller.Inner == null) return;
         scroller.Inner.gameObject.ForEachChild((Action<GameObject>)(DestroyObj));
         static void DestroyObj(GameObject obj)
         {
             if (obj.name.StartsWith("AccountButton")) Object.Destroy(obj);
         }
 
-        var numberSetter = AccountManager.Instance.transform.FindChild("DOBEnterScreen/EnterAgePage/MonthMenu/Months").GetComponent<NumberSetter>();
+        var numberSetterObject = AccountManager.Instance.transform.FindChild("DOBEnterScreen/EnterAgePage/MonthMenu/Months");
+        if (numberSetterObject == null || !numberSetterObject.TryGetComponent<NumberSetter>(out var numberSetter) || numberSetter.ButtonPrefab == null)
+            return;
         var buttonPrefab = numberSetter.ButtonPrefab.gameObject;
 
         Items?.Values?.Do(Object.Destroy);
         Items = new();
+
+        numItems = 0;
+
+        // 置顶成就头衔
+        numItems++;
+        var titleEntry = Object.Instantiate(buttonPrefab, scroller.Inner);
+        titleEntry.transform.localPosition = new(-1f, 1.6f - 0.6f * numItems, -0.5f);
+        titleEntry.transform.localScale = new(1.2f, 1.2f, 1.2f);
+        titleEntry.name = "Achievement Title Entry";
+        Object.Destroy(titleEntry.GetComponent<UIScrollbarHelper>());
+        Object.Destroy(titleEntry.GetComponent<NumberButton>());
+        titleEntry.transform.GetChild(0).GetComponent<TextMeshPro>().text = GetString("Achievement.TitleLabel");
+        titleEntry.GetComponent<SpriteRenderer>().color = Main.ModColor32;
+        titleEntry.GetComponent<ButtonRolloverHandler>().OutColor = Main.ModColor32;
+        var titleEntryPassive = titleEntry.GetComponent<PassiveButton>();
+        titleEntryPassive.OnClick = new();
+        titleEntryPassive.OnClick.AddListener(new Action(() => AchievementPanel.Toggle()));
+        var titlePreview = Object.Instantiate(titleEntry.transform.GetChild(0).GetComponent<TextMeshPro>(), titleEntry.transform);
+        titlePreview.transform.SetLocalX(1.9f);
+        titlePreview.fontSize = 1f;
+        //头衔以云端为准，主菜单里没有 LocalPlayer，用本地好友码读缓存
+        var equippedId = TONX.Modules.Achievements.Core.AchievementTitleService.GetWearedTitleId(TONX.Modules.Achievements.Core.CustomAchievementDataManager.LocalFriendCode);
+        var equipped = TONX.Modules.Achievements.Core.AchievementRegistry.GetById(equippedId);
+        titlePreview.text = equipped != null ? GetString(equipped.Name) : GetString("Achievement.NoTitleEquipped");
+        Items.Add("AchievementTitle", titleEntry);
 
         foreach (var nameTag in AllNameTags.Where(t => !t.Value.Isinternal))
         {

@@ -14,13 +14,16 @@ using UnityEngine;
 namespace TONX;
 
 [BepInPlugin(PluginGuid, "TONX", PluginVersion)]
-[AmciModGuid("789bf6f3-41e4-439f-82d3-ed6d2d2fb710")]
 [BepInIncompatibility("jp.ykundesu.supernewroles")]
 [BepInProcess("Among Us.exe")]
 public class Main : BasePlugin
 {
     // == 程序基本设定 / Program Config ==
-    public static readonly string ModName = "TONX";
+    public static string ModName => IsAprilFools ? "TOHE" : "TONX";
+    public static string DisplayVersion => IsAprilFools ? "2.3.6" : PluginVersion;
+    public static string LogoResource => IsAprilFools ? "TONX.Resources.Images.TOHE-Logo.png" : "TONX.Resources.Images.TONX-Logo.png";
+    public static string ModFullName => IsAprilFools ? "Town Of Host - Edited" : "Town Of Next";
+    public static string ModFullNameCompact => IsAprilFools ? "TownOfHost-Edited" : "TownOfNext";
     public static readonly string ModColor = "#ffc0cb";
     public static readonly Color32 ModColor32 = new(255, 192, 203, 255);
     public static readonly bool AllowPublicRoom = true;
@@ -33,9 +36,9 @@ public class Main : BasePlugin
     public const string DebugKeySalt = "59687b";
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
     // == 版本相关设定 / Version Config ==
-    public const string LowestSupportedVersion = "2026.8.18"; // 18.0
+    public const string LowestSupportedVersion = "2026.9.29"; // 19.0
     public static readonly bool IsPublicAvailableOnThisVersion = true;
-    public const string PluginVersion = "4.0.1";
+    public const string PluginVersion = "4.0.2";
     public const int PluginCreation = 1;
     public const VersionType VerType = VersionType.Release;
     public static readonly bool AllowHtmlTagMsgOnOfficialServer = false;
@@ -48,6 +51,12 @@ public class Main : BasePlugin
     public static readonly string DiscordInviteUrl = "https://dsc.gg/tonext";
     public static readonly bool ShowGithubUrl = true;
     public static readonly string GithubRepoUrl = "https://github.com/TownOfNext/TownOfNext";
+    public static readonly string CloudBaseUrl =
+#if DEBUG
+        "http://127.0.0.1:5051";
+#else 
+        "https://record.tonx.cc";
+#endif
     // ==========
 
     public Harmony Harmony { get; } = new Harmony(PluginGuid);
@@ -57,7 +66,7 @@ public class Main : BasePlugin
     public static string ExceptionMessage;
     public static bool ExceptionMessageIsShown = false;
     public static string CredentialsText;
-    public static NormalGameOptionsV11 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
+    public static NormalGameOptionsV12 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
     //Client Options
     public static ConfigEntry<string> HideName { get; private set; }
     public static ConfigEntry<string> HideColor { get; private set; }
@@ -72,7 +81,6 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> EnableCustomButton { get; private set; }
     public static ConfigEntry<bool> EnableCustomSoundEffect { get; private set; }
     public static ConfigEntry<bool> FastBoot { get; private set; }
-    public static ConfigEntry<bool> EnableAMCIMode { get; private set; }
     public static ConfigEntry<bool> VersionCheat { get; private set; }
     public static ConfigEntry<bool> GodMode { get; private set; }
     public static ConfigEntry<bool> DarkTheme { get; private set; }
@@ -179,7 +187,6 @@ public class Main : BasePlugin
         EnableCustomButton = Config.Bind("Client Options", "EnableCustomButton", true);
         EnableCustomSoundEffect = Config.Bind("Client Options", "EnableCustomSoundEffect", true);
         FastBoot = Config.Bind("Client Options", "FastBoot", false);
-        EnableAMCIMode =  Config.Bind("Client Options", "EnableAMCIMode", false);
         VersionCheat = Config.Bind("Client Options", "VersionCheat", false);
         GodMode = Config.Bind("Client Options", "GodMode", false);
         DarkTheme = Config.Bind("Client Options", "DarkTheme", false);
@@ -251,6 +258,7 @@ public class Main : BasePlugin
                 {CustomRoles.Shapeshifter, "#ff1919"},
                 {CustomRoles.Phantom, "#ff1919"},
                 {CustomRoles.Viper, "#ff1919"},
+                { CustomRoles.SpiritGuide, "#ffffff"},
 
                 //Add-Ons
                 {CustomRoles.NotAssigned, "#ffffff"},
@@ -335,7 +343,9 @@ public class Main : BasePlugin
 
         if (!DebugModeManager.AmDebugger) ConsoleManager.DetachConsole();
         else ConsoleManager.CreateConsole();
-
+        
+        AmciRegistration.Register();
+        
         ModUpdater.RecordVisit();
 
         TONX.Logger.Msg("========= TONX loaded! =========", "Plugin Load");
@@ -435,7 +445,8 @@ public enum OutfitType
 {
     NormalMode,
     HorseMode,
-    LongMode
+    LongMode,
+    ClassicMode
 }
 
 public enum VersionType

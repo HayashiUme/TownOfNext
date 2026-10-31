@@ -8,13 +8,17 @@ public class HnSDisablePatch
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
     public class MainMenuManagerStartPatch
     {
+        private static bool Registered;
+
         [HarmonyPostfix]
         public static void Postfix()
         {
+            if (Registered) return;
+            Registered = true;
             SceneManager.add_sceneLoaded((Action<Scene, LoadSceneMode>)((scene, _) =>
             {
                 if (!scene.name.Equals("MatchMaking", StringComparison.Ordinal)) return;
-                GameObject.Find("CreateHnSGameButton").SetActive(false);
+                GameObject.Find("CreateHnSGameButton")?.SetActive(false);
             }));
         }
     }
@@ -24,7 +28,7 @@ public class HnSDisablePatch
         [HarmonyPostfix]
         public static void Postfix()
         {
-            GameObject.Find("HideSeekOption").SetActive(false);
+            GameObject.Find("HideSeekOption")?.SetActive(false);
         }
     }
 }

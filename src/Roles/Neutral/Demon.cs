@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using TONX.Modules.Achievements.Neutral;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -49,6 +50,7 @@ public sealed class Demon : RoleBase, IKiller
     public static bool CanVent;
     private static Dictionary<byte, int> PlayerHP;
     private int DemonHP;
+    public int HealthKills { get; private set; }
 
     private static void SetupOptionItem()
     {
@@ -105,6 +107,8 @@ public sealed class Demon : RoleBase, IKiller
         {
             PlayerHP.Remove(target.PlayerId);
             killer.RpcMurderPlayerV2(target);
+            HealthKills++;
+            DemonHealthKill.Trigger(killer);
             return false;
         }
 

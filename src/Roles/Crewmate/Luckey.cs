@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Crewmate;
 
 namespace TONX.Roles.Crewmate;
 public sealed class Luckey : RoleBase
@@ -23,6 +24,8 @@ public sealed class Luckey : RoleBase
     { }
 
     static OptionItem OptionProbability;
+    private readonly HashSet<MurderInfo> blockedAttacks = new();
+    public int BlockedAttacks => blockedAttacks.Count;
     enum OptionName
     {
         LuckeyProbability
@@ -39,7 +42,12 @@ public sealed class Luckey : RoleBase
         {
             Logger.Info($"幸运儿 {Player.GetNameWithRole()} 触发技能，阻挡了 {info.AttemptKiller.GetNameWithRole()} 的击杀", "Luckey.OnCheckMurderAsTarget");
             info.AttemptKiller.ResetKillCooldown();
+            Observer.NotifyBlockedAttack(info);
             info.AttemptKiller.SetKillCooldownV2(target: Player, forceAnime: true);
+            if (!info.IsSuicide)
+            {
+                if (blockedAttacks.Add(info)) LuckyEscape.Trigger(Player);
+            }
             return false;
         }
         return true;

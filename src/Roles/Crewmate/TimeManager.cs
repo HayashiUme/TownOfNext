@@ -1,5 +1,7 @@
 using AmongUs.GameOptions;
+using TONX.Modules;
 using TONX.Roles.Core.Interfaces;
+using TONX.Modules.Achievements.Crewmate;
 
 namespace TONX.Roles.Crewmate;
 public sealed class TimeManager : RoleBase, IMeetingTimeAlterable
@@ -34,8 +36,19 @@ public sealed class TimeManager : RoleBase, IMeetingTimeAlterable
     }
     public static int IncreaseMeetingTime;
     public static int MeetingTimeLimit;
+    public bool ExtendedMeetingImpostorExile { get; private set; }
+    private int AppliedExtensionSeconds;
 
     public bool RevertOnDie => true;
+
+    public override void OnVotingComplete(MeetingVoteManager.VoteResult voteResult)
+    {
+        if (AppliedExtensionSeconds >= 30 && voteResult.Exiled?.Object?.GetCustomRole().IsImpostor() == true
+            && MeetingVoteManager.Instance.AllVotes.TryGetValue(Player.PlayerId, out var vote)
+            && vote.VotedFor == voteResult.Exiled.PlayerId)
+            ExtendedMeetingImpostorExile = true;
+        AppliedExtensionSeconds = 0;
+    }
 
     private static void SetupOptionItem()
     {
@@ -50,6 +63,7 @@ public sealed class TimeManager : RoleBase, IMeetingTimeAlterable
         var sec = IncreaseMeetingTime * MyTaskState.CompletedTasksCount;
         return sec * (Player.Is(CustomRoles.Madmate) ? -1 : 1);
     }
+    public void RecordAppliedExtension(int seconds) => AppliedExtensionSeconds = seconds;
     public override string GetProgressText(bool comms = false)
     {
         var time = CalculateMeetingTimeDelta();

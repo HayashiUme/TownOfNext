@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using System.Text;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -31,6 +32,8 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
 
         TargetId = byte.MaxValue;
         CanSetTarget = CurrentTargetMode != TargetMode.Never;
+        ReceivedKillFlashSinceMeeting = false;
+        KilledAfterFlashBeforeMeeting = false;
         //ImpostorsIdはEvilTracker内で共有
         ImpostorsId.Clear();
         var playerId = player.PlayerId;
@@ -61,6 +64,8 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
 
     public byte TargetId;
     public bool CanSetTarget;
+    public bool ReceivedKillFlashSinceMeeting { get; set; }
+    public bool KilledAfterFlashBeforeMeeting { get; set; }
     private HashSet<byte> ImpostorsId = new(3);
 
     private enum TargetMode
@@ -107,8 +112,18 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
 
         //インポスターによるキルかどうかの判別
         var realKiller = target.GetRealKiller() ?? killer;
-        return realKiller.Is(CustomRoleTypes.Impostor) && realKiller != target;
+        var isImpostorKill = realKiller.Is(CustomRoleTypes.Impostor) && realKiller != target;
+        if (isImpostorKill) ReceivedKillFlashSinceMeeting = true;
+        return isImpostorKill;
     }
+
+    public void BeforeMurderPlayerAsKiller(MurderInfo info)
+    {
+        if (info.IsSuicide) return;
+        if (ReceivedKillFlashSinceMeeting) KilledAfterFlashBeforeMeeting = true;
+    }
+
+    public override void OnStartMeeting() => ReceivedKillFlashSinceMeeting = false;
     public override void ReceiveRPC(MessageReader reader)
     {
         var operation = (TargetOperation)reader.ReadByte();
@@ -186,6 +201,7 @@ public sealed class EvilTracker : RoleBase, IImpostor, IKillFlashSeeable
         if (!CanTarget() || target.Is(CustomRoleTypes.Impostor)) return false;
 
         SetTarget(target.PlayerId);
+        TrackerTargetLocked.Trigger(Player);
         Logger.Info($"{Player.GetNameWithRole()}のターゲットを{target.GetNameWithRole()}に設定", "EvilTrackerTarget");
         Player.MarkDirtySettings();
         Utils.NotifyRoles();

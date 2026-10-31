@@ -2,6 +2,7 @@
 using UnityEngine;
 using Hazel;
 using TONX.Modules;
+using TONX.Modules.Achievements.Neutral;
 using TONX.Roles.Core.Interfaces;
 using static TONX.GuesserHelper;
 
@@ -56,6 +57,9 @@ public sealed class Doomsayer : RoleBase, IKiller, IMeetingButton, IGuesser
     private bool HasWrongGuess;
     private int CorrectGuesses;
     private int HintLimit;
+    public bool EverGuessedWrong { get; private set; }
+    public bool GuessWinTriggered { get; private set; }
+    public bool BaseWinTriggered { get; private set; }
     private static void SetupOptionItem()
     {
         OptionGuessNums = IntegerOptionItem.Create(RoleInfo, 10, OptionName.GuesserCanGuessTimes, new(1, 15, 1), 15, false)
@@ -192,8 +196,16 @@ public sealed class Doomsayer : RoleBase, IKiller, IMeetingButton, IGuesser
     }
     public bool OnGuessing(PlayerControl guesser, PlayerControl target, CustomRoles role, bool guesserSuicide, ref string reason)
     {
-        if (guesserSuicide) HasWrongGuess = true;
-        else CorrectGuesses++;
+        if (guesserSuicide)
+        {
+            HasWrongGuess = true;
+            EverGuessedWrong = true;
+        }
+        else
+        {
+            CorrectGuesses++;
+            DoomsayerCorrectGuess.Trigger(guesser);
+        }
         if (!OptionSuicideIfGuessWrong.GetBool() && guesser == target)
         {
             reason = GetString("DoomsayerGuessSelf");
@@ -210,8 +222,10 @@ public sealed class Doomsayer : RoleBase, IKiller, IMeetingButton, IGuesser
     {
         if (CorrectGuesses >= OptionGuessNumsToWin.GetInt())
         {
+            BaseWinTriggered = CustomWinnerHolder.WinnerTeam == CustomWinner.Default;
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Doomsayer);
             CustomWinnerHolder.WinnerIds.Add(guesser.PlayerId);
+            GuessWinTriggered = true;
         }
     }
 }

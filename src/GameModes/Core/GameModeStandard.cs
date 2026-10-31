@@ -219,8 +219,17 @@ internal static class GameModeStandard
             reason = GameOverReason.ImpostorsByKill;
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return false;
             if (CheckGameEndByLivingPlayers(out reason)) return true;
-            if (CheckGameEndByTask(out reason)) return true;
-            if (CheckGameEndBySabotage(out reason)) return true;
+            if (CheckGameEndByTask(out reason) || CheckGameEndBySabotage(out reason))
+            {
+                var team = CustomWinnerHolder.WinnerTeam;
+                Main.AllPlayerControls.Where(pc => !pc.Is(CustomRoles.Charmed)
+                    && ((team == CustomWinner.Crewmate && pc.GetCustomRole().IsCrewmate()
+                            && !pc.Is(CustomRoles.Madmate))
+                        || (team == CustomWinner.Impostor
+                            && (pc.GetCustomRole().IsImpostor() || pc.Is(CustomRoles.Madmate)))))
+                    .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
+                return true;
+            }
 
             return false;
         }
@@ -342,7 +351,12 @@ internal static class GameModeStandard
                 {
                     if (pc.GetRoleClass() is IOverrideWinner overrideWinner)
                     {
+                        var previousWinner = CustomWinnerHolder.WinnerTeam;
                         overrideWinner.CheckWin(ref CustomWinnerHolder.WinnerTeam, ref CustomWinnerHolder.WinnerIds);
+                        if (previousWinner is CustomWinner.Crewmate or CustomWinner.Impostor
+                            && pc.GetCustomRole().IsNeutral()
+                            && CustomWinnerHolder.WinnerTeam == (CustomWinner)pc.GetCustomRole())
+                            GameEndChecker.NeutralOverrideSources[pc.PlayerId] = CustomWinnerHolder.WinnerTeam;
                     }
 
                     if (pc.Is(CustomRoles.Egoist))

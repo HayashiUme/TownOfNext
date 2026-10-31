@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -43,6 +44,9 @@ class Penguin : RoleBase, IImpostor
     private float AbductTimerLimit;
     private bool stopCount;
     private bool MeetingKill;
+    private Vector2 abductStartPosition;
+    private readonly HashSet<byte> longDragTargets = new();
+    public int LongDragKills { get; private set; }
 
     //拉致中にキルしそうになった相手の能力を使わせないための処置
     public bool IsKiller => AbductVictim == null;
@@ -56,6 +60,8 @@ class Penguin : RoleBase, IImpostor
     {
         AbductTimer = 255f;
         stopCount = false;
+        longDragTargets.Clear();
+        LongDragKills = 0;
     }
     public override void ApplyGameOptions(IGameOptions opt) => AURoleOptions.ShapeshifterCooldown = AbductVictim != null ? AbductTimer : 255f;
     private void SendRPC()
@@ -85,6 +91,7 @@ class Penguin : RoleBase, IImpostor
     {
         PlayerState.GetByPlayerId(target.PlayerId).CanUseMovingPlatform = MyState.CanUseMovingPlatform = false;
         AbductVictim = target;
+        abductStartPosition = target.transform.position;
         AbductTimer = AbductTimerLimit;
         Player.SyncSettings();
         Player.RpcResetAbilityCooldown();
@@ -103,6 +110,16 @@ class Penguin : RoleBase, IImpostor
         Player.RpcResetAbilityCooldown();
         SendRPC();
     }
+    /// <summary>
+    /// 若本次拖拽目标已被带到距开始拖拽位置至少 5 个世界单位处，记录一次有效远距离拖拽击杀
+    /// </summary>
+    private void RecordLongDragKill()
+    {
+        if (AbductVictim == null) return;
+        if (Vector2.Distance(AbductVictim.transform.position, abductStartPosition) >= 5f
+            && longDragTargets.Add(AbductVictim.PlayerId))
+            LongDragKills = longDragTargets.Count;
+    }
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {
         var target = info.AttemptTarget;
@@ -116,7 +133,9 @@ class Penguin : RoleBase, IImpostor
                 info.DoKill = false;
                 return false;
             }
+            RecordLongDragKill();
             RemoveVictim();
+            PenguinDragKill.Trigger(Player);
             return true;
         }
         info.DoKill = false;
@@ -150,13 +169,17 @@ class Penguin : RoleBase, IImpostor
         // 時間切れ状態で会議を迎えたらはしご中でも構わずキルする
         if (AbductVictim != null && AbductTimer <= 0f)
         {
+            RecordLongDragKill();
             Player.RpcMurderPlayer(AbductVictim);
+            PenguinDragKill.Trigger(Player);
         }
         if (MeetingKill)
         {
             if (!AmongUsClient.Instance.AmHost) return;
             if (AbductVictim == null) return;
+            RecordLongDragKill();
             Player.RpcMurderPlayer(AbductVictim);
+            PenguinDragKill.Trigger(Player);
             RemoveVictim();
         }
     }

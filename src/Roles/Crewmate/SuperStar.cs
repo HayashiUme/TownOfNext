@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Crewmate;
 using UnityEngine;
 
 namespace TONX.Roles.Crewmate;
@@ -26,6 +27,8 @@ public sealed class SuperStar : RoleBase
     }
 
     public static OptionItem OptionEveryoneKnowSuperStar;
+    private readonly HashSet<MurderInfo> blockedAttacks = new();
+    public int BlockedAttacks => blockedAttacks.Count;
     enum OptionName
     {
         EveryOneKnowSuperStar,
@@ -46,11 +49,14 @@ public sealed class SuperStar : RoleBase
     {
         var (killer, target) = info.AttemptTuple;
         if (info.IsSuicide) return true;
-        return !Main.AllAlivePlayerControls.Any(pc =>
+        var blocked = Main.AllAlivePlayerControls.Any(pc =>
             !Is(pc) &&
             pc != killer &&
             Vector2.Distance(pc.GetTruePosition(), target.GetTruePosition()) < 2f
             );
+        if (blocked && !info.IsSuicide && blockedAttacks.Add(info))
+            StarProtected.Trigger(Player);
+        return !blocked;
     }
     public static bool KnowTargetRoleColor(PlayerControl target, bool isMeeting)
         => target.Is(CustomRoles.SuperStar) && OptionEveryoneKnowSuperStar.GetBool();

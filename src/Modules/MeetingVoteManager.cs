@@ -159,6 +159,8 @@ public class MeetingVoteManager
     public void EndMeeting(bool applyVoteMode = true)
     {
         logger.Info($"EndMeeting called: applyVoteMode={applyVoteMode}, meetingHud={(meetingHud != null ? "exists" : "NULL")}");
+        foreach (var role in CustomRoleManager.AllActiveRoles.Values.ToList())
+            if (role is TONX.Roles.Crewmate.Swapper swapper) swapper.CaptureVotesBeforeSwap();
         SwappedPlayers.ForEach(swapped => SwapVote(swapped.Target1, swapped.Target2));
         var result = CountVotes(applyVoteMode);
         var logName = result.Exiled == null ? (result.IsTie ? "平票" : "跳过") : result.Exiled.Object.GetNameWithRole();
@@ -376,6 +378,7 @@ public class MeetingVoteManager
             var maxVoteNum = orderedVotes.FirstOrDefault().Value;
             // 所有得票最多的玩家
             var mostVotedPlayers = votedCounts.Where(vote => vote.Value == maxVoteNum).Select(vote => vote.Key).ToArray();
+            NoVotes = maxVoteNum == 0;
 
             // 存在相同最多票数的玩家
             if (mostVotedPlayers.Length > 1)
@@ -384,13 +387,6 @@ public class MeetingVoteManager
                 Exiled = null;
                 logger.Info($"{string.Join('，', mostVotedPlayers.Select(GetVoteName))} 平票");
             }
-            else if (mostVotedPlayers.Length > 1 && maxVoteNum == 0)
-            {
-                IsTie = true;
-                NoVotes = true;
-                Exiled = null;
-                logger.Info($"{string.Join('，', mostVotedPlayers.Select(GetVoteName))} 票数均为0，无人投票。");
-            }
             else
             {
                 IsTie = false;
@@ -398,6 +394,8 @@ public class MeetingVoteManager
                 Exiled = GameData.Instance.GetPlayerById(mostVotedPlayers[0]);
                 logger.Info($"得票最多者：{GetVoteName(mostVotedPlayers[0])}");
             }
+
+            if (IsTie && TONX.Roles.Crewmate.Justice.IsJusticeMeeting()) return;
 
             if (IsTie && Tiebreaker.ChooseExileTarget(mostVotedPlayers, out var brakarTarget))
             {

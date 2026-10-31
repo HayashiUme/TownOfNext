@@ -22,13 +22,29 @@ public static class CustomPopup
 
     private static bool busy;
 
+    /// <summary>InfoScreen 的默认 localZ，与改动前的行为完全一致</summary>
+    public const float DefaultLayer = -110f;
+
+    /// <summary>Fill 相对 InfoScreen 向前偏移的量，保证遮罩压在页面下方</summary>
+    private const float FillLayerOffset = 10f;
+
+    /// <summary>
+    /// 应用层级。localZ 越负越靠后，调用方传入更小的（更正的）值即可把弹窗提到前面。
+    /// </summary>
+    private static void ApplyLayer(float layer)
+    {
+        if (Fill != null) Fill.transform.SetLocalZ(layer + FillLayerOffset);
+        if (InfoScreen != null) InfoScreen.transform.SetLocalZ(layer);
+    }
+
     /// <summary>
     /// 显示一个全屏信息显示界面
     /// </summary>
     /// <param name="title">标题</param>
     /// <param name="info">内容</param>
     /// <param name="buttons">按钮（文字，点击事件）</param>
-    public static void Show(string title, string info, List<(string, Action)>? buttons)
+    /// <param name="layer">InfoScreen 的 localZ。默认 <see cref="DefaultLayer"/>；调用方需要弹窗盖在自己前面时传更小的值</param>
+    public static void Show(string title, string info, List<(string, Action)>? buttons, float layer = DefaultLayer)
     {
         if (busy || !Fill || !InfoScreen || !ActionButtonPrefab || !TitleTMP || !InfoTMP)
         {
@@ -36,13 +52,16 @@ public static class CustomPopup
             if (!Fill || !InfoScreen || !ActionButtonPrefab || !TitleTMP || !InfoTMP) return;
         }
 
+        ApplyLayer(layer);
+
         busy = true;
 
         TitleTMP.text = title;
         InfoTMP.text = info;
 
-        ActionButtons?.Do(b => Object.Destroy(b.gameObject));
+        var oldButtons = ActionButtons?.ToList();
         ActionButtons = new();
+        oldButtons?.Do(b => { if (b != null) Object.Destroy(b.gameObject); });
 
         if (buttons != null)
         {
@@ -84,15 +103,16 @@ public static class CustomPopup
 
         busy = false;
     }
-    private static (string title, string info, List<(string, Action)>? buttons)? waitToShow;
-    public static void ShowLater(string title, string info, List<(string, Action)>? buttons) => waitToShow = (title, info, buttons);
+    private static (string title, string info, List<(string, Action)>? buttons, float layer)? waitToShow;
+    public static void ShowLater(string title, string info, List<(string, Action)>? buttons, float layer = DefaultLayer)
+        => waitToShow = (title, info, buttons, layer);
     private static string waitToUpdateText = string.Empty;
     public static void UpdateTextLater(string info) => waitToUpdateText = info;
     public static void Update()
     {
         if (waitToShow != null)
         {
-            Show(waitToShow.Value.title, waitToShow.Value.info, waitToShow.Value.buttons);
+            Show(waitToShow.Value.title, waitToShow.Value.info, waitToShow.Value.buttons, waitToShow.Value.layer);
             waitToShow = null;
         }
         if (!string.IsNullOrEmpty(waitToUpdateText))
@@ -107,14 +127,14 @@ public static class CustomPopup
         if (DOBScreen != null && (Fill == null || InfoScreen == null || ActionButtons == null))
         {
             Fill = Object.Instantiate(DOBScreen.FindChild("Fill").gameObject);
-            Fill.transform.SetLocalZ(-100f);
             Fill.name = "TONX Info Popup Fill";
             Fill.SetActive(false);
 
             InfoScreen = Object.Instantiate(DOBScreen.FindChild("InfoPage").gameObject);
-            InfoScreen.transform.SetLocalZ(-110f);
             InfoScreen.name = "TONX Info Popup Page";
             InfoScreen.SetActive(false);
+
+            ApplyLayer(DefaultLayer);
 
             TitleTMP = InfoScreen.transform.FindChild("Title Text").GetComponent<TextMeshPro>();
             TitleTMP.transform.localPosition = new(0f, 2.3f, 3f);

@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using TONX.Modules;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -50,6 +51,7 @@ public sealed class Fireworker : RoleBase, IImpostor
     int NowFireworkerCount;
     List<Vector3> FireworkerPosition = new();
     FireworkerState State = FireworkerState.Initial;
+    public int MaxBlastKills { get; private set; }
 
     public static void SetupCustomOption()
     {
@@ -64,6 +66,7 @@ public sealed class Fireworker : RoleBase, IImpostor
         NowFireworkerCount = FireworkerCount;
         FireworkerPosition.Clear();
         State = FireworkerState.Initial;
+        MaxBlastKills = 0;
     }
 
     public bool CanUseKillButton()
@@ -100,6 +103,7 @@ public sealed class Fireworker : RoleBase, IImpostor
                 {
                     //爆破処理はホストのみ
                     bool suicide = false;
+                    int blastKills = 0;
                     foreach (var fireTarget in Main.AllAlivePlayerControls)
                     {
                         foreach (var pos in FireworkerPosition)
@@ -117,9 +121,12 @@ public sealed class Fireworker : RoleBase, IImpostor
                                 PlayerState.GetByPlayerId(fireTarget.PlayerId).DeathReason = CustomDeathReason.Bombed;
                                 fireTarget.SetRealKiller(Player);
                                 fireTarget.RpcMurderPlayer(fireTarget);
+                                blastKills++;
                             }
                         }
                     }
+                    if (blastKills > MaxBlastKills) MaxBlastKills = blastKills;
+                    if (blastKills > 0) FireworkerBombKill.Trigger(Player);
                     if (suicide)
                     {
                         var totalAlive = Main.AllAlivePlayerControls.Count();

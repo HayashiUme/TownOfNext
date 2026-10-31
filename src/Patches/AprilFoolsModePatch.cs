@@ -9,6 +9,8 @@ public static class AprilFoolsModePatch
     public static bool FlipSkeld => AprilFoolsMode.ShouldFlipSkeld();
     public static bool HorseMode => AprilFoolsMode.ShouldHorseAround();
     public static bool LongMode => AprilFoolsMode.ShouldLongAround();
+    public static bool ClassicMode => AprilFoolsMode.ShouldClassicMode();
+    
     public static bool EnableFlipSkeld = false;
 
     [HarmonyPatch(nameof(AprilFoolsMode.ShouldFlipSkeld)), HarmonyPrefix]
@@ -60,6 +62,9 @@ public static class GetBodyTypePatch
                 break;
             case OutfitType.LongMode:
                 __result = PlayerBodyTypes.Long;
+                break;
+            case OutfitType.ClassicMode:
+                __result = PlayerBodyTypes.Classic;
                 break;
             default:
                 __result = PlayerBodyTypes.Normal;
@@ -140,6 +145,8 @@ public static class LongBoiPatch
         __result = true;
         return false;
     }
+    
+    
 }
 
 #endregion

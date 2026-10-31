@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿using TONX.Modules.Achievements.Titles;
+using UnityEngine;
 using Object = UnityEngine.Object;
+using TONX.Modules.Achievements.Core;
 
 namespace TONX;
 
@@ -7,7 +9,31 @@ namespace TONX;
 public class LobbyStartPatch
 {
     private static GameObject Paint;
+
+    private static bool _wasInGame = false;
+
+    [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.ExitGame))]
+    public static class MarkGameExit
+    {
+        public static void Prefix() => _wasInGame = GameStates.IsInGame;
+    }
+
     public static void Postfix(LobbyBehaviour __instance)
+    {
+        SetPaint(__instance);
+        
+        if (_wasInGame)
+        {
+            _wasInGame = false;
+            if (AmongUsClient.Instance?.AmHost == true)
+            {
+                AchievementRoomSyncService.ResetSession();
+                _ = AchievementRoomSyncService.SyncRoomAsync();
+            }
+        }
+    }
+
+    public static void SetPaint(LobbyBehaviour __instance)
     {
         if (Paint != null) return;
         Paint = Object.Instantiate(__instance.transform.FindChild("Leftbox").gameObject, __instance.transform);

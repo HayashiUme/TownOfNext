@@ -38,6 +38,8 @@ public static class Options
         {
             1 => CustomGameMode.SoloKombat,
             2 => CustomGameMode.RoleDraft,
+            3 => CustomGameMode.HotPotato,
+            4 => CustomGameMode.DoomTag,
             _ => CustomGameMode.Standard
         };
 
@@ -334,6 +336,10 @@ public static class Options
     public static OptionItem FixFirstKillCooldown;
     public static OptionItem ShieldPersonDiedFirst;
     public static OptionItem KillFlashDuration;
+
+    // 邪恶人数指令
+    public static OptionItem EnableEvilCount;
+    public static OptionItem EvilCountDisableInFirstMeeting;
     // public static OptionItem EnableRoleDraftMode;
     // public static OptionItem ShowSelectedRoles;
 
@@ -373,6 +379,7 @@ public static class Options
     public static OptionItem SendRoleDescriptionFirstMeeting;
     public static OptionItem HideGameSettings;
     public static OptionItem DIYGameSettings;
+    public static OptionItem EnableAchievemntObtainer;
 
     // 个性化相关设定
     public static OptionItem SuffixMode;
@@ -760,6 +767,9 @@ public static class Options
         DIYGameSettings = BooleanOptionItem.Create(2_002_006, "DIYGameSettings", false, TabGroup.SystemSettings, false)
             .SetGameMode(CustomGameMode.All)
             .SetColor(new Color32(246, 250, 112, byte.MaxValue));
+        EnableAchievemntObtainer = BooleanOptionItem.Create(2_002_007, "EnableAchievementObtainer", true, TabGroup.SystemSettings, false)
+            .SetGameMode(CustomGameMode.All)
+            .SetColor(new Color32(246, 250, 112, byte.MaxValue));
 
         // 个性化相关设定
         TextOptionItem.Create(2_100_004, "MenuTitle.Personality", TabGroup.SystemSettings)
@@ -1102,7 +1112,15 @@ public static class Options
             .SetColor(new Color32(193, 255, 209, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
-        
+
+        // 邪恶人数指令（/cec、/kc、/gs）
+        EnableEvilCount = BooleanOptionItem.Create(3_041_001, "EnableEvilCount", false, TabGroup.GameSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(193, 255, 209, byte.MaxValue));
+        EvilCountDisableInFirstMeeting = BooleanOptionItem.Create(3_041_002, "EvilCountDisableInFirstMeeting", true, TabGroup.GameSettings, false).SetParent(EnableEvilCount)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(193, 255, 209, byte.MaxValue));
+
         // 轮抽选角
         // EnableRoleDraftMode = BooleanOptionItem.Create(3_046_001, "EnableRoleDraftMode", false, TabGroup.GameSettings, false)
         //     .SetGameMode(CustomGameMode.Standard)

@@ -1,6 +1,8 @@
 using AmongUs.GameOptions;
 using Hazel;
 using TONX.Modules;
+using TONX.Modules.Achievements.Core;
+using TONX.Modules.Achievements.Crewmate;
 
 namespace TONX.Roles.Crewmate;
 
@@ -35,6 +37,20 @@ public sealed class SecurityGuard : RoleBase
     }
 
     public static HashSet<int> LockedVents = new();
+    private readonly HashSet<int> PersonallyLockedVents = new();
+    public int DistinctVentsLocked => PersonallyLockedVents.Count;
+    public bool EnemyBlockedByLock { get; private set; }
+
+    public static void RecordBlockedEntry(int ventId, PlayerControl player)
+    {
+        if (player?.Data == null || player.Data.Disconnected) return;
+        var role = player.GetCustomRole();
+        if (!role.IsImpostorTeam() && !role.IsNeutralEvil()) return;
+        foreach (var guard in Main.AllPlayerControls.Where(pc => pc.Is(CustomRoles.SecurityGuard)))
+            if (guard.GetRoleClass() is SecurityGuard securityGuard
+                && LockedVents.Contains(ventId) && securityGuard.PersonallyLockedVents.Contains(ventId))
+                securityGuard.EnemyBlockedByLock = true;
+    }
 
     private static void SetupOptionItem()
     {
@@ -83,7 +99,11 @@ public sealed class SecurityGuard : RoleBase
         }
 
         // 封锁该通风管
-        LockedVents.Add(ventId);
+        if (LockedVents.Add(ventId))
+        {
+            PersonallyLockedVents.Add(ventId);
+            VentLocked.Trigger(Player);
+        }
         SendRPC_SyncLockedVents();
         Player.Notify(string.Format(GetString("SecurityGuardVentLocked"), ventId));
         Logger.Info($"{Player.GetNameWithRole()}: 封锁了通风管 {ventId}，当前已封锁: {LockedVents.Count}", "SecurityGuard");

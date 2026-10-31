@@ -53,6 +53,7 @@ public class MainMenuManagerPatch
         asa2?.ScaleObject(Utils.GetAspectRatio(Screen.width, Screen.height));
 
         CustomPopup.Update();
+        TONX.Modules.Achievements.AchievementInterface.AchievementPanel.Update();
 
         if (GameObject.Find("MainUI") == null) ShowingPanel = false;
 
@@ -108,6 +109,15 @@ public class MainMenuManagerPatch
                 yPosition
             );
             return button;
+        }
+
+        if (Main.IsAprilFools)
+        {
+            var bq = new GameObject("title_BQ");
+            bq.transform.position = new Vector3(4.1f, -2f, 0f);
+            bq.transform.localScale *= 1.8f;
+            var bqRenderer = bq.AddComponent<SpriteRenderer>();
+            bqRenderer.sprite = Utils.LoadSprite("TONX.Resources.Images.BQ.png", 300f);
         }
 
         string extraLinkName = "Github";

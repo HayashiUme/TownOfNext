@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using TONX.Modules;
 using TONX.Roles.Core.Interfaces;
+using TONX.Modules.Achievements.Crewmate;
 using static TONX.GuesserHelper;
 
 namespace TONX.Roles.Crewmate;
@@ -38,6 +39,10 @@ public sealed class NiceGuesser : RoleBase, IMeetingButton, IGuesser
     }
 
     public int GuessLimit { get; set; }
+    public int ConsecutiveCorrectGuesses { get; private set; }
+    public bool GuessingError { get; private set; }
+    public byte LastCorrectTargetId { get; private set; } = byte.MaxValue;
+    private bool PendingCorrectGuess;
     public string GuessMaxMsg { get; set; } = "GGGuessMax";
     public bool CanGuessAddons => OptionCanGuessAddons.GetBool();
     public bool CanGuessVanilla => OptionCanGuessVanilla.GetBool();
@@ -52,6 +57,28 @@ public sealed class NiceGuesser : RoleBase, IMeetingButton, IGuesser
     public override void Add()
     {
         GuessLimit = OptionGuessNums.GetInt();
+    }
+    public void RecordGuess(PlayerControl target, bool correct)
+    {
+        PendingCorrectGuess = false;
+        if (correct)
+        {
+            PendingCorrectGuess = true;
+            LastCorrectTargetId = target.PlayerId;
+        }
+        else
+        {
+            GuessingError = true;
+            ConsecutiveCorrectGuesses = 0;
+            LastCorrectTargetId = byte.MaxValue;
+        }
+    }
+    public void RecordSuccessfulTarget(byte targetId)
+    {
+        if (!PendingCorrectGuess || LastCorrectTargetId != targetId) return;
+        PendingCorrectGuess = false;
+        ConsecutiveCorrectGuesses++;
+        NiceGuesserCorrectKill.Trigger(Player);
     }
     public override void OverrideNameAsSeer(PlayerControl seen, ref string nameText, bool isForMeeting = false)
     {

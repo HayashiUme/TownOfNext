@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using TONX.Modules;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Impostor;
@@ -31,6 +32,7 @@ public sealed class Mafia : RoleBase, IImpostor, IMeetingButton
         MafiaCanKillNum,
     }
     public int RevengeLimit = 0;
+    public bool RevengeKilledCrew { get; set; }
     private static void SetupOptionItem()
     {
         OptionRevengeNum = IntegerOptionItem.Create(RoleInfo, 10, OptionName.MafiaCanKillNum, new(0, 15, 1), 1, false)
@@ -39,6 +41,7 @@ public sealed class Mafia : RoleBase, IImpostor, IMeetingButton
     public override void Add()
     {
         RevengeLimit = OptionRevengeNum.GetInt();
+        RevengeKilledCrew = false;
     }
     public bool CanUseKillButton()
     {
@@ -94,6 +97,8 @@ public sealed class Mafia : RoleBase, IImpostor, IMeetingButton
         string Name = target.GetRealName();
 
         RevengeLimit--;
+        if (target.GetCustomRole().IsCrewmate()) RevengeKilledCrew = true;
+        MafiaRevengeKill.Trigger(Player);
         CustomSoundsManager.RPCPlayCustomSoundAll("AWP");
 
         _ = new LateTask(() =>

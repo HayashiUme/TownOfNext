@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -28,6 +29,8 @@ public sealed class AntiAdminer : RoleBase, IImpostor
         IsVitalWatch = false;
         IsDoorLogWatch = false;
         IsCameraWatch = false;
+        ProximityAlerts = 0;
+        AlertedDeviceTypes.Clear();
     }
 
     static OptionItem OptionCanCheckCamera;
@@ -40,6 +43,9 @@ public sealed class AntiAdminer : RoleBase, IImpostor
     public static bool IsVitalWatch;
     public static bool IsDoorLogWatch;
     public static bool IsCameraWatch;
+
+    public int ProximityAlerts { get; private set; }
+    public HashSet<byte> AlertedDeviceTypes { get; } = new();
 
     private static void SetupOptionItem()
     {
@@ -121,6 +127,16 @@ public sealed class AntiAdminer : RoleBase, IImpostor
 
         var isChange = false;
 
+        var adminNew = Admin && !IsAdminWatch;
+        var vitalNew = Vital && !IsVitalWatch;
+        var doorNew = DoorLog && !IsDoorLogWatch;
+        var cameraNew = OptionCanCheckCamera.GetBool() && Camera && !IsCameraWatch;
+        if (adminNew) { ProximityAlerts++; AlertedDeviceTypes.Add(0); }
+        if (vitalNew) { ProximityAlerts++; AlertedDeviceTypes.Add(1); }
+        if (doorNew) { ProximityAlerts++; AlertedDeviceTypes.Add(2); }
+        if (cameraNew) { ProximityAlerts++; AlertedDeviceTypes.Add(3); }
+        var becameTrue = adminNew || vitalNew || doorNew || cameraNew;
+
         isChange |= IsAdminWatch != Admin;
         IsAdminWatch = Admin;
         isChange |= IsVitalWatch != Vital;
@@ -137,5 +153,7 @@ public sealed class AntiAdminer : RoleBase, IImpostor
         {
             Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.AntiAdminer)).Do(x => Utils.NotifyRoles(x));
         }
+
+        if (becameTrue) AntiAdminerProximity.Trigger(Player);
     }
 }

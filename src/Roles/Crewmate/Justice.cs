@@ -2,6 +2,7 @@
 using Hazel;
 using UnityEngine;
 using TONX.Modules;
+using TONX.Modules.Achievements.Crewmate;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Crewmate;
@@ -37,6 +38,16 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable, ISpecial
     public List<byte> SelectedPlayes;
     public bool IsSpecialMeetingActive { get; set; }
     public List<byte> SpecialMeetingPlayers { get; set; }
+    public bool DoubleEvilExile { get; private set; }
+    private readonly HashSet<byte> PendingDoubleExile = new();
+    private readonly HashSet<byte> CompletedEvilExiles = new();
+    public void RecordMeetingExile(PlayerControl player)
+    {
+        if (player == null || !PendingDoubleExile.Remove(player.PlayerId)) return;
+        var role = player.GetCustomRole();
+        if (role.IsImpostorTeam() || role.IsNeutralEvil()) CompletedEvilExiles.Add(player.PlayerId);
+        if (CompletedEvilExiles.Count == 2) DoubleEvilExile = true;
+    }
     public bool AllowSkip => false;
     public bool RevertOnDie => true;
 
@@ -67,10 +78,20 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable, ISpecial
 
     public bool OnSpecialMeetingVotingComplete(MeetingVoteManager.VoteResult voteResult)
     {
-        if (!voteResult.IsTie || !voteResult.NoVotes) return false;
+        if (!IsSpecialMeetingActive || !voteResult.IsTie || SpecialMeetingPlayers.Count != 2
+            || SpecialMeetingPlayers[0] == SpecialMeetingPlayers[1]
+            || SpecialMeetingPlayers.Any(id => Utils.GetPlayerById(id)?.IsAlive() != true)) return false;
         var (target1, target2) = (SpecialMeetingPlayers[0], SpecialMeetingPlayers[1]);
         MeetingHudPatch.TryAddAfterMeetingDeathPlayers(CustomDeathReason.Vote, target1);
         MeetingHudPatch.TryAddAfterMeetingDeathPlayers(CustomDeathReason.Vote, target2);
+        PendingDoubleExile.Clear();
+        CompletedEvilExiles.Clear();
+        if (Main.AfterMeetingDeathPlayers.TryGetValue(target1, out var firstReason) && firstReason == CustomDeathReason.Vote
+            && Main.AfterMeetingDeathPlayers.TryGetValue(target2, out var secondReason) && secondReason == CustomDeathReason.Vote)
+        {
+            PendingDoubleExile.Add(target1);
+            PendingDoubleExile.Add(target2);
+        }
         Logger.Info($"Double Exile => {Utils.GetPlayerById(target1)?.GetNameWithRole()} & {Utils.GetPlayerById(target2)?.GetNameWithRole()}", "Justice");
         return true; 
     }
@@ -115,6 +136,7 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable, ISpecial
         {
             SkillLimits--;
             IsSpecialMeetingActive = true;
+            JusticeSpecialMeeting.Trigger(Player);
             Logger.Info($"Justice.AfterMeetingTasks: 天平会议已激活, players=[{string.Join(",", SpecialMeetingPlayers)}]", "Justice");
             _ = new LateTask(() =>
             {

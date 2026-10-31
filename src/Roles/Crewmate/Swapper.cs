@@ -1,7 +1,10 @@
 using AmongUs.GameOptions;
 using Hazel;
 using TONX.Modules;
+using TONX.Modules.Achievements.Crewmate;
 using TONX.Roles.Core.Interfaces;
+using TONX.Roles.AddOns.Common;
+using TONX.Roles.AddOns.Impostor;
 using UnityEngine;
 
 namespace TONX.Roles.Crewmate;
@@ -38,6 +41,13 @@ public sealed class Swapper : RoleBase, IMeetingButton
 
     private int SwapLimit;
     private List<byte> Targets = new();
+    public bool SwapChangedImpostorExile { get; private set; }
+    private Dictionary<byte, (byte Target, int Count)> VotesBeforeSwap;
+    public void CaptureVotesBeforeSwap()
+    {
+        VotesBeforeSwap = MeetingVoteManager.Instance.AllVotes.ToDictionary(
+            pair => pair.Key, pair => (pair.Value.VotedFor, pair.Value.NumVotes));
+    }
 
     private static void SetupOptionItem()
     {
@@ -69,6 +79,61 @@ public sealed class Swapper : RoleBase, IMeetingButton
     {
         if (Targets.Count == 2) SwapLimit--;
     }
+    public override void OnVotingComplete(MeetingVoteManager.VoteResult voteResult)
+    {
+        var manager = MeetingVoteManager.Instance;
+        if (VotesBeforeSwap == null || Targets.Count != 2
+            || voteResult.Exiled?.Object?.GetCustomRole().IsImpostorTeam() != true
+            || SpecialMeetingManager.GetActiveSpecialMeeting() != null
+            || TicketsStealer.IsEnable
+            || Main.AllPlayerControls.Any(pc => pc.Is(CustomRoles.Zombie) || pc.Is(CustomRoles.Dictator))) return;
+        var swaps = manager.SwappedPlayers.Where(s =>
+            Utils.GetPlayerById(s.Target1)?.IsAlive() == true
+            && Utils.GetPlayerById(s.Target2)?.IsAlive() == true).ToArray();
+        if (swaps.Count(s => s.Swapper == Player.PlayerId) != 1) return;
+        var withoutOwn = new Dictionary<byte, (byte Target, int Count)>();
+        foreach (var pair in VotesBeforeSwap)
+        {
+            var actualTarget = pair.Value.Target;
+            var comparedTarget = actualTarget;
+            foreach (var swap in swaps)
+            {
+                actualTarget = SwapTarget(actualTarget, swap.Target1, swap.Target2);
+                if (swap.Swapper != Player.PlayerId)
+                    comparedTarget = SwapTarget(comparedTarget, swap.Target1, swap.Target2);
+            }
+            if (!manager.AllVotes.TryGetValue(pair.Key, out var actual)
+                || actual.VotedFor != actualTarget || actual.NumVotes != pair.Value.Count) return;
+            withoutOwn[pair.Key] = (comparedTarget, pair.Value.Count);
+        }
+        var counts = voteResult.VotedCounts.ToDictionary(pair => pair.Key, _ => 0);
+        foreach (var vote in withoutOwn.Values)
+            if (vote.Target != MeetingVoteManager.NoVote && counts.ContainsKey(vote.Target))
+                counts[vote.Target] += vote.Count;
+        var highest = counts.Values.Max();
+        var leaders = counts.Where(pair => pair.Value == highest).Select(pair => pair.Key).ToArray();
+        if (leaders.Length == 1)
+        {
+            if (leaders[0] != voteResult.Exiled.PlayerId) SwapChangedImpostorExile = true;
+            return;
+        }
+        var breakerTargets = withoutOwn.Where(pair => Tiebreaker.IsThisRole(pair.Key))
+            .Select(pair => pair.Value.Target).ToHashSet();
+        var chosen = leaders.Where(breakerTargets.Contains).ToArray();
+        if (chosen.Length == 1)
+        {
+            if (chosen[0] != voteResult.Exiled.PlayerId) SwapChangedImpostorExile = true;
+            return;
+        }
+        if (Options.VoteMode.GetBool())
+        {
+            var mode = (TieMode)Options.WhenTie.GetValue();
+            if (mode == TieMode.Random || (mode == TieMode.All && leaders.Contains(voteResult.Exiled.PlayerId))) return;
+        }
+        SwapChangedImpostorExile = true;
+    }
+    private static byte SwapTarget(byte target, byte first, byte second)
+        => target == first ? second : target == second ? first : target;
 
     public string ButtonName { get; private set; } = "Swapper";
     public bool ShouldShowButton() => Player.IsAlive();
@@ -131,6 +196,7 @@ public sealed class Swapper : RoleBase, IMeetingButton
 
             Targets.Add(target.PlayerId);
             Logger.Info($"{Player.GetNameWithRole()} => Swap {target.GetNameWithRole()}({Targets.Count})", "Swapper");
+            if (Targets.Count == 2) SwapperVoteSwap.Trigger(Player);
             
             SendRpc();
 
@@ -219,7 +285,7 @@ public sealed class Swapper : RoleBase, IMeetingButton
     }
     private void RefreshTargets()
     {
+        MeetingVoteManager.Instance?.RemoveSwappedPlayers(Player.PlayerId);
         if (Targets.Count == 2) MeetingVoteManager.Instance?.AddSwappedPlayers(Player.PlayerId, Targets[0], Targets[1], true);
-        else MeetingVoteManager.Instance?.RemoveSwappedPlayers(Player.PlayerId);
     }
 }

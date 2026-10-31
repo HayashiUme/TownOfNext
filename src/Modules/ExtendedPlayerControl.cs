@@ -6,6 +6,7 @@ using TONX.Modules;
 using TONX.Roles.AddOns;
 using TONX.Roles.AddOns.Impostor;
 using TONX.Roles.Core.Interfaces;
+using TONX.Roles.Crewmate;
 using TONX.Roles.Impostor;
 using TONX.Roles.Neutral;
 using UnityEngine;
@@ -485,7 +486,7 @@ static class ExtendedPlayerControl
     }
     public static bool CanUseKillButton(this PlayerControl pc)
     {
-        if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || pc.IsEaten()) return false;
+        if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || pc.Data.Role.Role == RoleTypes.SpiritGuide || pc.IsEaten()) return false;
 
         var roleCanUse = (pc.GetRoleClass() as IKiller)?.CanUseKillButton();
 
@@ -684,7 +685,11 @@ static class ExtendedPlayerControl
         // 役職による仕分け
         if (seer.GetRoleClass() is IDeathReasonSeeable deathReasonSeeable)
         {
-            return deathReasonSeeable.CheckSeeDeathReason(seen);
+            var canSee = deathReasonSeeable.CheckSeeDeathReason(seen);
+            if (canSee && AmongUsClient.Instance.AmHost && seer.Is(CustomRoles.Doctor)
+                && seer.GetRoleClass() is Doctor doctor && doctor.RecordDeathReason(seen))
+            { }
+            return canSee;
         }
         return false;
     }
@@ -860,5 +865,16 @@ static class ExtendedPlayerControl
                 player.RpcSpecificShapeshift(target, shouldAnimate);
             }
         }
+    }
+    
+    public static TONX.Modules.Achievements.Core.CustomAchievementData GetAchievementInfo(this PlayerControl player)
+        => player == null ? null : TONX.Modules.Achievements.Core.CustomAchievementDataManager.GetByPlayer(player);
+
+    public static TONX.Modules.Achievements.Core.CustomAchievementData GetAchievementInfo(this PlayerControl player, bool fetchIfMissing)
+    {
+        var data = player.GetAchievementInfo();
+        if (data == null) return null;
+
+        return data;
     }
 }

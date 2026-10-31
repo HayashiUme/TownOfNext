@@ -28,6 +28,9 @@ public sealed class Provocateur : RoleBase, IAdditionalWinner
 
     }
     private bool IsKilled;
+    public bool HasKilled => IsKilled;
+    public byte ExplosionTargetId { get; private set; } = byte.MaxValue;
+    public bool ExplosionWinGranted { get; private set; }
     public override void Add()
     {
         var playerId = Player.PlayerId;
@@ -55,13 +58,16 @@ public sealed class Provocateur : RoleBase, IAdditionalWinner
         target.RpcMurderPlayerV2(killer);
         killer.SetRealKiller(target);
         IsKilled = true;
+        ExplosionTargetId = target.PlayerId;
         SendRPC();
         return true;
     }
     public bool CheckWin(ref CustomRoles winnerRole)
     {
+        ExplosionWinGranted = false;
         if (Player.IsAlive()) return false;
         if (CustomWinnerHolder.WinnerIds.Contains(Player?.GetRealKiller()?.PlayerId ?? 255) || !IsKilled) return false;
+        ExplosionWinGranted = true;
         return true;
 
     }

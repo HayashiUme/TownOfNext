@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using TONX.Modules;
+using TONX.Modules.Achievements.Crewmate;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -44,6 +45,7 @@ public sealed class Deceiver : RoleBase, IKiller
     private int SellLimit;
     private Dictionary<byte, bool> Customers;
     public bool IsKiller { get; private set; } = false;
+    public bool CounterfeitMisfireWin { get; private set; }
     private static void SetupOptionItem()
     {
         OptionSellCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.DeceiverSkillCooldown, new(2.5f, 180f, 2.5f), 20f, false)
@@ -94,6 +96,7 @@ public sealed class Deceiver : RoleBase, IKiller
         killer.RPCPlayCustomSound("Bet");
 
         Customers.Add(target.PlayerId, false);
+        DeceiverSoldCounterfeit.Trigger(killer);
 
         Logger.Info($"{killer.GetNameWithRole()}：将赝品售卖给 => {target.GetNameWithRole()}", "Deceiver.OnCheckMurderAsKiller");
         Logger.Info($"{killer.GetNameWithRole()}：剩余{SellLimit}个赝品", "Deceiver.OnCheckMurderAsKiller");
@@ -108,6 +111,8 @@ public sealed class Deceiver : RoleBase, IKiller
             if (deceiver.GetRoleClass() is not Deceiver roleClass) continue;
             if (roleClass.Customers.TryGetValue(killer.PlayerId, out var x) && x)
             {
+                if (roleClass.Player?.Data != null && roleClass.Player.IsAlive())
+                    roleClass.CounterfeitMisfireWin = true;
                 killer.SetRealKiller(deceiver);
                 killer.SetDeathReason(CustomDeathReason.Misfire);
                 killer.RpcMurderPlayerV2(killer);

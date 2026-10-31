@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using TONX.Modules;
+using TONX.Modules.Achievements.Crewmate;
 using Hazel;
 
 namespace TONX.Roles.Crewmate;
@@ -36,6 +37,10 @@ public sealed class Veteran : RoleBase
 
     private int SkillLimit;
     private long ProtectStartTime;
+    public int CounterKills { get; private set; }
+    public bool KilledImpostorAttacker { get; private set; }
+    public bool IsOnGuard
+        => ProtectStartTime != 0 && ProtectStartTime + (long)OptionSkillDuration.GetFloat() >= Utils.GetTimeStamp();
     private static void SetupOptionItem()
     {
         OptionSkillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.VeteranSkillCooldown, new(2.5f, 180f, 2.5f), 20f, false)
@@ -49,6 +54,8 @@ public sealed class Veteran : RoleBase
     {
         SkillLimit = OptionSkillNums.GetInt();
         ProtectStartTime = 0;
+        CounterKills = 0;
+        KilledImpostorAttacker = false;
     }
     public override void ApplyGameOptions(IGameOptions opt)
     {
@@ -106,6 +113,9 @@ public sealed class Veteran : RoleBase
         {
             var (killer, target) = info.AttemptTuple;
             target.RpcMurderPlayerV2(killer);
+            CounterKills++;
+            if (killer.GetCustomRole().IsImpostorTeam()) KilledImpostorAttacker = true;
+            VeteranCounterKill.Trigger(Player);
             Logger.Info($"{target.GetRealName()} 老兵反弹击杀：{killer.GetRealName()}", "Veteran.OnCheckMurderAsTarget");
             return false;
         }

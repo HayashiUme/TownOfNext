@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using System.Text.RegularExpressions;
 using TONX.Roles.Core.Descriptions;
 using UnityEngine;
@@ -231,6 +231,25 @@ public class ChatCommand(List<string> keywords, Func<CommandAccess> access, Func
                 string text = GetFormatString(containDeadPlayers: true);
                 return (MsgRecallMode.Block, text);
             }),
+            new(["cec", "kc", "gs"], () => CommandAccess.All, mc =>
+            {
+                string text = GetString("Message.CanNotUseInLobby");
+                if (GameStates.IsInGame)
+                {
+                    if (!Options.EnableEvilCount.GetBool())
+                        text = string.Format(GetString("Message.DirectorModeDisabled"), GetString("EnableEvilCount"));
+                    else if (MeetingStates.FirstMeeting && Options.EvilCountDisableInFirstMeeting.GetBool())
+                        text = GetString("Message.EvilCountDisabledInFirstMeeting");
+                    else
+                    {
+                        int impNum = Main.AllAlivePlayerControls.Count(p => p.Is(CustomRoleTypes.Impostor));
+                        int neutralNum = Main.AllAlivePlayerControls.Count(p => p.Is(CustomRoleTypes.Neutral));
+                        int madmateNum = Main.AllAlivePlayerControls.Count(p => p.Is(CustomRoles.Madmate));
+                        text = string.Format(GetString("Message.CurrentEvilCount"), impNum, neutralNum, madmateNum);
+                    }
+                }
+                return (MsgRecallMode.Block, text);
+            }),
             new(["end", "endgame"], () => CommandAccess.Host, mc =>
             {
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Draw);
@@ -253,6 +272,38 @@ public class ChatCommand(List<string> keywords, Func<CommandAccess> access, Func
                 Logger.Warn($"VisorId: {of.VisorId}", "Get Cos Id");
                 Logger.Warn($"NamePlateId: {of.NamePlateId}", "Get Cos Id");
                 return (MsgRecallMode.Block, null);
+            }), 
+            new(["achid","achevementid"], () => CommandAccess.All, mc =>
+            {
+                if (!GameStates.IsLobby)
+                    return (MsgRecallMode.Block, GetString("Achievement.SetWarning"));
+                _ = TONX.Modules.Achievements.Core.AchievementManager.DisplayAchievements(mc.Player);
+                return (MsgRecallMode.Block, null);
+            }),
+            new(["wach","wearachievement"], () => CommandAccess.All, mc =>
+            {
+                if (!GameStates.IsLobby)
+                    return (MsgRecallMode.Block, GetString("Achievement.SetWarning"));
+                if (!mc.HasValidArgs || !int.TryParse(mc.Args.Trim(), out int titleId))
+                    return (MsgRecallMode.Block, GetString("Achievement.Tip"));
+                if (GameStates.IsLocalGame)
+                    return (MsgRecallMode.Block, GetString("Achievement.Command.Local"));
+
+                _ = Achievements.Core.AchievementManager.WearAchievementTitleAndReplyAsync(mc.Player, titleId);
+                return (MsgRecallMode.Block, null);
+            }),
+            new(["ach","achievement"], () => CommandAccess.All, mc =>
+            {
+                if (!mc.HasValidArgs || !int.TryParse(mc.Args.Trim(), out int achId))
+                    return (MsgRecallMode.Block, GetString("Achievement.Tip2"));
+
+                var achievement = TONX.Modules.Achievements.Core.AchievementRegistry.GetById(achId);
+                if (achievement == null)
+                    return (MsgRecallMode.Block, string.Format(GetString("Achievement.NotFound"), achId));
+
+                string msg = $"<color={achievement.TitleColorHex}>【{GetString(achievement.Name)}】</color>\n" +
+                             GetString(achievement.Description);
+                return (MsgRecallMode.Block, msg);
             }),
             new(["qq","dc"], () => CommandAccess.Host, mc =>
             {

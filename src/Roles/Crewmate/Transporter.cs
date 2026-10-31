@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using TONX.Modules;
+using TONX.Modules.Achievements.Crewmate;
 
 namespace TONX.Roles.Crewmate;
 public sealed class Transporter : RoleBase
@@ -24,6 +25,8 @@ public sealed class Transporter : RoleBase
     { }
 
     static OptionItem OptionTeleportNums;
+    private readonly HashSet<int> transportedTasks = new();
+    public int SuccessfulTransports => transportedTasks.Count;
     enum OptionName
     {
         TransporterTeleportMax
@@ -51,8 +54,11 @@ public sealed class Transporter : RoleBase
             AllAlivePlayer.Remove(tar1);
             var tar2 = AllAlivePlayer[rd.Next(0, AllAlivePlayer.Count)];
             var pos = tar1.GetTruePosition();
+            var differentPositions = pos != tar2.GetTruePosition();
             Utils.TP(tar1.NetTransform, tar2.GetTruePosition());
             Utils.TP(tar2.NetTransform, pos);
+            if (differentPositions && transportedTasks.Add(MyTaskState.CompletedTasksCount))
+                PlayersTransported.Trigger(Player);
             tar1.RPCPlayCustomSound("Teleport");
             tar2.RPCPlayCustomSound("Teleport");
             tar1.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Transporter), string.Format(GetString("TeleportedByTransporter"), tar2.GetRealName())));

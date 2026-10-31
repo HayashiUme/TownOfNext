@@ -1,6 +1,7 @@
-﻿using AmongUs.Data;
+using AmongUs.Data;
 using Newtonsoft.Json.Linq;
 using System.Text;
+using TONX.Attributes;
 using UnityEngine;
 
 namespace TONX;
@@ -17,6 +18,8 @@ public static class NameTagManager
     public static IReadOnlyDictionary<string, NameTag> AllNameTags => NameTags;
     public static IReadOnlyDictionary<string, NameTag> AllInternalNameTags => AllNameTags.Where(t => t.Value.Isinternal).ToDictionary(x => x.Key, x => x.Value);
     public static IReadOnlyDictionary<string, NameTag> AllExternalNameTags => AllNameTags.Where(t => !t.Value.Isinternal).ToDictionary(x => x.Key, x => x.Value);
+
+    private static readonly List<INameTagProvider> TagProviders = new();
     public static NameTag DeepClone(NameTag tag)
     {
         NameTag newTag = new();
@@ -41,7 +44,16 @@ public static class NameTagManager
     public static void ApplyFor(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost || player == null) return;
-        if (!player.AmOwner && !AllNameTags.ContainsKey(player.FriendCode)) return;
+        // 无自定义名牌的玩家通常无需重新广播；但若原名字含有已卸下的成就头衔，
+        // 仍要走基础名字重建路径，以清掉旧前缀。
+        bool hasOldAchievementTitle = TONX.Modules.Achievements.Core.AchievementRegistry.GetAll()
+            .Any(achievement => !string.IsNullOrEmpty(achievement.Name) &&
+                                player.name.Contains($"[{GetString(achievement.Name)}]", StringComparison.Ordinal));
+        if (!player.AmOwner
+            && !AllNameTags.ContainsKey(player.FriendCode)
+            && TONX.Modules.Achievements.Core.AchievementTitleService.GetWearedTitleId(player.FriendCode) <= 0
+            && !hasOldAchievementTitle)
+            return;
 
         string name = player.GetTrueName();
         if (Main.HostNickName != "" && player.AmOwner) name = Main.HostNickName;
@@ -60,7 +72,7 @@ public static class NameTagManager
         {
             name = Options.GetSuffixMode() switch
             {
-                SuffixModes.TONX => name += $"\r\n<color={Main.ModColor}>TONX v{Main.PluginVersion}</color>",
+                SuffixModes.TONX => name += $"\r\n<color={Main.ModColor}>{Main.ModName} v{Main.DisplayVersion}</color>",
                 SuffixModes.Streaming => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.Streaming")}</color></size>",
                 SuffixModes.Recording => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.Recording")}</color></size>",
                 SuffixModes.RoomHost => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.RoomHost")}</color></size>",
@@ -74,6 +86,18 @@ public static class NameTagManager
                 var upper = $"<size=80%><color=#ffd6ec>{Main.ModName}</color><color=#baf7ca>★</color>";
                 upper += Options.CurrentGameMode.GetModeInfo()?.HostTag?.Invoke() ?? "";
                 name = upper + "</size>\r\n" + name;
+            }
+        }
+
+        //这个Lobby的判定条件也许可以扬了
+        if (GameStates.IsLobby)
+        {
+            foreach (var provider in TagProviders)
+            {
+                string prefix = provider.GetPrefix(player);
+                if (string.IsNullOrEmpty(prefix)) continue;
+                if (name.Contains(prefix)) continue; // 防重复
+                name = prefix + "\r\n" + name;
             }
         }
 
@@ -292,6 +316,30 @@ public static class NameTagManager
 
             return new Color(r, g, b);
         }
+    }
+    [PluginModuleInitializer]
+    public static void InitializeProviders()
+    {
+        TagProviders.Clear();
+
+        var types = System.Reflection.Assembly.GetExecutingAssembly()
+            .GetTypes()
+            .Where(t => t.IsClass && !t.IsAbstract && typeof(INameTagProvider).IsAssignableFrom(t));
+
+        foreach (var type in types)
+        {
+            var instance = (INameTagProvider)Activator.CreateInstance(type);
+            TagProviders.Add(instance);
+        }
+    }
+    public interface INameTagProvider
+    {
+        /// <summary>
+        /// 添加头衔的统一接口
+        /// </summary>
+        /// <param name="player">添加对象</param>
+        /// <returns></returns>
+        string GetPrefix(PlayerControl player);
     }
 }
 #nullable disable

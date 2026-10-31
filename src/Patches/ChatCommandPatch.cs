@@ -64,6 +64,8 @@ internal class ChatCommands
             blockForLocalPlayer = true;
             return;
         }
+        
+        if (player?.Data?.PlayerName?.EndsWith('\0') == true) return;
 
         ChatUpdatePatch.DoBlockChat = true;
 

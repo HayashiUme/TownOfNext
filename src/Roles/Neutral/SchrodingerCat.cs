@@ -1,4 +1,6 @@
 ﻿using AmongUs.GameOptions;
+using TONX.Attributes;
+using TONX.Modules.Achievements.Neutral;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Neutral;
@@ -47,6 +49,15 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
     static bool ChangeTeamWhenExile;
     // static bool CanSeeKillableTeammate;
     static bool ChangeToSpecificImpostorRole;
+    private static readonly Dictionary<(byte, string), (CustomRoles Role, CountTypes Team)> ConvertedPlayers = new();
+    [GameModuleInitializer]
+    public static void Init() => ConvertedPlayers.Clear();
+    public static bool WonAfterConversion(PlayerControl player)
+    {
+        return ConvertedPlayers.TryGetValue((player.PlayerId, player.FriendCode), out var conversion)
+            && player.GetCustomRole() == conversion.Role && player.GetCountTypes() == conversion.Team
+            && (int)CustomWinnerHolder.WinnerTeam == (int)conversion.Team;
+    }
 
     public static void SetupOptionItem()
     {
@@ -66,6 +77,11 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
         var role = killer.GetCustomRole();
         if (!ChangeToSpecificImpostorRole && role.IsImpostor()) role = CustomRoles.Impostor;
         target.RpcChangeRole(role);
+        if (target.GetCustomRole() == role && !target.Data.IsDead && role != CustomRoles.SchrodingerCat)
+        {
+            ConvertedPlayers[(target.PlayerId, target.FriendCode)] = (role, target.GetCountTypes());
+            CatConverted.Trigger(target);
+        }
         Utils.NotifyRoles();
         Logger.Info($"薛定谔的猫{target?.Data?.PlayerName}被{killer.GetNameWithRole()}击杀了", "SchrodingerCat");
         return false;

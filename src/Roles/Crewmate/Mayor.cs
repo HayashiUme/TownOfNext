@@ -1,5 +1,8 @@
 using AmongUs.GameOptions;
 using Hazel;
+using TONX.Modules;
+using TONX.Modules.Achievements.Crewmate;
+using TONX.Roles.AddOns.Common;
 
 namespace TONX.Roles.Crewmate;
 public sealed class Mayor : RoleBase
@@ -44,6 +47,7 @@ public sealed class Mayor : RoleBase
     public static bool HideVote;
 
     public int LeftButtonCount;
+    public bool ExtraVoteChangedImpostorExile { get; private set; }
     private static void SetupOptionItem()
     {
         OptionAdditionalVote = IntegerOptionItem.Create(RoleInfo, 10, OptionName.MayorAdditionalVote, new(1, 15, 1), 4, false)
@@ -88,8 +92,38 @@ public sealed class Mayor : RoleBase
         if (voterId == Player.PlayerId)
         {
             numVotes = AdditionalVote + 1;
+            if (isIntentional && numVotes > 1) MayorExtraVote.Trigger(Player);
         }
         return (votedForId, numVotes, doVote);
+    }
+    public override void OnVotingComplete(MeetingVoteManager.VoteResult voteResult)
+    {
+        var exileId = voteResult.Exiled?.PlayerId;
+        if (exileId == null || Utils.GetPlayerById(exileId.Value)?.GetCustomRole().IsImpostor() != true
+            || !MeetingVoteManager.Instance.AllVotes.TryGetValue(Player.PlayerId, out var ownVote)
+            || ownVote.VotedFor != exileId.Value || ownVote.NumVotes <= AdditionalVote
+            || SpecialMeetingManager.GetActiveSpecialMeeting() != null) return;
+
+        var counts = voteResult.VotedCounts.ToDictionary(pair => pair.Key, pair => pair.Value);
+        counts[exileId.Value] -= AdditionalVote;
+        var highest = counts.Values.Max();
+        var leaders = counts.Where(pair => pair.Value == highest).Select(pair => pair.Key).ToArray();
+        if (leaders.Length == 1)
+        {
+            if (leaders[0] != exileId.Value) ExtraVoteChangedImpostorExile = true;
+            return;
+        }
+        if (Tiebreaker.ChooseExileTarget(leaders, out var chosen))
+        {
+            if (chosen != exileId.Value) ExtraVoteChangedImpostorExile = true;
+            return;
+        }
+        if (Options.VoteMode.GetBool())
+        {
+            var mode = (TieMode)Options.WhenTie.GetValue();
+            if (mode == TieMode.Random || (mode == TieMode.All && leaders.Contains(exileId.Value))) return;
+        }
+        ExtraVoteChangedImpostorExile = true;
     }
     public override int OverrideAbilityButtonUsesRemaining() => LeftButtonCount;
     private void SendRpc()

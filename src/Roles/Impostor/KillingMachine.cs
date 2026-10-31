@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Impostor;
@@ -23,6 +24,14 @@ public sealed class KillingMachine : RoleBase, IImpostor
     { }
 
     static OptionItem KillCooldown;
+    private readonly HashSet<(byte, string)> victims = new();
+    public int SuccessfulKills => victims.Count;
+    public void OnMurderPlayerAsKiller(MurderInfo info)
+    {
+        if (!info.IsSuicide && info.AttemptTarget.Data.IsDead && !info.AttemptTarget.Data.Disconnected
+            && victims.Add((info.AttemptTarget.PlayerId, info.AttemptTarget.FriendCode)))
+            MachineKillCompleted.Trigger(Player);
+    }
     private static void SetupOptionItem()
     {
         KillCooldown = FloatOptionItem.Create(RoleInfo, 10, GeneralOption.KillCooldown, new(2.5f, 180f, 2.5f), 10f, false)

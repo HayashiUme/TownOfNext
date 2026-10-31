@@ -19,9 +19,7 @@ public static class ServerAddManager
         regionInfos.Add(CreateHttp("au-eu.duikbo.at", "Modded EU (MEU)", 443, true));
         regionInfos.Add(CreateHttp("au-us.niko233.top", "Niko233(NA)", 443, true));
         regionInfos.Add(CreateHttp("au-as.niko233.top", "Niko233(AS)", 443, true));
-        regionInfos.Add(CreateHttp("au-eu.niko233.top", "Niko233(EU)", 443, true));
-        regionInfos.Add(CreateHttp("au-cn.niko233.top", "Niko233(CN1)", 443, true));
-        regionInfos.Add(CreateHttp("eu.allofus.dev", "AOU EU", 443, true));
+        regionInfos.Add(CreateHttp("eu.allofus.dev", "AOU (EU)", 443, true));
 
         var defaultRegion = serverManager.CurrentRegion;
         regionInfos.Where(x => !serverManager.AvailableRegions.Contains(x)).Do(serverManager.AddOrUpdateRegion);
@@ -39,7 +37,7 @@ public static class ServerAddManager
             "Modded EU (MEU)" => "MEU",
             "Niko233(NA)" => "Niko[NA]",
             "Niko233(AS)" => "Niko[AS]",
-            "Niko233(EU)" => "Niko[EU]",
+            "AOU (EU)" => "AOU[EU]",
             _ => serverName,
         };
 
@@ -50,10 +48,10 @@ public static class ServerAddManager
             "North America" => new(58, 166, 117, 255),
             "Niko233(NA)" => new(255, 224, 0, 255),
             "Niko233(AS)" => new(255, 224, 0, 255),
-            "Niko233(EU)" => new(255, 224, 0, 255),
             "Modded Asia (MAS)" => new(255, 132, 0, 255),
             "Modded NA (MNA)" => new(255, 132, 0, 255),
             "Modded EU (MEU)" => new(255, 132, 0, 255),
+            "AOU (EU)" => new(255, 187, 255, 255),
             _ => new(255, 255, 255, 255),
         };
 

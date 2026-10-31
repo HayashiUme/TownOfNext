@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Impostor;
@@ -24,6 +25,8 @@ public sealed class Scavenger : RoleBase, IImpostor
     { }
 
     static OptionItem OptionKillCooldown;
+    public int CleanKills { get; private set; }
+    public override void Add() => CleanKills = 0;
     private static void SetupOptionItem()
     {
         OptionKillCooldown = FloatOptionItem.Create(RoleInfo, 10, GeneralOption.KillCooldown, new(2.5f, 180f, 2.5f), 40f, false)
@@ -41,6 +44,9 @@ public sealed class Scavenger : RoleBase, IImpostor
         target.RpcMurderPlayerV2(target);
         killer.SetKillCooldownV2();
         NameNotifyManager.Notify(target, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Scavenger), GetString("KilledByScavenger")));
+
+        CleanKills++;
+        ScavengerNoBodyKill.Trigger(killer);
 
         info.DoKill = false;
     }

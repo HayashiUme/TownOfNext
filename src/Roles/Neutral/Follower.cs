@@ -1,6 +1,8 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using TONX.Modules;
+using TONX.Modules.Achievements.Core;
+using TONX.Modules.Achievements.Neutral;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -108,6 +110,7 @@ public sealed class Follower : RoleBase, IKiller, IAdditionalWinner
         if (beforeTarget != null) Utils.NotifyRoles(beforeTarget);
 
         BetTarget = target.PlayerId;
+        BetPlaced.Trigger(Player);
         SendRPC();
 
         killer.ResetKillCooldown();
@@ -134,12 +137,14 @@ public sealed class Follower : RoleBase, IKiller, IAdditionalWinner
             ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Follower), "♦") : "";
     }
     public override string GetProgressText(bool comms = false) => Utils.ColorString(CanUseKillButton() ? Utils.ShadeColor(RoleInfo.RoleColor, 0.25f) : Color.gray, $"({BetLimit})");
+    public bool BetWinGranted { get; private set; }
     public bool CheckWin(ref CustomRoles winnerRole)
     {
         if (BetTarget == byte.MaxValue) return false;
         var targetPs = PlayerState.GetByPlayerId(BetTarget);
-        return (CustomWinnerHolder.WinnerIds?.Contains(BetTarget) ?? false)
+        BetWinGranted = (CustomWinnerHolder.WinnerIds?.Contains(BetTarget) ?? false)
             || (targetPs != null && (CustomWinnerHolder.WinnerRoles?.Contains(targetPs.MainRole) ?? false));
+        return BetWinGranted;
     }
     public bool OverrideKillButtonText(out string text)
     {

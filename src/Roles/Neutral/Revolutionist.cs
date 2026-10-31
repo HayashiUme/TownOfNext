@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using TONX.Modules.Achievements.Neutral;
 using UnityEngine;
 
 namespace TONX.Roles.Neutral;
@@ -167,6 +168,7 @@ public sealed class Revolutionist : RoleBase
                     player.SetKillCooldown();
                     TargetInfo = null;//拉拢完成从字典中删除
                     Isdraw[rv_target.PlayerId] = true;//完成拉拢
+                    DrawCompleted.Trigger(Player);
                     SendRPC(RPC_type.SetDrawPlayer, rv_target.PlayerId, true);
                     Utils.NotifyRoles(player);
                     SendRPC(RPC_type.SetCurrentDrawTarget);

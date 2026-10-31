@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using TONX.Modules;
+using TONX.Modules.Achievements.Crewmate;
 
 namespace TONX.Roles.Crewmate;
 public sealed class Dictator : RoleBase
@@ -25,6 +26,7 @@ public sealed class Dictator : RoleBase
 
     public override void OnStartMeeting() => lastVoted = byte.MaxValue;
     private byte lastVoted;
+    public bool ImpostorExileWon { get; private set; }
     public override bool CheckVoteAsVoter(PlayerControl votedFor)
     {
         if (votedFor != null && lastVoted == votedFor.PlayerId) return true;
@@ -43,7 +45,10 @@ public sealed class Dictator : RoleBase
         }
         MeetingHudPatch.TryAddAfterMeetingDeathPlayers(CustomDeathReason.Suicide, Player.PlayerId);
         Utils.GetPlayerById(sourceVotedForId).SetRealKiller(Player);
+        if (Utils.GetPlayerById(sourceVotedForId)?.GetCustomRole().IsImpostor() == true)
+            ImpostorExileWon = true;
         MeetingVoteManager.Instance.ClearAndExile(Player.PlayerId, sourceVotedForId);
+        DictatorForcedExile.Trigger(Player);
         return (votedForId, numVotes, false);
     }
 }

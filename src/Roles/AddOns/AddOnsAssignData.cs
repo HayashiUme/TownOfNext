@@ -20,6 +20,7 @@ public class AddOnsAssignData
     static readonly CustomRoles[] InvalidRoles =
     {
         CustomRoles.GuardianAngel,
+        CustomRoles.SpiritGuide,
         CustomRoles.NotAssigned,
         CustomRoles.LazyGuy,
         CustomRoles.GM,

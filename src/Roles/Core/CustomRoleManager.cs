@@ -116,6 +116,7 @@ public static class CustomRoleManager
         if (Main.ShieldPlayer != byte.MaxValue && Main.ShieldPlayer == attemptTarget.PlayerId && Utils.IsAllAlive)
         {
             Main.ShieldPlayer = byte.MaxValue;
+            TONX.Roles.Crewmate.Observer.NotifyBlockedAttack(info);
             attemptKiller.SetKillCooldownV2(target: attemptTarget, forceAnime: true);
             return false;
         }
@@ -630,6 +631,7 @@ public enum CustomRoles
     Tracker,
     Detective,
     Judge,
+    SpiritGuide,
     //Crewmate
     Luckey,
     LazyGuy,
@@ -694,6 +696,8 @@ public enum CustomRoles
     Shifter,
     Doomsayer,
     Yandere,
+    Lawyer,
+    Prosecutors,
 
     //SoloKombat
     KB_Normal = 400,
@@ -703,6 +707,13 @@ public enum CustomRoles
 
     //GM
     GM,
+
+    //HotPotato
+    HotPotato,
+    ColdPotato,
+
+    //DoomTag
+    Tagger,
 
     //Sub-role after 500
     NotAssigned = 500,

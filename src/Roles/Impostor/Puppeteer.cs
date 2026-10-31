@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using TONX.Modules;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -31,6 +32,9 @@ public sealed class Puppeteer : RoleBase, IImpostor
     /// </summary>
     private static Dictionary<byte, Puppeteer> Puppets = new(15);
     public bool IsKiller { get; private set; } = false;
+    public int PuppetKills { get; private set; }
+    public bool NonImpostorPuppetKill { get; private set; }
+    public override void Add() => PuppetKills = 0;
     public override void OnDestroy()
     {
         Puppets.Clear();
@@ -109,12 +113,20 @@ public sealed class Puppeteer : RoleBase, IImpostor
 
             var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();//一番値が小さい
             var target = min.Key;
-            var KillRange = NormalGameOptionsV11.KillDistances[Mathf.Clamp(Main.NormalOptions.KillDistance, 0, 2)];
+            var KillRange = NormalGameOptionsV12.KillDistances[Mathf.Clamp(Main.NormalOptions.KillDistance, 0, 2)];
             if (min.Value <= KillRange && puppet.CanMove && target.CanMove)
             {
                 RPC.PlaySoundRPC(Player.PlayerId, Sounds.KillSound);
                 target.SetRealKiller(Player);
+                var eligiblePuppetKill = !puppet.GetCustomRole().IsImpostorTeam()
+                    && !target.GetCustomRole().IsImpostorTeam()
+                    && !puppet.Is(CustomRoles.Madmate) && !target.Is(CustomRoles.Madmate)
+                    && !puppet.Data.Disconnected && !target.Data.Disconnected;
                 puppet.RpcMurderPlayer(target);
+                if (eligiblePuppetKill && target.Data.IsDead && !target.Data.Disconnected)
+                    NonImpostorPuppetKill = true;
+                PuppetKills++;
+                PuppeteerPuppetKill.Trigger(Player);
                 Utils.MarkEveryoneDirtySettings();
                 Puppets.Remove(puppet.PlayerId);
                 SendRPC(puppet.PlayerId, 2);

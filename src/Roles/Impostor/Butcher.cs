@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -25,8 +26,13 @@ public sealed class Butcher : RoleBase, IImpostor
     { }
 
     private List<byte> ButcherKilledPlayers;
+    public int DismemberCount { get; private set; }
     public override void OnDestroy() => ButcherKilledPlayers.Clear();
-    public override void Add() => ButcherKilledPlayers = new();
+    public override void Add()
+    {
+        ButcherKilledPlayers = new();
+        DismemberCount = 0;
+    }
     public bool OverrideKillButtonText(out string text)
     {
         text = GetString("ButcherButtonText");
@@ -43,7 +49,12 @@ public sealed class Butcher : RoleBase, IImpostor
         PlayerState.GetByPlayerId(target.PlayerId).DeathReason = CustomDeathReason.Dismembered;
         new LateTask(() =>
         {
-            if (!ButcherKilledPlayers.Contains(target.PlayerId)) ButcherKilledPlayers.Add(target.PlayerId);
+            if (!ButcherKilledPlayers.Contains(target.PlayerId))
+            {
+                ButcherKilledPlayers.Add(target.PlayerId);
+                DismemberCount++;
+                ButcherDismember.Trigger(killer);
+            }
             var ops = target.GetTruePosition();
             var rd = IRandom.Instance;
             for (int i = 0; i < 20; i++)

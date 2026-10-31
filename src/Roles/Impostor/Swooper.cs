@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using System.Text;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Impostor;
@@ -40,6 +41,8 @@ public sealed class Swooper : RoleBase, IImpostor
     private long InvisTime;
     private long LastTime;
     private int VentedId;
+    private bool HasBeenInvis;
+    public bool InvisKill { get; private set; }
     private static void SetupOptionItem()
     {
         SwooperCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.SwooperCooldown, new(2.5f, 180f, 2.5f), 30f, false)
@@ -82,6 +85,11 @@ public sealed class Swooper : RoleBase, IImpostor
             LastTime = now;
             InvisTime = -1;
             SendRPC();
+            if (HasBeenInvis)
+            {
+                HasBeenInvis = false;
+                SwooperInvisCycle.Trigger(player);
+            }
             player?.MyPhysics?.RpcBootFromVent(VentedId != -1 ? VentedId : Main.LastEnteredVent[player.PlayerId].Id);
             NameNotifyManager.Notify(player, GetString("SwooperInvisStateOut"));
             return;
@@ -99,6 +107,11 @@ public sealed class Swooper : RoleBase, IImpostor
             LastTime = now;
             InvisTime = -1;
             SendRPC();
+            if (HasBeenInvis)
+            {
+                HasBeenInvis = false;
+                SwooperInvisCycle.Trigger(Player);
+            }
             NameNotifyManager.Notify(Player, GetString("SwooperInvisStateOut"));
             return false;
         }
@@ -113,6 +126,7 @@ public sealed class Swooper : RoleBase, IImpostor
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
 
                 InvisTime = now;
+                HasBeenInvis = true;
                 SendRPC();
 
                 NameNotifyManager.Notify(Player, GetString("SwooperInvisState"), SwooperDuration.GetFloat());
@@ -151,6 +165,8 @@ public sealed class Swooper : RoleBase, IImpostor
         if (!IsInvis()) return;
         var (killer, target) = info.AttemptTuple;
 
+        InvisKill = true;
+
         Utils.TP(killer.NetTransform, target.GetTruePosition());
         RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
         killer.SetKillCooldownV2();
@@ -169,6 +185,8 @@ public sealed class Swooper : RoleBase, IImpostor
     public override void OnGameStart()
     {
         LastTime = Utils.GetTimeStamp();
+        InvisKill = false;
+        HasBeenInvis = false;
         SendRPC();
     }
 }

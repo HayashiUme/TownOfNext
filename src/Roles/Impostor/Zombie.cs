@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Impostor;
@@ -30,6 +31,13 @@ public sealed class Zombie : RoleBase, IImpostor
         ZombieSpeedReduce
     }
 
+    private float TotalSpeedReduced;
+    public bool KilledAfterSpeedThreshold { get; private set; }
+    public override void Add()
+    {
+        TotalSpeedReduced = 0f;
+        KilledAfterSpeedThreshold = false;
+    }
     private static void SetupOptionItem()
     {
         OptionKillCooldown = FloatOptionItem.Create(RoleInfo, 10, GeneralOption.KillCooldown, new(2.5f, 180f, 2.5f), 12f, false)
@@ -40,7 +48,14 @@ public sealed class Zombie : RoleBase, IImpostor
     public float CalculateKillCooldown()
     {
         Main.AllPlayerSpeed[Player.PlayerId] -= OptionSpeedReduce.GetFloat();
+        TotalSpeedReduced += OptionSpeedReduce.GetFloat();
         return OptionKillCooldown.GetFloat();
+    }
+    public void OnMurderPlayerAsKiller(MurderInfo info)
+    {
+        if (info.IsSuicide) return;
+        if (TotalSpeedReduced > 0f) ZombieSlowKill.Trigger(Player);
+        if (TotalSpeedReduced >= 0.3f) KilledAfterSpeedThreshold = true;
     }
     public override void ApplyGameOptions(IGameOptions opt) => opt.SetFloat(FloatOptionNames.ImpostorLightMod, 0.2f);
     public override (byte? votedForId, int? numVotes, bool doVote) ModifyVote(byte voterId, byte sourceVotedForId, bool isIntentional)

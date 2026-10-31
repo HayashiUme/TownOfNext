@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using TONX.Modules;
+using TONX.Modules.Achievements.Core;
 using TONX.Roles.AddOns.Crewmate;
 using TONX.Roles.AddOns.Impostor;
 using TONX.Roles.Core.Interfaces;
@@ -299,6 +300,9 @@ public static class Utils
         //seer側による変更
         seer.GetRoleClass()?.OverrideDisplayRoleNameAsSeer(seen, ref enabled, ref roleColor, ref roleText);
 
+        if (enabled && AmongUsClient.Instance.AmHost && seer.AmOwner
+            && seer.GetRoleClass() is God god && !string.IsNullOrWhiteSpace(roleText))
+            god.RecordRoleInformationProvided(seen);
         return enabled ? ColorString(roleColor, roleText) : "";
     }
     /// <summary>
@@ -749,7 +753,7 @@ public static class Utils
             SendMessage(GetString("CantUse.lastresult"), PlayerId);
             return;
         }
-            
+
         var sb = new StringBuilder();
         var winnerColor = ((CustomRoles)CustomWinnerHolder.WinnerTeam).GetRoleInfo()?.RoleColor ?? Palette.DisabledGrey;
 
@@ -774,6 +778,7 @@ public static class Utils
         }
         SendMessage(sb.ToString(), PlayerId);
     }
+
     public static void ShowKillLog(byte PlayerId = byte.MaxValue)
     {
         if (GameStates.IsInGame)
@@ -827,7 +832,7 @@ public static class Utils
         { 16, "茶|tan" },
         { 17, "珊瑚|coral" }
     };
-    public static readonly List<(int, string)> SeparatedColorNames = 
+    public static readonly List<(int, string)> SeparatedColorNames =
         ColorNames.SelectMany(kvp => kvp.Value.Split('|').Select(n => (kvp.Key, n.Trim().ToLower()))).ToList();
     public static List<(int, string)> GetSeparatedColorNames()
     {
@@ -903,6 +908,19 @@ public static class Utils
         SendMessage(txt, ID);
     }
     public static bool MustRemoveHtmlTags() => !GameStates.IsLocalGame && !GameStates.IsFreePlay && GameStates.IsVanillaServer && !Main.AllowHtmlTagMsgOnOfficialServer;
+
+    public static Color HexToColor(string hex)
+    {
+        _ = ColorUtility.TryParseHtmlString(hex, out var color);
+        return color;
+    }
+
+    public static string ColorToHex(Color color)
+    {
+        Color32 color32 = color;
+        return $"#{color32.r:X2}{color32.g:X2}{color32.b:X2}";
+    }
+
     public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "<Default>", bool removeTags = false, bool allowOverride = false, string dead = "")
     {
         if (!AmongUsClient.Instance.AmHost) return;
@@ -990,6 +1008,7 @@ public static class Utils
 
             var sender = CustomRpcSender.Create("NotifyRoles", SendOption.Reliable);
             sender.StartMessage(seer.GetClientId());
+            PlayerControl godInformationTarget = null;
 
             // 会議じゃなくて，キノコカオス中で，seerが生きていてdesyncインポスターの場合に自身の名前を消す
             if (!isForMeeting && isMushroomMixupActive && seer.IsAlive() && !seer.Is(CustomRoleTypes.Impostor) && seer.GetCustomRole().GetRoleInfo()?.IsDesyncImpostor == true)
@@ -1139,11 +1158,15 @@ public static class Utils
                     if (NoCache || Main.LastNotifyNames[(target.PlayerId, seer.PlayerId)] != TargetName)
                     {
                         sender.RpcSetName(target, TargetName, seer);
+                        if (seerRole is God && targetRoleData.enabled
+                            && !string.IsNullOrWhiteSpace(targetRoleData.text)) godInformationTarget = target;
                     }
                 }
                 logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":END");
             }
             sender.SendMessage(); // 统一发送以防止误触原版反作弊
+            if (seerRole is God informedGod && godInformationTarget != null)
+                informedGod.RecordRoleInformationProvided(godInformationTarget);
             logger.Info("NotifyRoles-Loop1-" + seer.GetNameWithRole() + ":END");
         }
     }
@@ -1245,7 +1268,7 @@ public static class Utils
 #elif Android
         FileInfo file = new(@$"/data/data/dev.allofus.starlight/files/BepInEx/LogOutput.log");
 #endif
-        
+
         file.CopyTo(@filename);
         if (PlayerControl.LocalPlayer != null)
         {

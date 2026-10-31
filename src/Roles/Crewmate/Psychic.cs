@@ -1,4 +1,6 @@
 using AmongUs.GameOptions;
+using TONX.Modules;
+using TONX.Modules.Achievements.Crewmate;
 
 namespace TONX.Roles.Crewmate;
 public sealed class Psychic : RoleBase
@@ -40,6 +42,9 @@ public sealed class Psychic : RoleBase
 
     private bool RedNameInited;
     private List<byte> RedNames;
+    public int CorrectRedNameExiles { get; private set; }
+    private HashSet<byte> CorrectRedNameExileTargets = new();
+    private byte[] RedNamesAtMeeting = Array.Empty<byte>();
     private static void SetupOptionItem()
     {
         OptionRedNameNum = IntegerOptionItem.Create(RoleInfo, 10, OptionName.PsychicCanSeeNum, new(1, 15, 1), 3, false)
@@ -52,8 +57,19 @@ public sealed class Psychic : RoleBase
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         if (OptionFreshEachMeeting.GetBool() || !RedNameInited) GetRedNames();
+        RedNamesAtMeeting = RedNames?.ToArray() ?? Array.Empty<byte>();
         NameColorManager.RemoveAll(Player.PlayerId);
         RedNames.Do(id => NameColorManager.Add(Player.PlayerId, id, "#ff1919"));
+    }
+    public override void OnVotingComplete(MeetingVoteManager.VoteResult voteResult)
+    {
+        if (voteResult.Exiled?.Object?.GetCustomRole().IsImpostor() == true
+            && RedNamesAtMeeting.Contains(voteResult.Exiled.PlayerId)
+            && MeetingVoteManager.Instance.AllVotes.TryGetValue(Player.PlayerId, out var ownVote)
+            && ownVote.VotedFor == voteResult.Exiled.PlayerId
+            && CorrectRedNameExileTargets.Add(voteResult.Exiled.PlayerId))
+            CorrectRedNameExiles++;
+        RedNamesAtMeeting = Array.Empty<byte>();
     }
     public override void AfterMeetingTasks()
     {
@@ -98,6 +114,8 @@ public sealed class Psychic : RoleBase
 
         Logger.Info($"需要{OptionRedNameNum.GetInt()}个红名，其中需要{ENum}个邪恶。计算后显示红名{RedNames.Count}个", "Psychic");
         RedNames.Do(x => Logger.Info($"红名：{x}: {Main.AllPlayerNames[x]}", "Psychic"));
+        if (RedNames.Any(id => Utils.GetPlayerById(id)?.Is(CustomRoleTypes.Impostor) == true))
+            PsychicRedName.Trigger(Player);
         RedNameInited = true;
     }
 }

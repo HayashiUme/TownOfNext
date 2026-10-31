@@ -20,6 +20,9 @@ internal class ChangeRoleSettings
             //注:この時点では役職は設定されていません。
             Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.GuardianAngel, 0, 0);
 
+            // 和天使同等待遇
+            Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.SpiritGuide, 0, 0);
+
             Main.OverrideWelcomeMsg = "";
             Main.AllPlayerKillCooldown = new();
             Main.AllPlayerSpeed = new();
@@ -113,14 +116,29 @@ internal class ChangeRoleSettings
     }
 }
 [HarmonyPatch(typeof(RoleManager), nameof(RoleManager.SelectRoles))]
-internal class SelectRolesPatch
+internal static class SelectRolesPatch
 {
+    public static HashSet<byte> StartingImpostorIds = new();
+    public static Dictionary<byte, string> StartingCrewmates = new();
+    public static HashSet<byte> DepartedStartingCrewmates = new();
+
+    public static void RecordCrewmateAlignment(byte playerId)
+    {
+        if (!StartingCrewmates.ContainsKey(playerId)) return;
+        var state = PlayerState.GetByPlayerId(playerId);
+        if (state == null || !state.MainRole.IsCrewmate() || state.CountType != CountTypes.Crew
+            || state.SubRoles.Contains(CustomRoles.Madmate) || state.SubRoles.Contains(CustomRoles.Charmed))
+            DepartedStartingCrewmates.Add(playerId);
+    }
+
     public static void Prefix()
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
         try
         {
+            StartingCrewmates.Clear();
+            DepartedStartingCrewmates.Clear();
             // 初始化CustomRpcSender和RpcSetRoleReplacer
             Dictionary<byte, CustomRpcSender> senders = new();
             foreach (var pc in Main.AllPlayerControls)
@@ -228,6 +246,16 @@ internal class SelectRolesPatch
             }
 
             Options.CurrentGameMode.GetModeClass()?.AfterAssignRoles();
+
+            StartingImpostorIds = PlayerState.AllPlayerStates
+                .Where(kv => kv.Value != null && kv.Value.MainRole.IsImpostor())
+                .Select(kv => kv.Key)
+                .ToHashSet();
+            StartingCrewmates = Main.AllPlayerControls
+                .Where(pc => pc.Data != null && !pc.Data.Disconnected && pc.GetCustomRole().IsCrewmate()
+                    && pc.GetCountTypes() == CountTypes.Crew
+                    && !pc.Is(CustomRoles.Madmate) && !pc.Is(CustomRoles.Charmed))
+                .ToDictionary(pc => pc.PlayerId, pc => pc.FriendCode);
 
             foreach (var pc in Main.AllPlayerControls)
             {

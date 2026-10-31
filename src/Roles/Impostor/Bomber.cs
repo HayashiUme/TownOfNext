@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using TONX.Modules;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -36,6 +37,8 @@ public sealed class Bomber : RoleBase, IImpostor
             .SetValueFormat(OptionFormat.Multiplier);
     }
     public bool CanKill { get; private set; } = false;
+    public int MaxBlastKills { get; private set; }
+    public override void Add() => MaxBlastKills = 0;
     public float CalculateKillCooldown() => 255f;
     public override bool GetAbilityButtonText(out string text)
     {
@@ -57,6 +60,7 @@ public sealed class Bomber : RoleBase, IImpostor
 
         Logger.Info("炸弹爆炸了", "Boom");
         CustomSoundsManager.RPCPlayCustomSoundAll("Boom");
+        int blastKills = 0;
         foreach (var tg in Main.AllPlayerControls)
         {
             if (!tg.IsModClient()) tg.KillFlash();
@@ -71,7 +75,10 @@ public sealed class Bomber : RoleBase, IImpostor
             state.DeathReason = CustomDeathReason.Bombed;
             tg.SetRealKiller(Player);
             tg.RpcMurderPlayerV2(tg);
+            blastKills++;
         }
+        if (blastKills > MaxBlastKills) MaxBlastKills = blastKills;
+        if (blastKills > 0) BomberExplosionKill.Trigger(Player);
         new LateTask(() =>
         {
             //自分が最後の生き残りの場合は勝利のために死なない

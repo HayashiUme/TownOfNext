@@ -1,4 +1,6 @@
 using AmongUs.GameOptions;
+using TONX.Modules;
+using TONX.Modules.Achievements.Crewmate;
 using UnityEngine;
 
 namespace TONX.Roles.Crewmate;
@@ -64,6 +66,8 @@ public class Snitch : RoleBase
 
     private bool IsExposed = false;
     private bool IsComplete = false;
+    public bool CompletedTaskImpostorExile { get; private set; }
+    private byte CompletedTaskVoteTarget = byte.MaxValue;
 
     //複数Snitchで共有するためstatic
     private static HashSet<byte> TargetList = new();
@@ -195,6 +199,7 @@ public class Snitch : RoleBase
         if (!IsComplete && IsTaskFinished)
         {
             IsComplete = true;
+            CompletedTaskVoteTarget = byte.MaxValue;
             foreach (var targetId in TargetList)
             {
                 NameColorManager.Add(Player.PlayerId, targetId);
@@ -202,10 +207,23 @@ public class Snitch : RoleBase
                 if (EnableTargetArrow)
                     TargetArrow.Add(Player.PlayerId, targetId);
             }
+            if (TargetList.Any(id => Utils.GetPlayerById(id)?.Is(CustomRoleTypes.Impostor) == true))
+            {
+                CompletedTaskVoteTarget = TargetList.FirstOrDefault(id => Utils.GetPlayerById(id)?.Is(CustomRoleTypes.Impostor) == true);
+                SnitchFullTaskReveal.Trigger(Player);
+            }
             update = true;
         }
         if (update) Utils.NotifyRoles();
         cancel = false;
         return false;
+    }
+    public override void OnVotingComplete(MeetingVoteManager.VoteResult voteResult)
+    {
+        if (CompletedTaskVoteTarget != byte.MaxValue && voteResult.Exiled?.PlayerId == CompletedTaskVoteTarget
+            && MeetingVoteManager.Instance.AllVotes.TryGetValue(Player.PlayerId, out var ownVote)
+            && ownVote.VotedFor == CompletedTaskVoteTarget)
+            CompletedTaskImpostorExile = true;
+        CompletedTaskVoteTarget = byte.MaxValue;
     }
 }

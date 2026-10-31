@@ -1,5 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
+using TONX.Modules;
+using TONX.Modules.Achievements.Neutral;
 
 namespace TONX.Roles.Neutral;
 
@@ -28,6 +30,8 @@ public sealed class Collector : RoleBase
     }
     private int CollectVote;
     private PlayerControl CollectorVoteFor;
+    public bool VoteWinTriggered { get; private set; }
+    public bool BaseWinTriggered { get; private set; }
     private void SendRPC()
     {
         using var sender = CreateSender();
@@ -64,16 +68,16 @@ public sealed class Collector : RoleBase
         return true;
     }
 
-    public override (byte? votedForId, int? numVotes, bool doVote) ModifyVote(byte voterId, byte sourceVotedForId, bool isIntentional)
+    public override void OnVotingComplete(MeetingVoteManager.VoteResult voteResult)
     {
-        var (votedForId, numVotes, doVote) = base.ModifyVote(voterId, sourceVotedForId, isIntentional);
-        if (CollectorVoteFor == null) return (votedForId, numVotes, doVote);
-        if (votedForId == CollectorVoteFor.PlayerId)
-        {
-            CollectVote += (int)numVotes;
-            SendRPC();
-        }
-        return (votedForId, numVotes, doVote);
+        if (!AmongUsClient.Instance.AmHost || !Player.IsAlive() || CollectorVoteFor == null
+            || MeetingVoteManager.Instance?.AllVotes.TryGetValue(Player.PlayerId, out var vote) != true
+            || vote.NumVotes <= 0 || vote.VotedFor != CollectorVoteFor.PlayerId
+            || !voteResult.VotedCounts.TryGetValue(CollectorVoteFor.PlayerId, out var collected)
+            || collected <= 0) return;
+        CollectVote += collected;
+        CollectorVoteCollected.Trigger(Player);
+        SendRPC();
     }
     public override void AfterMeetingTasks()
     {
@@ -82,7 +86,9 @@ public sealed class Collector : RoleBase
     public override void OnFixedUpdate(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost || CollectVote < CollectorCollectAmount.GetInt()) return;
+        BaseWinTriggered |= CustomWinnerHolder.WinnerTeam == CustomWinner.Default;
         CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Collector);
         CustomWinnerHolder.WinnerIds.Add(Player.PlayerId);
+        VoteWinTriggered = true;
     }
 }

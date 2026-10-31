@@ -2,6 +2,7 @@
 using Hazel;
 using System.Text;
 using TONX.Modules;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -58,6 +59,14 @@ public sealed class Messenger : RoleBase, IImpostor, IKillFlashSeeable
     private static HashSet<Messenger> instances = new(1);
 
     private HashSet<MurderNotify> activeNotifies = new(2);
+    private HashSet<SystemTypes> intelRooms = new(2);
+    public bool KilledInIntelRoom { get; private set; }
+
+    public override void Add()
+    {
+        intelRooms.Clear();
+        KilledInIntelRoom = false;
+    }
 
     private static void SetupOptionItems()
     {
@@ -86,6 +95,8 @@ public sealed class Messenger : RoleBase, IImpostor, IKillFlashSeeable
         }
         var admins = AdminProvider.CalculateAdmin();
         var builder = new StringBuilder(512);
+        var hasDeadMark = false;
+        intelRooms.Clear();
 
         // 送信するメッセージを生成
         foreach (var admin in admins)
@@ -109,9 +120,13 @@ public sealed class Messenger : RoleBase, IImpostor, IKillFlashSeeable
             {
                 builder.Append('(').Append(GetString("Deadbody"));
                 builder.Append('×').Append(entry.NumDeadBodies).Append(')');
+                hasDeadMark = true;
+                intelRooms.Add(entry.Room);
             }
             builder.Append('\n');
         }
+
+        if (hasDeadMark) MessengerIntel.Trigger(Player);
 
         // 送信
         var message = builder.ToString();
@@ -125,6 +140,13 @@ public sealed class Messenger : RoleBase, IImpostor, IKillFlashSeeable
             }
         }, 4f, "Messenger Admin Message");
         return;
+    }
+    public void BeforeMurderPlayerAsKiller(MurderInfo info)
+    {
+        if (intelRooms.Count <= 0) return;
+        var (killer, target) = info.AttemptTuple;
+        var room = target.GetPlainShipRoom()?.RoomId ?? SystemTypes.Hallway;
+        if (intelRooms.Contains(room)) KilledInIntelRoom = true;
     }
     private void OnMurderPlayer(MurderInfo info)
     {

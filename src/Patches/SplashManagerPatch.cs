@@ -45,7 +45,7 @@ public class SplashManagerPatch
         };
         logoObj.transform.localPosition+=Vector3.back*10;
         var logoRenderer = logoObj.AddComponent<SpriteRenderer>();
-        logoRenderer.sprite = Utils.LoadSprite("TONX.Resources.Images.TONX-Logo.png", 100f);
+        logoRenderer.sprite = Utils.LoadSprite(Main.LogoResource, Main.IsAprilFools ? 150f : 100f);
 
         if (logoRenderer == null) yield break;
         var animControllerObj = new GameObject("TONX_LogoAnimationController_Instance");
@@ -64,10 +64,11 @@ public class SplashManagerPatch
         versionTextObj.transform.localPosition+=Vector3.back*10;
         
         var versionTMP = versionTextObj.AddComponent<TextMeshPro>();
-        versionTMP.text = $"Town Of Next - v{Main.PluginVersion}";
+        versionTMP.text = $"{Main.ModFullName} - v{Main.DisplayVersion}";
         versionTMP.alignment = TextAlignmentOptions.Right;
         versionTMP.color = ((Color)Main.ModColor32).SetAlpha(0.7f).ShadeColor(0.9f);
         versionTMP.fontSize = 2;
+        versionTMP.enableWordWrapping = false; // 防止愚人节长文本在窄框内折行
         versionTextObj.GetComponent<RectTransform>().sizeDelta = new Vector2(2, 2);
         var versionAP = versionTextObj.AddComponent<AspectPosition>();
         versionAP.Alignment = AspectPosition.EdgeAlignments.RightBottom;

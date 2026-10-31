@@ -1,4 +1,6 @@
 ﻿using AmongUs.GameOptions;
+using TONX.Modules;
+using TONX.Modules.Achievements.Crewmate;
 
 namespace TONX.Roles.Crewmate;
 public sealed class Paranoia : RoleBase
@@ -32,6 +34,8 @@ public sealed class Paranoia : RoleBase
 
     private int SkillLimit;
     private int oldSkillLimit;
+    public bool FakeReportImpostorExile { get; private set; }
+    private bool FakeReportMeetingPending;
     private static void SetupOptionItem()
     {
         OptionSkillNums = IntegerOptionItem.Create(RoleInfo, 10, OptionName.ParanoiaNumOfUseButton, new(1, 99, 1), 3, false)
@@ -68,6 +72,11 @@ public sealed class Paranoia : RoleBase
             {
                 user?.NoCheckStartMeeting(user?.Data);
                 SkillLimit--;
+                if (GameStates.IsMeeting)
+                {
+                    FakeReportMeetingPending = true;
+                    ParanoiaFakeReport.Trigger(Player);
+                }
             }, 0.1f, "ParanoiaPortableButton");
 
             //ポータブルボタン時はベントから追い出す必要はない
@@ -75,6 +84,14 @@ public sealed class Paranoia : RoleBase
         }
         Player.Notify(GetString("SkillMaxUsage"));
         return false;
+    }
+    public override void OnVotingComplete(MeetingVoteManager.VoteResult voteResult)
+    {
+        if (FakeReportMeetingPending && voteResult.Exiled?.Object?.GetCustomRole().IsImpostor() == true
+            && MeetingVoteManager.Instance.AllVotes.TryGetValue(Player.PlayerId, out var ownVote)
+            && ownVote.VotedFor == voteResult.Exiled.PlayerId)
+            FakeReportImpostorExile = true;
+        FakeReportMeetingPending = false;
     }
     public override void NotifyOnMeetingStart(ref List<(string, byte, string)> msgToSend)
     {

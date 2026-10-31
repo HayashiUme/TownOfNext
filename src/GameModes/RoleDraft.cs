@@ -12,7 +12,8 @@ public sealed class RoleDraft : GameModeBase
             CustomGameMode.RoleDraft,
             30_000_000,
             SetupCustomOption,
-            "#ffffff"
+            "#ffffff",
+            roleshelp: (true, true)
         );
     public RoleDraft() : base(ModeInfo)
     { }

@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using TONX.Modules;
+using TONX.Modules.Achievements.Crewmate;
 
 namespace TONX.Roles.Crewmate;
 public sealed class DoveOfPeace : RoleBase
@@ -32,6 +33,7 @@ public sealed class DoveOfPeace : RoleBase
     }
 
     private int SkillLimit;
+    public int MaxSingleUseResets { get; private set; }
     private static void SetupOptionItem()
     {
         OptionSkillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.DoveOfPeaceCooldown, new(2.5f, 180f, 2.5f), 30f, false)
@@ -59,17 +61,23 @@ public sealed class DoveOfPeace : RoleBase
         {
             SkillLimit--;
             Player.RpcProtectedMurderPlayer();
-            Main.AllAlivePlayerControls.Where(x =>
+            var resetPlayers = Main.AllAlivePlayerControls.Where(x =>
             Player.Is(CustomRoles.Madmate) ?
             (x.CanUseKillButton() && x.GetCustomRole().IsCrewmate()) :
             (x.CanUseKillButton())
-            ).Do(x =>
+            ).ToList();
+            resetPlayers.Do(x =>
             {
                 x.RPCPlayCustomSound("Dove");
                 x.ResetKillCooldown();
                 x.SetKillCooldownV2();
                 x.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DoveOfPeace), GetString("DoveOfPeaceSkillNotify")));
             });
+            if (resetPlayers.Count > 0)
+            {
+                DoveSongCooldownReset.Trigger(Player);
+                if (resetPlayers.Count > MaxSingleUseResets) MaxSingleUseResets = resetPlayers.Count;
+            }
             Player.RPCPlayCustomSound("Dove");
             Player.Notify(string.Format(GetString("DoveOfPeaceOnGuard"), SkillLimit));
         }

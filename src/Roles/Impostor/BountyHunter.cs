@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -51,6 +52,9 @@ public sealed class BountyHunter : RoleBase, IImpostor
     public bool CanBeLastImpostor { get; } = false;
     public PlayerControl Target;
     public float ChangeTimer;
+    private MurderInfo bountyKill;
+    private readonly HashSet<(byte, string)> bountyVictims = new();
+    public int SuccessfulBounties => bountyVictims.Count;
 
     private static void SetupOptionItem()
     {
@@ -67,6 +71,7 @@ public sealed class BountyHunter : RoleBase, IImpostor
         if (AmongUsClient.Instance.AmHost)
             ResetTarget();
     }
+
     private void SendRPC(byte targetId)
     {
         using var sender = CreateSender();
@@ -92,6 +97,8 @@ public sealed class BountyHunter : RoleBase, IImpostor
 
             if (GetTarget() == target)
             {//ターゲットをキルした場合
+                if (ChangeTimer < TargetChangeTime)
+                    bountyKill = info;
                 Logger.Info($"{killer?.Data?.PlayerName}:ターゲットをキル", "BountyHunter");
                 Main.AllPlayerKillCooldown[killer.PlayerId] = SuccessKillCooldown;
                 killer.SyncSettings();//キルクール処理を同期
@@ -106,40 +113,38 @@ public sealed class BountyHunter : RoleBase, IImpostor
         }
         return;
     }
+    public void OnMurderPlayerAsKiller(MurderInfo info)
+    {
+        if (info == bountyKill && !info.IsSuicide && info.AttemptTarget.Data.IsDead
+            && !info.AttemptTarget.Data.Disconnected
+            && bountyVictims.Add((info.AttemptTarget.PlayerId, info.AttemptTarget.FriendCode)))
+            BountyCompleted.Trigger(Player);
+        bountyKill = null;
+    }
+
     public override void OnFixedUpdate(PlayerControl player)
     {
         if (AmongUsClient.Instance.AmHost)
         {
             if (Player.IsAlive())
             {
-                var target = GetTarget();
-                if (target == null) return;
-                var targetId = target.PlayerId;
-                if (ChangeTimer >= TargetChangeTime)//時間経過でターゲットをリセットする処理
-                {
-                    ResetTarget();//ターゲットの選びなおし
-                    Utils.NotifyRoles(SpecifySeer: Player);
-                }
                 if (ChangeTimer >= 0)
                     ChangeTimer += Time.fixedDeltaTime;
 
-                //BountyHunterのターゲット更新
-                if (PlayerState.GetByPlayerId(targetId).IsDead)
-                {
-                    ResetTarget();
+                var target = Target;
+                var targetIsDead = target != null && PlayerState.GetByPlayerId(target.PlayerId).IsDead;
+                
+                if (!targetIsDead && ChangeTimer < TargetChangeTime) return;
+
+                if (targetIsDead)
                     Logger.Info($"{Player.GetNameWithRole()}のターゲットが無効だったため、ターゲットを更新しました", "BountyHunter");
-                    Utils.NotifyRoles(SpecifySeer: Player);
-                }
+
+                ResetTarget();//ターゲットの選びなおし
+                Utils.NotifyRoles(SpecifySeer: Player);
             }
         }
     }
-    public PlayerControl GetTarget()
-    {
-        if (Target == null)
-            Target = ResetTarget();
-
-        return Target;
-    }
+    public PlayerControl GetTarget() => Target;
     public PlayerControl ResetTarget()
     {
         if (!AmongUsClient.Instance.AmHost) return null;
@@ -151,10 +156,13 @@ public sealed class BountyHunter : RoleBase, IImpostor
         Logger.Info($"{Player.GetNameWithRole()}:ターゲットリセット", "BountyHunter");
         Player.RpcResetAbilityCooldown(); ;//タイマー（変身クールダウン）のリセットと
 
+        var previousTarget = Target;
+        Target = null;
+
         var cTargets = new List<PlayerControl>(Main.AllAlivePlayerControls.Where(pc => !pc.Is(CountTypes.Impostor)));
 
         if (cTargets.Count >= 2)
-            cTargets.RemoveAll(x => x == Target); //前回のターゲットは除外
+            cTargets.RemoveAll(x => x == previousTarget); //前回のターゲットは除外
 
         if (cTargets.Count <= 0)
         {

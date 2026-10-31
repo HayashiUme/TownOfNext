@@ -151,6 +151,11 @@ class RpcSetTasksPatch
         }
 
     }
+    public static void Postfix(NetworkedPlayerInfo __instance, [HarmonyArgument(0)] Il2CppStructArray<byte> taskTypeIds)
+    {
+        if (AmongUsClient.Instance.AmHost && __instance.Object?.GetRoleClass() is TONX.Roles.Neutral.Workaholic workaholic)
+            workaholic.RecordTaskBatch(taskTypeIds.Length, Math.Max(0, workaholic.MyTaskState.CompletedTasksCount));
+    }
     public static void Shuffle<T>(Il2CppSystem.Collections.Generic.List<T> list)
     {
         for (int i = 0; i < list.Count - 1; i++)

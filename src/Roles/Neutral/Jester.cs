@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using TONX.Modules;
 
 namespace TONX.Roles.Neutral;
 public sealed class Jester : RoleBase
@@ -22,6 +23,9 @@ public sealed class Jester : RoleBase
     )
     { }
     static OptionItem OptionCanUseButton;
+    public bool ExileWinTriggered { get; private set; }
+    public bool WonInFirstMeeting { get; private set; }
+    public bool BaseWinTriggered { get; private set; }
     enum OptionName
     {
         JesterCanUseButton
@@ -36,10 +40,15 @@ public sealed class Jester : RoleBase
 
         DecidedWinner = true;
         WinDescriptionText.Add(GetString("ExiledJester"));
+        // MeetingHud.OnDestroy may clear FirstMeeting before the wrap-up action runs.
+        var wasFirstMeeting = MeetingStates.FirstMeeting;
         return () =>
         {
+            BaseWinTriggered = CustomWinnerHolder.WinnerTeam == CustomWinner.Default;
             CustomWinnerHolder.SetWinnerOrAdditonalWinner(CustomWinner.Jester);
             CustomWinnerHolder.WinnerIds.Add(Player.PlayerId);
+            ExileWinTriggered = true;
+            WonInFirstMeeting = wasFirstMeeting;
         };
     }
     public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)

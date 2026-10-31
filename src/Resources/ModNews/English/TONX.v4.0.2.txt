@@ -1,0 +1,43 @@
+#Number:100054
+#Title:TownOfNext v4.0.2
+#SubTitle:★★★★TO The Next★★★★
+#ShortTitle:★TONX v4.0.2
+#Date:2026-10-25T00:00:00Z
+#-----------------------------
+
+## Base
+- Base on AmongUs v19.0
+- Base on TOH v5.1.14
+
+## Warning
+- Innersloth was currently enhancing the server anticheat.
+- As a result, we no longer recommend playing TONX on the vanilla regions! The developers will not be spending time adapting the game for the vanilla regions.
+- Please play on Modded, AOU, and other regions that allow +25 Mode.
+
+## What You Need to Know
+- We have refactored the code related to game modes.
+- Upcoming versions of TONX may contain numerous bugs. Please report any bugs you encounter promptly and include logs if possible.
+
+## Fix
+- Fixed an issue where rooms could not be created in Free Mode or Local Mode in AMCI mode (though this issue could not actually be reproduced)
+- Fixed an issue where the room creation page occasionally displayed null references due to performance issues
+- Modified the logic for special game modes; class descriptions are now visible
+- Fixed a crash on Android when not logged in
+
+## Changing
+- AMCI has been set to “On” by default
+- Added U.S. and European private servers for EHR
+- Removed Niko's Chinese and European private servers
+- Designated Colorblind as an experimental role
+- Enhanced theme effects in dark mode
+
+## New Feature
+- Added an achievement system
+- Added an April Fools' Day retro mode
+- Type the /kc command to view the current number of remaining evil players
+- Mode: Hot Potato
+- Mode: Doom Tag
+
+## New Role
+- Neutral: Lawyer
+- Neutral: Prosecutor

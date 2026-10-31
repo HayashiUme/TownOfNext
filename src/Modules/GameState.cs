@@ -57,6 +57,7 @@ public class PlayerState
                 RoleTypes.Tracker => CustomRoles.Tracker,
                 RoleTypes.Detective => CustomRoles.Detective,
                 RoleTypes.Judge => CustomRoles.Judge,
+                RoleTypes.SpiritGuide => CustomRoles.SpiritGuide,
                 RoleTypes.Impostor => CustomRoles.Impostor,
                 RoleTypes.Shapeshifter => CustomRoles.Shapeshifter,
                 RoleTypes.Phantom => CustomRoles.Phantom,
@@ -75,6 +76,7 @@ public class PlayerState
                 CustomRoles.GM => CountTypes.OutOfGame,
                 _ => role.IsImpostor() ? CountTypes.Impostor : CountTypes.Crew,
             };
+        SelectRolesPatch.RecordCrewmateAlignment(PlayerId);
     }
     public void SetSubRole(CustomRoles role, bool AllReplace = false, bool recordRole = true)
     {
@@ -107,6 +109,7 @@ public class PlayerState
             SubRoles.Remove(CustomRoles.Madmate);
         }
 
+        SelectRolesPatch.RecordCrewmateAlignment(PlayerId);
         if (recordRole && AmongUsClient.Instance.AmHost) Utils.RecordPlayerRoles(PlayerId);
     }
     public void RemoveSubRole(CustomRoles role, bool recordRole = true)
@@ -144,7 +147,11 @@ public class PlayerState
                 count++;
         return count;
     }
-    public void SetCountType(CountTypes countType) => CountType = countType;
+    public void SetCountType(CountTypes countType)
+    {
+        CountType = countType;
+        SelectRolesPatch.RecordCrewmateAlignment(PlayerId);
+    }
 
     private static Dictionary<byte, PlayerState> allPlayerStates = new(15);
     public static IReadOnlyDictionary<byte, PlayerState> AllPlayerStates => allPlayerStates;
@@ -188,6 +195,8 @@ public class TaskState
         AllTasksCount = Utils.HasTasks(player.Data, false) ? player.Data.Tasks.Count : 0;
         CompletedTasksCount = 0;
         RPC.SyncTaskState(player.PlayerId, AllTasksCount, CompletedTasksCount, hasTasks);
+        if (AmongUsClient.Instance.AmHost && player.GetRoleClass() is TONX.Roles.Neutral.Workaholic workaholic)
+            workaholic.RecordTaskBatch(AllTasksCount, 0);
         Logger.Info($"{player.GetNameWithRole()}: TaskCounts = {CompletedTasksCount}/{AllTasksCount}", "TaskState.Init");
     }
     public void Update(PlayerControl player)

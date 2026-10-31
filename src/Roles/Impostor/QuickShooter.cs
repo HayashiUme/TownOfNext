@@ -1,5 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using TONX.Modules.Achievements.Core;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -36,6 +38,10 @@ public sealed class QuickShooter : RoleBase, IImpostor
 
     private int ShotLimit;
     private bool Storaging;
+    public int RoundKills { get; private set; }
+    public int MaxRoundKills { get; private set; }
+    public int ConsecutiveStoredBulletKills { get; private set; }
+    public int MaxConsecutiveStoredBulletKills { get; private set; }
     private static void SetupOptionItem()
     {
         OptionKillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.KillCooldown, new(2.5f, 180f, 2.5f), 35f, false)
@@ -48,6 +54,10 @@ public sealed class QuickShooter : RoleBase, IImpostor
     public override void Add()
     {
         ShotLimit = 0;
+        RoundKills = 0;
+        MaxRoundKills = 0;
+        ConsecutiveStoredBulletKills = 0;
+        MaxConsecutiveStoredBulletKills = 0;
     }
     private void SendRPC()
     {
@@ -79,6 +89,7 @@ public sealed class QuickShooter : RoleBase, IImpostor
         if (Player.killTimer < 1 && shapeshifting)
         {
             ShotLimit++;
+            BulletStored.Trigger(Player);
             SendRPC();
             Storaging = true;
             Player.ResetKillCooldown();
@@ -95,12 +106,26 @@ public sealed class QuickShooter : RoleBase, IImpostor
     }
     public override void OnStartMeeting()
     {
+        RoundKills = 0;
+        ConsecutiveStoredBulletKills = 0;
         int before = ShotLimit;
         ShotLimit = Mathf.Clamp(ShotLimit, 0, OptionMeetingReserved.GetInt());
         if (ShotLimit != before) SendRPC();
     }
     public void BeforeMurderPlayerAsKiller(MurderInfo info)
     {
+        if (!info.IsSuicide)
+        {
+            RoundKills++;
+            if (RoundKills > MaxRoundKills) MaxRoundKills = RoundKills;
+            if (ShotLimit > 0)
+            {
+                ConsecutiveStoredBulletKills++;
+                if (ConsecutiveStoredBulletKills > MaxConsecutiveStoredBulletKills)
+                    MaxConsecutiveStoredBulletKills = ConsecutiveStoredBulletKills;
+            }
+            else ConsecutiveStoredBulletKills = 0;
+        }
         int before = ShotLimit;
         ShotLimit--;
         ShotLimit = Mathf.Max(ShotLimit, 0);

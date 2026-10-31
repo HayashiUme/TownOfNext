@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using Hazel;
 using UnityEngine;
 using TONX.Modules;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Impostor;
@@ -39,6 +40,8 @@ public sealed class EvilGrenadier : RoleBase, IImpostor
     
     private long BlindingStartTime;
     private List<byte> Blinds;
+    public int MaxBlindsInFlash { get; private set; }
+    public bool KilledDuringBlind { get; private set; }
     private static void SetupOptionItem()
     {
         OptionSkillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.EvilGrenadierSkillCooldown, new(2.5f, 180f, 2.5f), 20f, false)
@@ -54,6 +57,8 @@ public sealed class EvilGrenadier : RoleBase, IImpostor
         OptionSkillDuration.GetFloat();
         BlindingStartTime = 0;
         Blinds = new();
+        MaxBlindsInFlash = 0;
+        KilledDuringBlind = false;
     }
     public override void ApplyGameOptions(IGameOptions opt)
     {
@@ -82,6 +87,10 @@ public sealed class EvilGrenadier : RoleBase, IImpostor
         text = GetString("GrenadierVetnButtonText");
         return true;
     }
+    public void BeforeMurderPlayerAsKiller(MurderInfo info)
+    {
+        if (BlindingStartTime != 0 && Blinds.Count >= 3) KilledDuringBlind = true;
+    }
     public override bool OnCheckVanish()
     {
         if (BlindingStartTime != 0) return false;
@@ -92,6 +101,8 @@ public sealed class EvilGrenadier : RoleBase, IImpostor
         }
         SendRPC();
         Player.RPCPlayCustomSound("FlashBang");
+        MaxBlindsInFlash = Math.Max(MaxBlindsInFlash, Blinds.Count);
+        if (Blinds.Count > 0) EvilGrenadierFlash.Trigger(Player);
         if (!Player.IsModClient()) Player.RpcProtectedMurderPlayer();
         foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.IsImpTeam()))
             pc.Notify(GetString("GrenadierSkillInUse"), OptionSkillDuration.GetFloat());
