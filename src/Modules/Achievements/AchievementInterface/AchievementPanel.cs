@@ -22,6 +22,8 @@ public static class AchievementPanel
     private static TextMeshPro SearchHint;
 
     private static ListFilter CurrentFilter = ListFilter.All;
+    private static AchievementCategory? CategoryFilter;
+    private static AchievementRarity? RarityFilter;
     private static string SearchText = "";
 
     private static float HalfWidth = 4.6f;
@@ -32,6 +34,7 @@ public static class AchievementPanel
 
     private static readonly List<GameObject> Items = new();
     private static readonly List<ToggleButtonBehaviour> FilterButtons = new();
+    private static readonly List<GameObject> FilterLabels = new();
     private static readonly Color UnlockedColor = new(0.33f, 0.78f, 0.35f, 1f);
     private static readonly SemaphoreSlim WearGate = new(1, 1);
     private static int refreshVersion;
@@ -212,23 +215,69 @@ public static class AchievementPanel
         var old = FilterButtons.ToList();
         FilterButtons.Clear();
         old.Do(x => { if (x != null) Object.Destroy(x.gameObject); });
+        FilterLabels.Do(x => { if (x != null) Object.Destroy(x); });
+        FilterLabels.Clear();
 
-        var filters = new List<ListFilter> { ListFilter.Locked, ListFilter.Unlocked, ListFilter.All };
-        var width = (columnRight - columnLeft) * 0.5f;
+        var columnWidth = columnRight - columnLeft;
+        const int columns = 3;
+        var cellWidth = columnWidth / columns;
+        var buttonWidth = cellWidth * 0.94f;
+        var rowHeight = 0.42f * Unit;
+        var startY = halfHeight - 1.05f * Unit;
 
-        for (int i = 0; i < filters.Count; i++)
+        void Rebuild() => BuildFilterButtons(template, columnLeft, columnRight, halfHeight);
+
+        void Option(int row, int column, string text, bool selected, Action onClick)
         {
-            var filter = filters[i];
-            var y = halfHeight - 1.3f * Unit - 0.62f * Unit * i;
-            var button = MakeButton("Achievement Filter " + filter, GetFilterText(filter), new Vector3(columnRight - width / 2f, y, -5f), width,
-                filter == CurrentFilter ? Main.ModColor32 : Palette.DisabledGrey, template);
+            var button = MakeButton($"Achievement Filter {row}-{column}", text,
+                new Vector3(columnLeft + cellWidth * (column + 0.5f), startY - rowHeight * row, -5f),
+                buttonWidth, selected ? Main.ModColor32 : Palette.DisabledGrey, template);
+            button.Text.enableAutoSizing = true;
+            button.Text.fontSizeMax = button.Text.fontSize;
+            button.Text.fontSizeMin = 0.2f;
             button.GetComponent<PassiveButton>().OnClick.AddListener(new Action(() =>
             {
-                CurrentFilter = filter;
-                BuildFilterButtons(template, columnLeft, columnRight, halfHeight);
+                onClick();
+                Rebuild();
                 RefreshList();
             }));
             FilterButtons.Add(button);
+        }
+
+        void GroupLabel(int row, string text)
+        {
+            var label = MakeText(Menu.transform, $"Achievement Filter Label {row}", text,
+                new Vector3(columnLeft + cellWidth * 0.5f, startY - rowHeight * row, -5f),
+                0.9f * Unit, TextAlignmentOptions.Center, cellWidth, new Color(1f, 1f, 1f, 0.75f));
+            FilterLabels.Add(label.gameObject);
+        }
+
+        Option(0, 0, GetFilterText(ListFilter.Locked), CurrentFilter == ListFilter.Locked, () => CurrentFilter = ListFilter.Locked);
+        Option(0, 1, GetFilterText(ListFilter.Unlocked), CurrentFilter == ListFilter.Unlocked, () => CurrentFilter = ListFilter.Unlocked);
+        Option(0, 2, GetFilterText(ListFilter.All), CurrentFilter == ListFilter.All, () => CurrentFilter = ListFilter.All);
+
+        GroupLabel(1, GetString("Achievement.Filter.Category"));
+        var categoryValues = new AchievementCategory?[]
+            { null, AchievementCategory.General, AchievementCategory.Impostor, AchievementCategory.Crewmate, AchievementCategory.Neutral, AchievementCategory.AddOn };
+        var categoryCells = new (int row, int column)[] { (1, 1), (1, 2), (2, 0), (2, 1), (2, 2), (3, 0) };
+        for (int i = 0; i < categoryValues.Length; i++)
+        {
+            var value = categoryValues[i];
+            Option(categoryCells[i].row, categoryCells[i].column,
+                value == null ? GetString("Achievement.Filter.All") : GetCategoryText(value.Value),
+                CategoryFilter == value, () => CategoryFilter = value);
+        }
+
+        GroupLabel(4, GetString("Achievement.Filter.Rarity"));
+        var rarityValues = new AchievementRarity?[]
+            { null, AchievementRarity.Common, AchievementRarity.Rare, AchievementRarity.Epic, AchievementRarity.Legendary };
+        var rarityCells = new (int row, int column)[] { (4, 1), (4, 2), (5, 0), (5, 1), (5, 2) };
+        for (int i = 0; i < rarityValues.Length; i++)
+        {
+            var value = rarityValues[i];
+            Option(rarityCells[i].row, rarityCells[i].column,
+                value == null ? GetString("Achievement.Filter.All") : value.Value.GetDisplayName(),
+                RarityFilter == value, () => RarityFilter = value);
         }
     }
 
@@ -377,6 +426,8 @@ public static class AchievementPanel
             _ => true
         };
         if (!passFilter) return false;
+        if (CategoryFilter.HasValue && achievement.Category != CategoryFilter.Value) return false;
+        if (RarityFilter.HasValue && achievement.Rarity != RarityFilter.Value) return false;
         if (string.IsNullOrEmpty(SearchText)) return true;
         if (!unlocked && achievement.Hidden)
             return GetString("Achievement.HiddenName").Contains(SearchText, StringComparison.OrdinalIgnoreCase);
@@ -389,6 +440,15 @@ public static class AchievementPanel
         ListFilter.Unlocked => GetString("Achievement.UnlockedMark"),
         _ => GetString("Achievement.Filter.All")
     };
+
+    private static string GetCategoryText(AchievementCategory category) => GetString(category switch
+    {
+        AchievementCategory.Impostor => "Achievement.Category.Impostor",
+        AchievementCategory.Crewmate => "Achievement.Category.Crewmate",
+        AchievementCategory.Neutral => "Achievement.Category.Neutral",
+        AchievementCategory.AddOn => "Achievement.Category.AddOn",
+        _ => "Achievement.Category.General",
+    });
 
     private static string StateText(AchievementBase achievement, int equippedId, CustomAchievementData data)
     {
