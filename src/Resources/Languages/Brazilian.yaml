@@ -1751,7 +1751,7 @@ Achievement.LoadingFromServer.ServerBomb: "Não foi possível conectar ao servid
 Achievement.LoadingFromServer.Empty: "Você ainda não desbloqueou nenhuma conquista!\nComplete objetivos específicos e as conquistas serão desbloqueadas automaticamente"
 Achievement.Command.UnWear: "Título de conquista removido."
 Achievement.Command.Wear: "Título equipado <color={0}>【{1}】</color>\nEste título será exibido antes do seu nome no lobby."
-Achievement.Command.Fail: "Conquista com ID {0} não encontrada. Use /tlid para verificar sua lista de conquistas"
+Achievement.Command.Fail: "Conquista com ID {0} não encontrada. Use /achid para verificar sua lista de conquistas"
 Achievement.Command.NoBelong: "Você ainda não desbloqueou a conquista {0}, por isso não pode usar este título."
 Achievement.Command.Local: "Por motivos técnicos, não recomendamos usar o sistema de conquistas em salas locais. Se você tentar forçar um título de conquista modificando o código ou métodos semelhantes, suas conquistas poderão ser todas zeradas."
 Achievement.Info.AllCount: "Você possui {0} conquistas no total"

@@ -1748,7 +1748,7 @@ Achievement.LoadingFromServer.ServerBomb: "Cannot connect to the achievement ser
 Achievement.LoadingFromServer.Empty: "You have not unlocked any achievements yet!\nComplete specific goals and achievements will unlock automatically"
 Achievement.Command.UnWear: "Achievement title removed."
 Achievement.Command.Wear: "Title equipped <color={0}>【{1}】</color>\nThis title will be shown before your name in the lobby."
-Achievement.Command.Fail: "Achievement with ID {0} was not found. Use /tlid to check your achievement list"
+Achievement.Command.Fail: "Achievement with ID {0} was not found. Use /achid to check your achievement list"
 Achievement.Command.NoBelong: "You have not unlocked achievement {0} yet, so you cannot wear this title."
 Achievement.Command.Local: "For technical reasons, we do not recommend using the achievement system in local rooms. If you try to force an achievement title by modifying the code or similar methods, your achievements may all be reset."
 Achievement.Info.AllCount: "You have {0} achievements in total"

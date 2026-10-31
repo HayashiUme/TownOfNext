@@ -292,7 +292,7 @@ public class ChatCommand(List<string> keywords, Func<CommandAccess> access, Func
                 _ = Achievements.Core.AchievementManager.WearAchievementTitleAndReplyAsync(mc.Player, titleId);
                 return (MsgRecallMode.Block, null);
             }),
-            new(["ach","achievement"], () => CommandAccess.All, mc =>
+            new(["ach"], () => CommandAccess.All, mc =>
             {
                 if (!mc.HasValidArgs || !int.TryParse(mc.Args.Trim(), out int achId))
                     return (MsgRecallMode.Block, GetString("Achievement.Tip2"));
