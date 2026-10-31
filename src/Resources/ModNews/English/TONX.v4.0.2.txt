@@ -2,7 +2,7 @@
 #Title:TownOfNext v4.0.2
 #SubTitle:★★★★TO The Next★★★★
 #ShortTitle:★TONX v4.0.2
-#Date:2026-10-25T00:00:00Z
+#Date:2026-10-31T00:00:00Z
 #-----------------------------
 
 ## Base
@@ -25,8 +25,7 @@
 - Fixed a crash on Android when not logged in
 
 ## Changing
-- AMCI has been set to “On” by default
-- Added U.S. and European private servers for EHR
+- AMCI has been set to On by default
 - Removed Niko's Chinese and European private servers
 - Designated Colorblind as an experimental role
 - Enhanced theme effects in dark mode
