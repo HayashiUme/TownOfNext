@@ -201,7 +201,7 @@ public static class NameTagManager
         {
             if (str is null or "") return null;
             if (!str.StartsWith("#")) str = "#" + str;
-            return ColorUtility.TryParseHtmlString(str, out var color) ? color : null;
+            return ColorHelper.TryParseHtmlString(str, out var color) ? color : null;
         }
 
         ColorGradient? GetGradient(string? str)
@@ -213,7 +213,7 @@ public static class NameTagManager
             args.Do(arg =>
             {
                 if (!arg.StartsWith("#")) arg = "#" + arg;
-                if (ColorUtility.TryParseHtmlString(arg, out var color))
+                if (ColorHelper.TryParseHtmlString(arg, out var color))
                     colors.Add(color);
             });
             var gradient = new ColorGradient(colors.ToArray());

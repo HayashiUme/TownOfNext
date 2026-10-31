@@ -399,7 +399,7 @@ public static class Utils
     public static Color GetRoleColor(CustomRoles role)
     {
         if (!Main.roleColors.TryGetValue(role, out var hexColor)) hexColor = role.GetRoleInfo()?.RoleColorCode;
-        _ = ColorUtility.TryParseHtmlString(hexColor, out Color c);
+        _ = ColorHelper.TryParseHtmlString(hexColor, out Color c);
         return c;
     }
     public static string GetRoleColorCode(CustomRoles role)
@@ -911,7 +911,7 @@ public static class Utils
 
     public static Color HexToColor(string hex)
     {
-        _ = ColorUtility.TryParseHtmlString(hex, out var color);
+        _ = ColorHelper.TryParseHtmlString(hex, out var color);
         return color;
     }
 

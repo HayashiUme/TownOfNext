@@ -92,7 +92,7 @@ public class SimpleRoleInfo
             };
         RoleColorCode = colorCode;
 
-        _ = ColorUtility.TryParseHtmlString(colorCode, out RoleColor);
+        _ = ColorHelper.TryParseHtmlString(colorCode, out RoleColor);
 
         if (Experimental) tab = TabGroup.OtherRoles;
         else if (tab == TabGroup.GameSettings)
