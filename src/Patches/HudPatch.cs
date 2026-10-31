@@ -342,6 +342,21 @@ class TaskPanelBehaviourPatch
     }
 }
 
+[HarmonyPatch(typeof(MatchInfoHudButton), nameof(MatchInfoHudButton.Update))]
+class MatchInfoHudButtonPatch
+{
+    public static void Postfix(MatchInfoHudButton __instance)
+    {
+        if (!GameStates.IsInTask || !HudManager.Instance.Chat.gameObject.activeInHierarchy) return;
+        
+        var position = __instance.GetComponent<AspectPosition>();
+        var distance = position.DistanceFromEdge;
+        distance.x = 2.75f;
+        position.DistanceFromEdge = distance;
+        position.AdjustPosition();
+    }
+}
+
 class RepairSender
 {
     public static bool enabled = false;
