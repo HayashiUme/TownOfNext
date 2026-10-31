@@ -114,6 +114,21 @@ public static class AchievementManager
         if (title is int titleId) data.SetWearedTitle(titleId);
         data.StartRound();
     }
+    
+    public static async Task<bool> LoadLocalFromCloudAsync()
+    {
+        var friendCode = CustomAchievementDataManager.LocalFriendCode;
+        if (string.IsNullOrEmpty(friendCode)) return false;
+
+        var data = CustomAchievementDataManager.GetOrCreate(friendCode, true);
+        var (records, _) = await AchievementApiClient.GetRecordsWithStatusAsync(friendCode);
+        if (records == null) return false;
+
+        data.MergeCloud(records);
+        var title = await AchievementApiClient.GetWearedTitleAsync(friendCode);
+        if (title is int titleId) data.SetWearedTitle(titleId);
+        return true;
+    }
     public static async Task WearAchievementTitleAndReplyAsync(PlayerControl player, int titleId)
     {
         if (player == null) return;

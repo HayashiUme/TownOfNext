@@ -33,11 +33,13 @@ public static class AchievementPanel
     private static float ListHeight = 4f;
 
     private static readonly List<GameObject> Items = new();
-    private static readonly List<ToggleButtonBehaviour> FilterButtons = new();
+    private static readonly List<(ToggleButtonBehaviour Button, Func<bool> Selected)> FilterButtons = new();
     private static readonly List<GameObject> FilterLabels = new();
     private static readonly Color UnlockedColor = new(0.33f, 0.78f, 0.35f, 1f);
     private static readonly SemaphoreSlim WearGate = new(1, 1);
     private static int refreshVersion;
+    private static int pendingRefresh;
+    private static bool LocalCloudLoading;
 
     private static OptionsMenuBehaviour OptionsMenu;
 
@@ -64,6 +66,7 @@ public static class AchievementPanel
         }
 
         BootstrapLocalData();
+        EnsureLocalCloudData();
         RefreshList();
         Menu.SetActive(true);
     }
@@ -78,10 +81,44 @@ public static class AchievementPanel
 
         CustomAchievementDataManager.GetOrCreate(friendCode, true);
     }
+    
+    private static void EnsureLocalCloudData()
+    {
+        var friendCode = CustomAchievementDataManager.LocalFriendCode;
+        if (string.IsNullOrEmpty(friendCode)) return;
+
+        if (LocalCloudLoading) return;
+        if (CustomAchievementDataManager.Get(friendCode)?.HasData == true) return;
+
+        LocalCloudLoading = true;
+        _ = LoadLocalCloudDataAsync();
+    }
+
+    private static async Task LoadLocalCloudDataAsync()
+    {
+        try
+        {
+            if (await TONX.Modules.Achievements.Core.AchievementManager.LoadLocalFromCloudAsync())
+                RequestListRefresh();
+        }
+        catch (Exception ex)
+        {
+            Logger.Warn($"成就云端加载失败：{ex.Message}", "AchievementPanel");
+        }
+        finally
+        {
+            LocalCloudLoading = false;
+        }
+    }
+
+    
+    private static void RequestListRefresh() => Interlocked.Exchange(ref pendingRefresh, 1);
 
     public static void Update()
     {
         if (Menu == null || !Menu.activeInHierarchy) return;
+
+        if (Interlocked.Exchange(ref pendingRefresh, 0) == 1) RefreshList();
 
         if (SearchHint != null)
             SearchHint.gameObject.SetActive(SearchBox == null || string.IsNullOrEmpty(SearchBox.text));
@@ -214,7 +251,7 @@ public static class AchievementPanel
     {
         var old = FilterButtons.ToList();
         FilterButtons.Clear();
-        old.Do(x => { if (x != null) Object.Destroy(x.gameObject); });
+        old.Do(x => { if (x.Button != null) Object.Destroy(x.Button.gameObject); });
         FilterLabels.Do(x => { if (x != null) Object.Destroy(x); });
         FilterLabels.Clear();
 
@@ -225,23 +262,21 @@ public static class AchievementPanel
         var rowHeight = 0.42f * Unit;
         var startY = halfHeight - 1.05f * Unit;
 
-        void Rebuild() => BuildFilterButtons(template, columnLeft, columnRight, halfHeight);
-
-        void Option(int row, int column, string text, bool selected, Action onClick)
+        void Option(int row, int column, string text, Func<bool> selected, Action onClick)
         {
             var button = MakeButton($"Achievement Filter {row}-{column}", text,
                 new Vector3(columnLeft + cellWidth * (column + 0.5f), startY - rowHeight * row, -5f),
-                buttonWidth, selected ? Main.ModColor32 : Palette.DisabledGrey, template);
+                buttonWidth, Palette.DisabledGrey, template);
             button.Text.enableAutoSizing = true;
             button.Text.fontSizeMax = button.Text.fontSize;
             button.Text.fontSizeMin = 0.2f;
             button.GetComponent<PassiveButton>().OnClick.AddListener(new Action(() =>
             {
                 onClick();
-                Rebuild();
-                RefreshList();
+                UpdateFilterColors();
+                RequestListRefresh();
             }));
-            FilterButtons.Add(button);
+            FilterButtons.Add((button, selected));
         }
 
         void GroupLabel(int row, string text)
@@ -252,9 +287,9 @@ public static class AchievementPanel
             FilterLabels.Add(label.gameObject);
         }
 
-        Option(0, 0, GetFilterText(ListFilter.Locked), CurrentFilter == ListFilter.Locked, () => CurrentFilter = ListFilter.Locked);
-        Option(0, 1, GetFilterText(ListFilter.Unlocked), CurrentFilter == ListFilter.Unlocked, () => CurrentFilter = ListFilter.Unlocked);
-        Option(0, 2, GetFilterText(ListFilter.All), CurrentFilter == ListFilter.All, () => CurrentFilter = ListFilter.All);
+        Option(0, 0, GetFilterText(ListFilter.Locked), () => CurrentFilter == ListFilter.Locked, () => CurrentFilter = ListFilter.Locked);
+        Option(0, 1, GetFilterText(ListFilter.Unlocked), () => CurrentFilter == ListFilter.Unlocked, () => CurrentFilter = ListFilter.Unlocked);
+        Option(0, 2, GetFilterText(ListFilter.All), () => CurrentFilter == ListFilter.All, () => CurrentFilter = ListFilter.All);
 
         GroupLabel(1, GetString("Achievement.Filter.Category"));
         var categoryValues = new AchievementCategory?[]
@@ -265,7 +300,7 @@ public static class AchievementPanel
             var value = categoryValues[i];
             Option(categoryCells[i].row, categoryCells[i].column,
                 value == null ? GetString("Achievement.Filter.All") : GetCategoryText(value.Value),
-                CategoryFilter == value, () => CategoryFilter = value);
+                () => CategoryFilter == value, () => CategoryFilter = value);
         }
 
         GroupLabel(4, GetString("Achievement.Filter.Rarity"));
@@ -277,7 +312,18 @@ public static class AchievementPanel
             var value = rarityValues[i];
             Option(rarityCells[i].row, rarityCells[i].column,
                 value == null ? GetString("Achievement.Filter.All") : value.Value.GetDisplayName(),
-                RarityFilter == value, () => RarityFilter = value);
+                () => RarityFilter == value, () => RarityFilter = value);
+        }
+
+        UpdateFilterColors();
+    }
+
+    private static void UpdateFilterColors()
+    {
+        foreach (var (button, selected) in FilterButtons)
+        {
+            if (button == null) continue;
+            button.Background.color = selected() ? Main.ModColor32 : Palette.DisabledGrey;
         }
     }
 
@@ -315,7 +361,7 @@ public static class AchievementPanel
             new Color(1f, 1f, 1f, 0.3f), template).GetComponent<PassiveButton>().OnClick.AddListener(new Action(() =>
         {
             SearchText = SearchBox?.text?.Trim() ?? "";
-            RefreshList();
+            RequestListRefresh();
         }));
     }
 
