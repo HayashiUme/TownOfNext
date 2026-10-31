@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using TONX.Modules;
+using TONX.Modules.Achievements.Crewmate;
 
 namespace TONX.Roles.Crewmate;
 public sealed class Dictator : RoleBase
@@ -44,6 +45,7 @@ public sealed class Dictator : RoleBase
         MeetingHudPatch.TryAddAfterMeetingDeathPlayers(CustomDeathReason.Suicide, Player.PlayerId);
         Utils.GetPlayerById(sourceVotedForId).SetRealKiller(Player);
         MeetingVoteManager.Instance.ClearAndExile(Player.PlayerId, sourceVotedForId);
+        DictatorForcedExile.Trigger(Player);
         return (votedForId, numVotes, false);
     }
 }

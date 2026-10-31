@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using TONX.Modules;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Impostor;
@@ -94,6 +95,7 @@ public sealed class Mafia : RoleBase, IImpostor, IMeetingButton
         string Name = target.GetRealName();
 
         RevengeLimit--;
+        MafiaRevengeKill.Trigger(Player);
         CustomSoundsManager.RPCPlayCustomSoundAll("AWP");
 
         _ = new LateTask(() =>

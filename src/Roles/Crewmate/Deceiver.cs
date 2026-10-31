@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using TONX.Modules;
+using TONX.Modules.Achievements.Crewmate;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -94,6 +95,7 @@ public sealed class Deceiver : RoleBase, IKiller
         killer.RPCPlayCustomSound("Bet");
 
         Customers.Add(target.PlayerId, false);
+        DeceiverSoldCounterfeit.Trigger(killer);
 
         Logger.Info($"{killer.GetNameWithRole()}：将赝品售卖给 => {target.GetNameWithRole()}", "Deceiver.OnCheckMurderAsKiller");
         Logger.Info($"{killer.GetNameWithRole()}：剩余{SellLimit}个赝品", "Deceiver.OnCheckMurderAsKiller");

@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using TONX.Modules;
+using TONX.Modules.Achievements.Crewmate;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -131,6 +132,7 @@ public sealed class Swapper : RoleBase, IMeetingButton
 
             Targets.Add(target.PlayerId);
             Logger.Info($"{Player.GetNameWithRole()} => Swap {target.GetNameWithRole()}({Targets.Count})", "Swapper");
+            if (Targets.Count == 2) SwapperVoteSwap.Trigger(Player);
             
             SendRpc();
 

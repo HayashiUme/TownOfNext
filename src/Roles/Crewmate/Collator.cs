@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using TONX.Modules.Achievements.Crewmate;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -127,6 +128,7 @@ public sealed class Collator : RoleBase, IKiller
 
         Samples.Add((target.PlayerId, team));
         SendRPC_SetCollated();
+        if (secondCollate) CollatorTwoSamples.Trigger(killer);
 
         Logger.Info($"{killer.GetNameWithRole()}: 提取样本 => {target.GetNameWithRole()}", "Collator.OnCheckMurderAsKiller");
         if (secondCollate) Logger.Info($"{killer.GetNameWithRole()}: 剩余{CollateLimit}次提取机会", "Collator.OnCheckMurderAsKiller");

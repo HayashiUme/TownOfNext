@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using TONX.Modules;
+using TONX.Modules.Achievements.Crewmate;
 
 namespace TONX.Roles.Crewmate;
 public sealed class Medium : RoleBase
@@ -99,6 +100,7 @@ public sealed class Medium : RoleBase
             Utils.SendMessage(GetString("Mediumship" + (ans ? "Yes" : "No")), medium.PlayerId, Utils.ColorString(RoleInfo.RoleColor, GetString("MediumshipTitle")));
             Utils.SendMessage(GetString("MediumshipDone"), player.PlayerId, Utils.ColorString(RoleInfo.RoleColor, GetString("MediumshipTitle")));
 
+            MediumAnswerReceived.Trigger(medium);
             roleClass.ContactPlayer = byte.MaxValue;
         }
     }

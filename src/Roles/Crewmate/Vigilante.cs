@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using TONX.Modules.Achievements.Crewmate;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -56,6 +57,7 @@ public sealed class Vigilante : RoleBase, IKiller
             if (IsKilled) return false;
             IsKilled = true;
             SendRPC();
+            if (info.AttemptTarget.GetCustomRole().IsImpostor()) VigilanteEvilKill.Trigger(Player);
             Player.ResetKillCooldown();
         }
         return true;

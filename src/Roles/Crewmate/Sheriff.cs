@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using TONX.Modules.Achievements.Crewmate;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -145,6 +146,7 @@ public sealed class Sheriff : RoleBase, IKiller
                 ))
             {
                 killer.ResetKillCooldown();
+                if (target.GetCustomRole().IsImpostor()) SheriffImpostorKill.Trigger(killer);
                 return true;
             }
             PlayerState.GetByPlayerId(killer.PlayerId).DeathReason = CustomDeathReason.Misfire;

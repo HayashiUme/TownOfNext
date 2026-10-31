@@ -2,6 +2,7 @@
 using Hazel;
 using UnityEngine;
 using TONX.Modules;
+using TONX.Modules.Achievements.Crewmate;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Crewmate;
@@ -115,6 +116,7 @@ public class Justice : RoleBase, IMeetingButton, IMeetingTimeAlterable, ISpecial
         {
             SkillLimits--;
             IsSpecialMeetingActive = true;
+            JusticeSpecialMeeting.Trigger(Player);
             Logger.Info($"Justice.AfterMeetingTasks: 天平会议已激活, players=[{string.Join(",", SpecialMeetingPlayers)}]", "Justice");
             _ = new LateTask(() =>
             {

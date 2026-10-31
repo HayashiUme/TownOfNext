@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using TONX.Modules;
+using TONX.Modules.Achievements.Crewmate;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -108,6 +109,7 @@ public sealed class JudgeTONX : RoleBase, IMeetingButton
         string Name = dp.GetRealName();
 
         TrialLimit--;
+        if (!judgeSuicide) JudgeCorrectTrial.Trigger(Player);
 
         _ = new LateTask(() =>
         {
