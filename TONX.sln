@@ -11,6 +11,8 @@ Global
 		Release|Windows = Release|Windows
 		Debug|Android = Debug|Android
 		Release|Android = Release|Android
+		Debug|iOS = Debug|iOS
+		Release|iOS = Release|iOS
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{BB32D6D5-7915-496C-933A-A2632C78918F}.Debug|Windows.ActiveCfg = Debug|Windows
@@ -21,6 +23,10 @@ Global
 		{BB32D6D5-7915-496C-933A-A2632C78918F}.Debug|Android.Build.0 = Debug|Android
 		{BB32D6D5-7915-496C-933A-A2632C78918F}.Release|Android.ActiveCfg = Release|Android
 		{BB32D6D5-7915-496C-933A-A2632C78918F}.Release|Android.Build.0 = Release|Android
+		{BB32D6D5-7915-496C-933A-A2632C78918F}.Debug|iOS.ActiveCfg = Debug|iOS
+		{BB32D6D5-7915-496C-933A-A2632C78918F}.Debug|iOS.Build.0 = Debug|iOS
+		{BB32D6D5-7915-496C-933A-A2632C78918F}.Release|iOS.ActiveCfg = Release|iOS
+		{BB32D6D5-7915-496C-933A-A2632C78918F}.Release|iOS.Build.0 = Release|iOS
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

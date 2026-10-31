@@ -14,13 +14,16 @@
 		<BaseOutputPath>..\Export</BaseOutputPath>
 		<NoWarn>MSB3246, CA2211, IDE0044, IDE0028, IDE0300</NoWarn>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<Platforms>Windows;Android</Platforms>
+		<Platforms>Windows;Android;iOS</Platforms>
 	</PropertyGroup>
     <PropertyGroup Condition="'$(Platform)' == 'Windows'">
     <DefineConstants>Windows</DefineConstants>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Platform)' == 'Android'">
     <DefineConstants>Android</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Platform)' == 'iOS'">
+    <DefineConstants>iOS</DefineConstants>
     </PropertyGroup>
 	<ItemGroup>
 		<EmbeddedResource Include=".\Resources\**" />
@@ -38,6 +41,12 @@
 		<PackageReference Include="YamlDotNet" Version="16.3.0" />
 	</ItemGroup>
 	
+	<ItemGroup Condition="'$(Platform)' == 'iOS'">
+		<Reference Include="Assembly-CSharp">
+			<HintPath>..\libs\Assembly-CSharp.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+	</ItemGroup>
 
 	<Target Name="Copy" AfterTargets="Build" Condition="'$(AmongUs)' != ''">
 		<Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(AmongUs)/BepInEx/plugins/" Condition="'$(Configuration)' == 'Debug'" />
