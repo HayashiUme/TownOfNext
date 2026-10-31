@@ -1810,6 +1810,37 @@ RD_OptionNum: "Número de Opções"
 RD_DraftTimeLimit: "Tempo de Seleção"
 RD_ShowSelectedRoles: "Mostrar Seleção dos Jogadores"
 
+# Hot Potato
+GetHotPotato: "Você recebeu a Batata Quente! Passe-a para outra pessoa!"
+HotPotatoTimeRemain: "Contagem para distribuição e explosão da Batata Quente: {0}"
+HotPotatoMaxNum: "Máximo de Batatas Quentes"
+ExplosionTotalTime: "Contagem para Explosão"
+
+# Doom Tag
+DoomTag: "Caça Final"
+DoomTag.WrongKillSuicide: "Você matou o alvo errado. Você cometerá suicídio!"
+DoomTag.WrongKillLowerVision: "Você atacou o alvo errado. Sua visão foi reduzida para {0}x"
+DoomTag.FrenzyModeActivated: "Modo Frenesi ativado!"
+DoomTag.FrenzyModeHUD: "Modo Frenesi"
+DoomTag.CurrentTarget: "Alvo Atual"
+DoomTag.BaseKillCooldown: "Recarga Base de Abate"
+DoomTag.PunishmentMode: "Punição por Alvo Errado"
+DoomTag.PunishSuicide: "Suicídio"
+DoomTag.PunishLowerVision: "Reduzir Visão"
+DoomTag.LowerVisionMultiplier: "Multiplicador de Visão Reduzida"
+DoomTag.FrenzyPlayerCount: "Jogadores para Ativar o Frenesi"
+DoomTag.FrenzyKillCooldown: "Recarga de Abate no Frenesi"
+DoomTag.FrenzySpeedMultiplier: "Multiplicador de Velocidade no Frenesi"
+DoomTag.ShowTargetArrow: "Mostrar Seta do Alvo"
+ModeDescribe.HotPotato: "Modo atual: [Batata Quente]\nQualquer jogador pode se tornar uma Batata Quente ou Fria. Use o botão de matar para passar a Batata Quente a uma Batata Fria antes que a contagem termine, ou você explodirá.\nAs Batatas Frias devem evitar as Batatas Quentes. O último sobrevivente vence."
+ModeDescribe.DoomTag: "Modo atual: [Caça Final]\nCada jogador recebe um alvo. Ao matar seu alvo, você herda o alvo dele. Atacar o alvo errado resulta em punição.\nO último sobrevivente vence."
+HotPotatoInfo: "Passe a Batata Quente para outra pessoa!"
+HotPotatoInfoLong: "Use o botão de matar para passar a Batata Quente a uma Batata Fria antes que a contagem termine, ou você explodirá. Todos podem ver quem está com a Batata Quente."
+ColdPotatoInfo: "Evite a Batata Quente"
+ColdPotatoInfoLong: "Evite a Batata Quente e sobreviva até o fim. Todos podem ver quem está com a Batata Quente."
+TaggerInfo: "Mate seu alvo"
+TaggerInfoLong: "Mate o alvo que lhe foi atribuído para herdar o alvo dele. Atacar o alvo errado resulta em punição."
+
 # 模式介绍 / Mode descriptions
 ModeDescribe.SoloKombat: "O modo atual é [Combate Solo]\nSem distribuição de funções. Todos têm vida e usam o botão de matar para causar dano. Quem tiver mais abates ao final vence."
 
