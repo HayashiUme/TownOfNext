@@ -289,8 +289,7 @@ public class ChatCommand(List<string> keywords, Func<CommandAccess> access, Func
                 if (GameStates.IsLocalGame)
                     return (MsgRecallMode.Block, GetString("Achievement.Command.Local"));
 
-                //指令在房主端解析，上云 + 落地都在 WearAchievementTitle 里完成
-                _ = WearAchievementTitleAndReplyAsync(mc.Player, titleId);
+                _ = Achievements.Core.AchievementManager.WearAchievementTitleAndReplyAsync(mc.Player, titleId);
                 return (MsgRecallMode.Block, null);
             }),
             new(["ach","achievement"], () => CommandAccess.All, mc =>
@@ -515,32 +514,6 @@ public class ChatCommand(List<string> keywords, Func<CommandAccess> access, Func
         if (MatchCommand(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id", isCmd: isCmd)) operate = 1;
         else if (MatchCommand(ref msg, command, false, isCmd)) operate = 2;
         return operate != 0;
-    }
-
-    /// <summary>/wach 的异步尾巴：上云 + 落地，然后把结果私聊回给发指令的人</summary>
-    private static async Task WearAchievementTitleAndReplyAsync(PlayerControl player, int titleId)
-    {
-        if (player == null) return;
-
-        var result = await TONX.Modules.Achievements.Core.AchievementManager.WearAchievementTitle(player.FriendCode, titleId);
-        var def = TONX.Modules.Achievements.Core.AchievementRegistry.GetById(titleId);
-
-        string reply = result switch
-        {
-            TONX.Modules.Achievements.Core.TitleChangeResult.Unknown
-                => string.Format(GetString("Achievement.Command.Fail"), titleId),
-            TONX.Modules.Achievements.Core.TitleChangeResult.NotOwned
-                => string.Format(GetString("Achievement.Command.NoBelong"), titleId),
-            TONX.Modules.Achievements.Core.TitleChangeResult.Ok => def == null
-                ? GetString("Achievement.Command.UnWear")
-                : string.Format(GetString("Achievement.Command.Wear"), def.TitleColorHex, GetString(def.Name)),
-            _ => string.Format(GetString("Achievement.Command.Fail"), titleId),
-        };
-
-        _ = new LateTask(() =>
-        {
-            Utils.SendMessage(reply, player.PlayerId, $"<color=#FFD700>{GetString("Achievement.ChatTitle")}</color>");
-        },0f, "WearAchievementTitleAndReplyAsync");
     }
 }
 

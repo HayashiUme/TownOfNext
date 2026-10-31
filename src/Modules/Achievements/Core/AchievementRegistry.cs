@@ -7,9 +7,9 @@ public static class AchievementRegistry
 {
     private static readonly Dictionary<int, AchievementBase> All = new();
     private static readonly Dictionary<Type, AchievementBase> ByType = new();
-    private static readonly Dictionary<string, List<AchievementBase>> ByCategory = new();
+    private static readonly Dictionary<AchievementCategory, List<AchievementBase>> ByCategory = new();
 
-    public static IReadOnlyList<string> Categories { get; private set; } = new List<string>();
+    public static IReadOnlyList<AchievementCategory> Categories { get; private set; } = new List<AchievementCategory>();
 
     [PluginModuleInitializer]
     public static void Initialize()
@@ -40,7 +40,7 @@ public static class AchievementRegistry
         foreach (var definition in ProposalAchievementCatalog.CreateDefinitions())
             if (!All.ContainsKey(definition.Id)) Register(definition);
 
-        Categories = ByCategory.Keys.OrderBy(x => x, StringComparer.Ordinal).ToList().AsReadOnly();
+        Categories = ByCategory.Keys.OrderBy(x => x).ToList().AsReadOnly();
         Logger.Info($"{All.Count} achievements in {Categories.Count} categories", "AchievementRegistry");
     }
 
@@ -68,7 +68,7 @@ public static class AchievementRegistry
             achievement.RequiredValue <= 0 || achievement.RequiredValue > 1_000_000 ||
             string.IsNullOrWhiteSpace(achievement.Name) ||
             string.IsNullOrWhiteSpace(achievement.Description) ||
-            string.IsNullOrWhiteSpace(achievement.Category))
+            !Enum.IsDefined(typeof(AchievementCategory), achievement.Category))
         {
             Logger.Error($"Invalid achievement definition: {achievement.GetType().Name}", "AchievementRegistry");
             return;

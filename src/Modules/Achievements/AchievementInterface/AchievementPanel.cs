@@ -305,16 +305,33 @@ public static class AchievementPanel
             .ThenBy(a => a.Id);
 
         var listTop = mask.position.y + ListHeight / 2f;
-        var rowPitch = 0.72f * Unit;
-        var titleGap = 0.26f * Unit;
-        var lineGap = 0.32f * Unit;
+        var rowGap = 0.12f * Unit;
+        var cursorY = listTop;
+        var contentWidth = ListWidth - 0.2f * Unit;
+        var textLeft = -ListWidth / 2f + 0.1f * Unit;
+        var stateWidth = 1.05f * Unit;
+        var titleWidth = contentWidth - stateWidth;
 
-        int rows = 0;
         foreach (var achievement in list)
         {
-            rows++;
-            var rowCenterY = listTop - rowPitch * (rows - 0.5f);
-            var titleY = rowCenterY + titleGap;
+            var visible = IsUnlocked(achievement, localData) || !achievement.Hidden;
+            var titleText = $"{GetAchievementName(achievement, localData)}  <size=72%><color={achievement.Rarity.GetColorCode()}>{achievement.Rarity.GetDisplayName()}</color></size>";
+            var descriptionText = visible
+                ? $"{GetString(achievement.Description)}{(achievement.IsProgressAchievement ? $"  <size=80%>{GetString("Achievement.Progress")} ({GetProgress(achievement, localData)}/{achievement.RequiredValue})</size>" : "")}" 
+                : GetString("Achievement.HiddenDescription");
+            var title = MakeText(inner, "Achievement Row Title " + achievement.Id, titleText,
+                Vector3.zero, 1f * Unit, TextAlignmentOptions.Left, titleWidth, Color.white);
+            title.ForceMeshUpdate();
+            var titleHeight = Mathf.Max(0.34f * Unit, title.preferredHeight);
+            var description = MakeText(inner, "Achievement Row Description " + achievement.Id, descriptionText,
+                Vector3.zero, 0.72f * Unit, TextAlignmentOptions.Left, contentWidth, new Color(1f, 1f, 1f, 0.6f));
+            description.ForceMeshUpdate();
+            var descriptionHeight = Mathf.Max(0.34f * Unit, description.preferredHeight);
+            var rowHeight = titleHeight + descriptionHeight + rowGap;
+            var rowCenterY = cursorY - rowHeight / 2f;
+            cursorY -= rowHeight;
+            var titleY = cursorY + descriptionHeight + titleHeight / 2f;
+            var descriptionY = cursorY + descriptionHeight / 2f;
             var rowPoint = inner.InverseTransformPoint(new Vector3(mask.position.x, rowCenterY, mask.position.z));
 
             var row = Object.Instantiate(buttonPrefab, inner);
@@ -325,7 +342,7 @@ public static class AchievementPanel
             var renderer = row.GetComponent<SpriteRenderer>();
             row.transform.localScale = new Vector3(
                 rowPrefabSize.x > 0f ? ListWidth / rowPrefabSize.x : 1f,
-                rowPrefabSize.y > 0f ? rowPitch * 0.94f / rowPrefabSize.y : 1f, 1f);
+                rowPrefabSize.y > 0f ? rowHeight * 0.96f / rowPrefabSize.y : 1f, 1f);
             row.transform.localPosition = new Vector3(rowPoint.x, rowPoint.y, -0.5f);
             renderer.color = Color.clear;
             var rollover = row.GetComponent<ButtonRolloverHandler>();
@@ -338,24 +355,20 @@ public static class AchievementPanel
             passive.OnClick.AddListener(new Action(() => OnClicked(captured)));
             Items.Add(row);
 
-            var visible = IsUnlocked(achievement, localData) || !achievement.Hidden;
-            var title = MakeText(inner, "Achievement Row Title " + achievement.Id, titleY, 1f * Unit, TextAlignmentOptions.Left, Color.white);
-            title.text = $"{GetAchievementName(achievement, localData)}  <size=72%><color={achievement.Rarity.GetColorCode()}>{achievement.Rarity.GetDisplayName()}</color></size>";
+            title.transform.localPosition = new Vector3(textLeft, titleY, -0.5f);
             Items.Add(title.gameObject);
 
-            var description = MakeText(inner, "Achievement Row Description " + achievement.Id, titleY - lineGap, 0.72f * Unit, TextAlignmentOptions.Left, new Color(1f, 1f, 1f, 0.6f));
-            description.text = visible
-                ? $"{GetString(achievement.Description)}{(achievement.IsProgressAchievement ? $"  <size=80%>{GetString("Achievement.Progress")}（{GetProgress(achievement, localData)}/{achievement.RequiredValue}）</size>" : "")}"
-                : GetString("Achievement.HiddenDescription");
+            description.transform.localPosition = new Vector3(textLeft, descriptionY, -0.5f);
             Items.Add(description.gameObject);
 
-            var state = MakeText(inner, "Achievement Row State " + achievement.Id, titleY, 0.9f * Unit, TextAlignmentOptions.Right, StateColor(achievement, equippedId, localData));
-            state.text = StateText(achievement, equippedId, localData);
+            var state = MakeText(inner, "Achievement Row State " + achievement.Id, StateText(achievement, equippedId, localData),
+                new Vector3(ListWidth / 2f - stateWidth / 2f - 0.1f * Unit, titleY, -0.5f),
+                0.9f * Unit, TextAlignmentOptions.Right, stateWidth, StateColor(achievement, equippedId, localData));
             Items.Add(state.gameObject);
         }
 
         scroller.SetYBoundsMin(0f);
-        scroller.SetYBoundsMax(Mathf.Max(0f, rowPitch * rows - ListHeight));
+        scroller.SetYBoundsMax(Mathf.Max(0f, listTop - cursorY - ListHeight));
     }
 
     private static bool IsUnlocked(AchievementBase achievement, CustomAchievementData data)
@@ -490,14 +503,15 @@ public static class AchievementPanel
         obj.name = name;
         obj.transform.localPosition = position;
         obj.transform.localScale = Vector3.one;
-        obj.GetComponent<RectTransform>().sizeDelta = new Vector2(width, 1f);
+        obj.GetComponent<RectTransform>().sizeDelta = new Vector2(width, 0f);
         var tmp = obj.GetComponent<TextMeshPro>();
         tmp.DestroyTranslator();
         tmp.text = text;
         tmp.alignment = alignment;
         tmp.fontSize = fontSize;
         tmp.color = color;
-        tmp.enableWordWrapping = false;
+        tmp.enableWordWrapping = true;
+        tmp.overflowMode = TextOverflowModes.Overflow;
         return tmp;
     }
 

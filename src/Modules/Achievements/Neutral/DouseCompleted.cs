@@ -7,5 +7,5 @@ public sealed class DouseCompleted : SingleUnlockAchievement<DouseCompleted>
 {
     public override int Id => 300101;
     public override Color TitleColor => new Color32(0xFF, 0x66, 0x33, 0xFF);
-    public override string Category => "Neutral";
+    public override AchievementCategory Category => AchievementCategory.Neutral;
 }

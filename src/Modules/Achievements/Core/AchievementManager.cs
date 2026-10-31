@@ -114,4 +114,28 @@ public static class AchievementManager
         if (title is int titleId) data.SetWearedTitle(titleId);
         data.StartRound();
     }
+    public static async Task WearAchievementTitleAndReplyAsync(PlayerControl player, int titleId)
+    {
+        if (player == null) return;
+
+        var result = await TONX.Modules.Achievements.Core.AchievementManager.WearAchievementTitle(player.FriendCode, titleId);
+        var def = TONX.Modules.Achievements.Core.AchievementRegistry.GetById(titleId);
+
+        string reply = result switch
+        {
+            TONX.Modules.Achievements.Core.TitleChangeResult.Unknown
+                => string.Format(GetString("Achievement.Command.Fail"), titleId),
+            TONX.Modules.Achievements.Core.TitleChangeResult.NotOwned
+                => string.Format(GetString("Achievement.Command.NoBelong"), titleId),
+            TONX.Modules.Achievements.Core.TitleChangeResult.Ok => def == null
+                ? GetString("Achievement.Command.UnWear")
+                : string.Format(GetString("Achievement.Command.Wear"), def.TitleColorHex, GetString(def.Name)),
+            _ => string.Format(GetString("Achievement.Command.Fail"), titleId),
+        };
+
+        _ = new LateTask(() =>
+        {
+            Utils.SendMessage(reply, player.PlayerId, $"<color=#FFD700>{GetString("Achievement.ChatTitle")}</color>");
+        },0f, "WearAchievementTitleAndReplyAsync");
+    }
 }

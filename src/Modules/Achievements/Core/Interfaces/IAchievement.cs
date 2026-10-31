@@ -12,6 +12,6 @@ public interface IAchievement
     Sprite Icon { get; }
     AchievementRarity Rarity { get; }
     bool Hidden { get; }
-    string Category { get; }
+    AchievementCategory Category { get; }
     int RequiredValue { get; }
 }

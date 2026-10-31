@@ -12,7 +12,7 @@ public abstract class AchievementBase : IAchievement
 
     public virtual AchievementRarity Rarity => AchievementRarity.Common;
     public virtual bool Hidden => false;
-    public virtual string Category => "General";
+    public virtual AchievementCategory Category => AchievementCategory.General;
     public virtual Sprite Icon => DefaultIcon;
     public virtual int RequiredValue => 1;
 
