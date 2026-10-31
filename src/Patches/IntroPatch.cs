@@ -253,7 +253,7 @@ public class IntroCutscenePatch
     }
 #if Windows
     [HarmonyPatch(nameof(IntroCutscene.OnDestroy))]
-#elif Android
+#elif Android || iOS
     [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.StartSFX))]
     [HarmonyPatch(typeof(FungleShipStatus), nameof(FungleShipStatus.StartSFX))]
 #endif

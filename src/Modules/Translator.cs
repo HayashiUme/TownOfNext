@@ -206,7 +206,7 @@ public static class Translator
         foreach (var title in translateMaps) sb.Append($"{title.Key}:\n");
 #if Windows
         File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/template.dat", sb.ToString());
-#elif Android
+#elif Android || iOS
         File.WriteAllText(@$"{LANGUAGE_FOLDER_NAME}/template.dat", sb.ToString());
 #endif
     }
@@ -223,7 +223,7 @@ public static class Translator
         }
 #if Windows
         File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/export_{lang}.dat", sb.ToString());
-#elif Android
+#elif Android || iOS
         File.WriteAllText(@$"{LANGUAGE_FOLDER_NAME}/export_{lang}.dat", sb.ToString());
 #endif
     }

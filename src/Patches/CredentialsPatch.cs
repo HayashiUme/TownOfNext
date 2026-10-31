@@ -108,7 +108,7 @@ internal class VersionShowerStartPatch
         var ap1 = __instance.GetComponent<AspectPosition>();
         ap1.Alignment = AspectPosition.EdgeAlignments.LeftBottom;
         ap1.DistanceFromEdge = new(
-#if Android
+#if Android || iOS
             2.2f * Utils.GetAspectRatio(Screen.width, Screen.height), 0.1f
 #elif Windows
             2.0f * Utils.GetAspectRatio(Screen.width, Screen.height), 0.1f
