@@ -26,6 +26,8 @@ public sealed class TimeThief : RoleBase, IMeetingTimeAlterable, IImpostor
         DecreaseMeetingTime = OptionDecreaseMeetingTime.GetInt();
         LowerLimitVotingTime = OptionLowerLimitVotingTime.GetInt();
         ReturnStolenTimeUponDeath = OptionReturnStolenTimeUponDeath.GetBool();
+        EffectiveKills = 0;
+        MeetingTimeCutApplied = false;
     }
     private static OptionItem OptionKillCooldown;
     private static OptionItem OptionDecreaseMeetingTime;
@@ -43,6 +45,14 @@ public sealed class TimeThief : RoleBase, IMeetingTimeAlterable, IImpostor
     public static bool ReturnStolenTimeUponDeath;
 
     public bool RevertOnDie => ReturnStolenTimeUponDeath;
+    public int EffectiveKills { get; private set; }
+    public bool MeetingTimeCutApplied { get; set; }
+
+    public void BeforeMurderPlayerAsKiller(MurderInfo info)
+    {
+        if (info.IsSuicide) return;
+        EffectiveKills++;
+    }
 
     private static void SetupOptionItem()
     {

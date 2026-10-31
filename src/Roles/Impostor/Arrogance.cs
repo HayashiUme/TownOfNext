@@ -34,6 +34,10 @@ public sealed class Arrogance : RoleBase, IImpostor
         ArroganceMinKillCooldown,
     }
     private float KillCooldown;
+    public int Kills { get; private set; }
+    public int KillsWithoutMeeting { get; private set; }
+    public int MaxKillsWithoutMeeting { get; private set; }
+    public bool KilledWithReducedCooldown { get; private set; }
     private static void SetupOptionItem()
     {
         DefaultKillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.ArroganceDefaultKillCooldown, new(2.5f, 180f, 2.5f), 65f, false)
@@ -46,8 +50,14 @@ public sealed class Arrogance : RoleBase, IImpostor
     public override void Add()
     {
         KillCooldown = DefaultKillCooldown.GetFloat();
+        Kills = 0;
+        KillsWithoutMeeting = 0;
+        MaxKillsWithoutMeeting = 0;
+        KilledWithReducedCooldown = false;
     }
     public float CalculateKillCooldown() => KillCooldown;
+
+    public override void OnStartMeeting() => KillsWithoutMeeting = 0;
 
     public void BeforeMurderPlayerAsKiller(MurderInfo info)
     {
@@ -56,6 +66,13 @@ public sealed class Arrogance : RoleBase, IImpostor
         var before = KillCooldown;
         KillCooldown = Math.Clamp(KillCooldown - ReduceKillCooldown.GetFloat(), MinKillCooldown.GetFloat(), DefaultKillCooldown.GetFloat());
         if (KillCooldown < before) ArroganceCooldownReduce.Trigger(killer);
+        if (killer != null && killer.PlayerId == Player.PlayerId)
+        {
+            Kills++;
+            KillsWithoutMeeting++;
+            if (KillsWithoutMeeting > MaxKillsWithoutMeeting) MaxKillsWithoutMeeting = KillsWithoutMeeting;
+            if (before < DefaultKillCooldown.GetFloat()) KilledWithReducedCooldown = true;
+        }
         killer.ResetKillCooldown();
         killer.SyncSettings();
     }

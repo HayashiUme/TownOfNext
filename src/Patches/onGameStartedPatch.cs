@@ -116,8 +116,10 @@ internal class ChangeRoleSettings
     }
 }
 [HarmonyPatch(typeof(RoleManager), nameof(RoleManager.SelectRoles))]
-internal class SelectRolesPatch
+internal static class SelectRolesPatch
 {
+    public static HashSet<byte> StartingImpostorIds = new();
+
     public static void Prefix()
     {
         if (!AmongUsClient.Instance.AmHost) return;
@@ -231,6 +233,11 @@ internal class SelectRolesPatch
             }
 
             Options.CurrentGameMode.GetModeClass()?.AfterAssignRoles();
+
+            StartingImpostorIds = PlayerState.AllPlayerStates
+                .Where(kv => kv.Value != null && kv.Value.MainRole.IsImpostor())
+                .Select(kv => kv.Key)
+                .ToHashSet();
 
             foreach (var pc in Main.AllPlayerControls)
             {

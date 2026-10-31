@@ -1,5 +1,7 @@
 ﻿using AmongUs.GameOptions;
+using TONX.Roles.AddOns.Common;
 using TONX.Roles.Core.Interfaces;
+using TONX.Roles.Crewmate;
 
 namespace TONX.Roles.Impostor;
 public sealed class Hangman : RoleBase, IImpostor
@@ -26,6 +28,19 @@ public sealed class Hangman : RoleBase, IImpostor
     static OptionItem OptionShapeshiftDuration;
 
     public bool IsKiller { get; private set; } = false;
+    private readonly HashSet<byte> strangledTargets = new();
+    public bool StrangledProtectedTarget { get; private set; }
+    public int DistinctStrangleTargets { get; private set; }
+    public bool BypassedDeathPassive { get; private set; }
+
+    public override void Add()
+    {
+        strangledTargets.Clear();
+        StrangledProtectedTarget = false;
+        DistinctStrangleTargets = 0;
+        BypassedDeathPassive = false;
+    }
+
     private static void SetupOptionItem()
     {
         OptionShapeshiftCooldown = FloatOptionItem.Create(RoleInfo, 10, GeneralOption.ShapeshiftCooldown, new(2.5f, 180f, 2.5f), 25f, false)
@@ -43,6 +58,9 @@ public sealed class Hangman : RoleBase, IImpostor
         var (killer, target) = info.AttemptTuple;
         if (Main.CheckShapeshift.TryGetValue(killer.PlayerId, out var s) && s)
         {
+            if (HasProtectionState(target)) StrangledProtectedTarget = true;
+            if (HasBypassedDeathPassive(target)) BypassedDeathPassive = true;
+            if (strangledTargets.Add(target.PlayerId)) DistinctStrangleTargets = strangledTargets.Count;
 
             Utils.TP(killer.NetTransform, target.GetTruePosition());
 
@@ -59,6 +77,23 @@ public sealed class Hangman : RoleBase, IImpostor
         }
         return true;
     }
+    /// <summary>
+    /// 一次绞杀前目标是否处于常规防护状态（白名单，均读取实时游戏状态）
+    /// </summary>
+    private static bool HasProtectionState(PlayerControl target)
+        => target != null
+           && (Main.ShieldPlayer == target.PlayerId
+               || Medic.InProtect(target.PlayerId)
+               || target.GetRoleClass() is Veteran { IsOnGuard: true });
+    /// <summary>
+    /// 一次绞杀是否绕过了死亡被动（绞杀直接置死，不经过 OnMurderPlayer）
+    /// </summary>
+    private static bool HasBypassedDeathPassive(PlayerControl target)
+        => target != null
+           && (Bait.IsThisRole(target.PlayerId)
+               || Beartrap.IsThisRole(target.PlayerId)
+               || Avenger.IsThisRole(target.PlayerId)
+               || target.GetRoleClass() is Luckey);
     public override bool GetAbilityButtonSprite(out string buttonName)
     {
         buttonName = "Hangman";

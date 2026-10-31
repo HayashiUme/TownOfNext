@@ -97,7 +97,10 @@ public class MeetingTimeManager
             foreach (var role in CustomRoleManager.AllActiveRoles.Values.ToList())
                 if (role is TimeThief timeThief && timeThief.Player.IsAlive()
                     && timeThief.CalculateMeetingTimeDelta() < 0)
+                {
+                    timeThief.MeetingTimeCutApplied = true;
                     TimeThiefMeetingCut.Trigger(timeThief.Player);
+                }
         }
 
         Options.CurrentGameMode.GetModeClass()?.AlterMeetingTime(ref DiscussionTime, ref VotingTime);

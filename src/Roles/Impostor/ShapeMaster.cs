@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
+using UnityEngine;
 
 namespace TONX.Roles.Impostor;
 public sealed class ShapeMaster : RoleBase, IImpostor
@@ -29,12 +30,31 @@ public sealed class ShapeMaster : RoleBase, IImpostor
     private static float shapeshiftDuration;
 
     private readonly HashSet<byte> ShiftedTargets = new();
-    public override void Add() => ShiftedTargets.Clear();
+    public int ShiftedTargetCount { get; private set; }
+    public bool KilledWithinShiftWindow { get; private set; }
+    private float lastShiftEndTime = float.MinValue;
+
+    public override void Add()
+    {
+        ShiftedTargets.Clear();
+        ShiftedTargetCount = 0;
+        KilledWithinShiftWindow = false;
+        lastShiftEndTime = float.MinValue;
+    }
     public override void OnShapeshift(PlayerControl target)
     {
         if (Is(target)) return;
         ShiftedTargets.Add(target.PlayerId);
+        ShiftedTargetCount = ShiftedTargets.Count;
+        lastShiftEndTime = Time.time + shapeshiftDuration;
         if (ShiftedTargets.Count >= 2) ShapeMasterTwoForms.Trigger(Player);
+    }
+
+    public void BeforeMurderPlayerAsKiller(MurderInfo info)
+    {
+        if (info.IsSuicide) return;
+        if (Time.time >= lastShiftEndTime && Time.time - lastShiftEndTime <= 10f)
+            KilledWithinShiftWindow = true;
     }
 
     public static void SetupOptionItem()

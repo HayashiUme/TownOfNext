@@ -41,6 +41,8 @@ public sealed class EvilGuesser : RoleBase, IImpostor, IMeetingButton, IGuesser
     }
 
     public int GuessLimit { get; set; }
+    public int ConsecutiveCorrectGuesses { get; private set; }
+    public int MaxConsecutiveCorrectGuesses { get; private set; }
     public string GuessMaxMsg { get; set; } = "EGGuessMax";
     public bool CanGuessAddons => OptionCanGuessAddons.GetBool();
     public bool CanGuessVanilla => OptionCanGuessVanilla.GetBool();
@@ -56,6 +58,8 @@ public sealed class EvilGuesser : RoleBase, IImpostor, IMeetingButton, IGuesser
     public override void Add()
     {
         GuessLimit = OptionGuessNums.GetInt();
+        ConsecutiveCorrectGuesses = 0;
+        MaxConsecutiveCorrectGuesses = 0;
     }
     public override void OverrideNameAsSeer(PlayerControl seen, ref string nameText, bool isForMeeting = false)
     {
@@ -91,8 +95,20 @@ public sealed class EvilGuesser : RoleBase, IImpostor, IMeetingButton, IGuesser
         => role.IsImpostor() && !OptionCanGuessImp.GetBool();
     public bool OnGuessing(PlayerControl guesser, PlayerControl target, CustomRoles role, bool guesserSuicide, ref string reason)
     {
-        if (!guesserSuicide && guesser != null && guesser.PlayerId == Player.PlayerId)
-            EvilGuesserCorrectGuess.Trigger(Player);
+        if (guesser != null && guesser.PlayerId == Player.PlayerId)
+        {
+            if (guesserSuicide)
+            {
+                ConsecutiveCorrectGuesses = 0;
+            }
+            else
+            {
+                ConsecutiveCorrectGuesses++;
+                if (ConsecutiveCorrectGuesses > MaxConsecutiveCorrectGuesses)
+                    MaxConsecutiveCorrectGuesses = ConsecutiveCorrectGuesses;
+                EvilGuesserCorrectGuess.Trigger(Player);
+            }
+        }
         return true;
     }
     public List<CustomRoleTypes> GetCustomRoleTypesList()

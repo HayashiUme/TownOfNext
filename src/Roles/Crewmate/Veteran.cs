@@ -39,6 +39,8 @@ public sealed class Veteran : RoleBase
     private long ProtectStartTime;
     public int CounterKills { get; private set; }
     public bool KilledImpostorAttacker { get; private set; }
+    public bool IsOnGuard
+        => ProtectStartTime != 0 && ProtectStartTime + (long)OptionSkillDuration.GetFloat() >= Utils.GetTimeStamp();
     private static void SetupOptionItem()
     {
         OptionSkillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.VeteranSkillCooldown, new(2.5f, 180f, 2.5f), 20f, false)

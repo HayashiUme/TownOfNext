@@ -23,6 +23,8 @@ public sealed class BoobyTrap : RoleBase, IImpostor
     )
     {
         Boobytraps = new();
+        ReportChainDepth = new();
+        MaxReportChain = 0;
     }
 
     static OptionItem OptionSuicideDelay;
@@ -32,6 +34,8 @@ public sealed class BoobyTrap : RoleBase, IImpostor
     }
 
     private static Dictionary<byte, byte> Boobytraps;
+    private static Dictionary<byte, int> ReportChainDepth;
+    public int MaxReportChain { get; set; }
     private static void SetupOptionItem()
     {
         OptionSuicideDelay = FloatOptionItem.Create(RoleInfo, 10, OptionName.BoobyTrapSuicideDelay, new(0f, 5f, 1f), 1f, false)
@@ -70,8 +74,16 @@ public sealed class BoobyTrap : RoleBase, IImpostor
 
             Boobytraps.TryAdd(reporter.PlayerId, killerId);
 
+            var depth = ReportChainDepth.TryGetValue(target.PlayerId, out var previousDepth) ? previousDepth + 1 : 1;
+            ReportChainDepth[reporter.PlayerId] = depth;
+
             var trapOwner = Utils.GetPlayerById(killerId);
-            if (trapOwner != null) BoobyTrapReportKill.Trigger(trapOwner);
+            if (trapOwner != null)
+            {
+                BoobyTrapReportKill.Trigger(trapOwner);
+                if (trapOwner.GetRoleClass() is BoobyTrap trapOwnerRole && depth > trapOwnerRole.MaxReportChain)
+                    trapOwnerRole.MaxReportChain = depth;
+            }
 
             return false;
         }

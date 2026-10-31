@@ -1,13 +1,22 @@
 using AmongUs.Data;
+using TONX.Attributes;
 using TONX.Modules;
 using TONX.Roles.Neutral;
 
 namespace TONX;
 
-class ExileControllerWrapUpPatch
+static partial class ExileControllerWrapUpPatch
 {
     public static List<Action> ActionsOnWrapUp = new();
     public static NetworkedPlayerInfo AntiBlackout_LastExiled;
+    public static int ExiledImpostorCount = 0;
+    public static int ExiledCrewCount = 0;
+    [GameModuleInitializer]
+    public static void Init()
+    {
+        ExiledImpostorCount = 0;
+        ExiledCrewCount = 0;
+    }
     [HarmonyPatch(typeof(ExileController), nameof(ExileController.WrapUp))]
     class BaseExileControllerPatch
     {
@@ -73,6 +82,9 @@ class ExileControllerWrapUpPatch
 
             exiled.IsDead = true;
             PlayerState.GetByPlayerId(exiled.PlayerId).DeathReason = CustomDeathReason.Vote;
+
+            if (role.IsImpostorTeam()) ExiledImpostorCount++;
+            else if (role.IsCrewmate()) ExiledCrewCount++;
 
             ActionsOnWrapUp.Do(f => f.Invoke());
             ActionsOnWrapUp = new();
