@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using TONX.Modules;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -31,6 +32,8 @@ public sealed class Puppeteer : RoleBase, IImpostor
     /// </summary>
     private static Dictionary<byte, Puppeteer> Puppets = new(15);
     public bool IsKiller { get; private set; } = false;
+    public int PuppetKills { get; private set; }
+    public override void Add() => PuppetKills = 0;
     public override void OnDestroy()
     {
         Puppets.Clear();
@@ -115,6 +118,8 @@ public sealed class Puppeteer : RoleBase, IImpostor
                 RPC.PlaySoundRPC(Player.PlayerId, Sounds.KillSound);
                 target.SetRealKiller(Player);
                 puppet.RpcMurderPlayer(target);
+                PuppetKills++;
+                PuppeteerPuppetKill.Trigger(Player);
                 Utils.MarkEveryoneDirtySettings();
                 Puppets.Remove(puppet.PlayerId);
                 SendRPC(puppet.PlayerId, 2);

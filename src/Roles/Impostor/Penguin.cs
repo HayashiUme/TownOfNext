@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -117,6 +118,7 @@ class Penguin : RoleBase, IImpostor
                 return false;
             }
             RemoveVictim();
+            PenguinDragKill.Trigger(Player);
             return true;
         }
         info.DoKill = false;
@@ -151,12 +153,14 @@ class Penguin : RoleBase, IImpostor
         if (AbductVictim != null && AbductTimer <= 0f)
         {
             Player.RpcMurderPlayer(AbductVictim);
+            PenguinDragKill.Trigger(Player);
         }
         if (MeetingKill)
         {
             if (!AmongUsClient.Instance.AmHost) return;
             if (AbductVictim == null) return;
             Player.RpcMurderPlayer(AbductVictim);
+            PenguinDragKill.Trigger(Player);
             RemoveVictim();
         }
     }

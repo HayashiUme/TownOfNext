@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -28,6 +29,8 @@ public sealed class CrewPostor : RoleBase, IImpostor
     static OptionItem OptionCanKillAllies;
 
     public bool CanKill { get; private set; } = false;
+    public int TaskKills { get; private set; }
+    public override void Add() => TaskKills = 0;
     public bool CanUseSabotageButton() => false;
     public bool CanUseImpostorVentButton() => false;
     public override void ApplyGameOptions(IGameOptions opt)
@@ -53,13 +56,19 @@ public sealed class CrewPostor : RoleBase, IImpostor
             list = list.OrderBy(x => Vector2.Distance(Player.GetTruePosition(), x.GetTruePosition())).ToList();
             var target = list[0];
 
-            CustomRoleManager.OnCheckMurder(
+            var killed = CustomRoleManager.OnCheckMurder(
                 Player, target,
                 target, target
                 );
 
             if (Player.IsModClient()) RPC.PlaySoundRPC(Player.PlayerId, Sounds.KillSound);
             else Player.RpcProtectedMurderPlayer();
+
+            if (killed)
+            {
+                TaskKills++;
+                CrewpostorTaskKill.Trigger(Player);
+            }
 
             Logger.Info($"船鬼完成任务击杀：{Player.GetNameWithRole()} => {target.GetNameWithRole()}", "CrewPostor.OnCompleteTask");
         }

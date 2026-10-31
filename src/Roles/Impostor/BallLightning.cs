@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using TONX.Modules;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -42,6 +43,8 @@ public sealed class BallLightning : RoleBase, IImpostor
     }
 
     private static Dictionary<byte, byte> Ghosts;
+    public int GhostKills { get; private set; }
+    public override void Add() => GhostKills = 0;
     private static void SetupOptionItem()
     {
         OptionKillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.BallLightningKillCooldown, new(2.5f, 180f, 2.5f), 30f, false)
@@ -92,8 +95,9 @@ public sealed class BallLightning : RoleBase, IImpostor
         {
             if (GameStates.IsInGame && GameStates.IsInTask && target.IsAlive() && !target.IsEaten())
             {
-                Ghosts.TryAdd(target.PlayerId, killer.PlayerId);
+                var added = Ghosts.TryAdd(target.PlayerId, killer.PlayerId);
                 (killer.GetRoleClass() as BallLightning)?.SendRPC();
+                if (added && killer.GetRoleClass() is BallLightning) BallLightningQuantum.Trigger(killer);
                 if (!killer.inVent) killer.RpcProtectedMurderPlayer(killer);
                 Utils.NotifyRoles();
                 Logger.Info($"{target.GetNameWithRole()} 转化为量子幽灵", "BallLightning.StartConvertCountDown");
@@ -133,6 +137,7 @@ public sealed class BallLightning : RoleBase, IImpostor
                     killer, gs,
                     gs, gs
                     );
+                if (killer.GetRoleClass() is BallLightning ballLightning) ballLightning.GhostKills++;
 
                 Logger.Info($"{gs.GetNameWithRole()} 作为量子幽灵因碰撞而死", "BallLightning.OnFixedUpdate");
                 break;

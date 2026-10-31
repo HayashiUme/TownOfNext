@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using TONX.Modules.Achievements.Crewmate;
 
 namespace TONX.Roles.Crewmate;
 public sealed class Mayor : RoleBase
@@ -88,6 +89,7 @@ public sealed class Mayor : RoleBase
         if (voterId == Player.PlayerId)
         {
             numVotes = AdditionalVote + 1;
+            if (isIntentional && numVotes > 1) MayorExtraVote.Trigger(Player);
         }
         return (votedForId, numVotes, doVote);
     }

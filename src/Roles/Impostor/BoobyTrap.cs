@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Impostor;
@@ -68,6 +69,9 @@ public sealed class BoobyTrap : RoleBase, IImpostor
             RPC.PlaySoundRPC(killerId, Sounds.KillSound);
 
             Boobytraps.TryAdd(reporter.PlayerId, killerId);
+
+            var trapOwner = Utils.GetPlayerById(killerId);
+            if (trapOwner != null) BoobyTrapReportKill.Trigger(trapOwner);
 
             return false;
         }

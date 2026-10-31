@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using TONX.Modules.Achievements.Neutral;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Neutral;
@@ -71,6 +72,7 @@ public sealed class BloodKnight : RoleBase, IKiller
         ProtectStartTime = Utils.GetTimeStamp();
         SendRPC();
         Utils.NotifyRoles(Player);
+        BloodKnightShield.Trigger(Player);
     }
     public override void OnFixedUpdate(PlayerControl player)
     {

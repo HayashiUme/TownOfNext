@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -32,6 +33,7 @@ public sealed class CursedWolf : RoleBase, IImpostor
     }
 
     private int SpellLimit;
+    public int CounterKills { get; private set; }
     private static void SetupOptionItem()
     {
         OptionGuardSpellTimes = IntegerOptionItem.Create(RoleInfo, 10, OptionName.GuardSpellTimes, new(1, 99, 1), 3, false)
@@ -40,6 +42,7 @@ public sealed class CursedWolf : RoleBase, IImpostor
     public override void Add()
     {
         SpellLimit = OptionGuardSpellTimes.GetInt();
+        CounterKills = 0;
     }
     private void SendRPC()
     {
@@ -66,6 +69,9 @@ public sealed class CursedWolf : RoleBase, IImpostor
         target.RpcMurderPlayerV2(killer);
 
         target.Notify(GetString("CursedWolfSkill"));
+
+        CounterKills++;
+        CursedWolfCounter.Trigger(target);
 
         Logger.Info($"{target.GetNameWithRole()} 呪狼反杀 => {killer.GetNameWithRole()}", "CursedWolf.OnCheckMurderAsTarget");
         Logger.Info($"{target.GetNameWithRole()} 呪狼反杀：剩余{SpellLimit}次", "CursedWolf.OnCheckMurderAsTarget");

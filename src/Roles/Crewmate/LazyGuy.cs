@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Crewmate;
 
 namespace TONX.Roles.Crewmate;
 public sealed class LazyGuy : RoleBase
@@ -21,4 +22,21 @@ public sealed class LazyGuy : RoleBase
         player
     )
     { }
+
+    public bool TaskDone { get; private set; }
+    public int MeetingsSurvived { get; private set; }
+    public override bool OnCompleteTask(out bool cancel)
+    {
+        if (!TaskDone)
+        {
+            TaskDone = true;
+            LazyGuyTaskDone.Trigger(Player);
+        }
+        cancel = false;
+        return false;
+    }
+    public override void OnStartMeeting()
+    {
+        if (Player.IsAlive()) MeetingsSurvived++;
+    }
 }

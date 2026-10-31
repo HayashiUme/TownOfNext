@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Crewmate;
 using UnityEngine;
 
 namespace TONX.Roles.Crewmate;
@@ -26,6 +27,7 @@ public sealed class Bodyguard : RoleBase
     }
 
     static OptionItem OptionRadius;
+    public bool SavedCrewFromImpostor { get; private set; }
     enum OptionName
     {
         BodyguardProtectRadius
@@ -56,6 +58,10 @@ public sealed class Bodyguard : RoleBase
                     pc.SetDeathReason(CustomDeathReason.Sacrifice);
                     pc.RpcMurderPlayerV2(killer);
                     killer.RpcMurderPlayerV2(pc);
+                    if (killer.GetCustomRole().IsImpostorTeam() && target.IsCrew()
+                        && pc.GetRoleClass() is Bodyguard bodyguard)
+                        bodyguard.SavedCrewFromImpostor = true;
+                    BodyguardSacrifice.Trigger(pc);
                     Logger.Info($"{pc.GetRealName()} 挺身而出与歹徒 {killer.GetRealName()} 同归于尽", "Bodyguard.OnCheckMurderPlayerOthers_After");
                     return false;
                 }

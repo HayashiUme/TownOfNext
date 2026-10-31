@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -34,6 +35,7 @@ public sealed class Hacker : RoleBase, IImpostor
     }
 
     private int HackLimit = new();
+    public bool NoBodyReport { get; private set; }
     private static List<byte> DeadBodyList = new();
     private static void SetupOptionItem()
     {
@@ -45,6 +47,7 @@ public sealed class Hacker : RoleBase, IImpostor
     public override void Add()
     {
         HackLimit = OptionHackLimit.GetInt();
+        NoBodyReport = false;
     }
     private void SendRPC()
     {
@@ -93,13 +96,18 @@ public sealed class Hacker : RoleBase, IImpostor
         SendRPC();
 
         var targetId = byte.MaxValue;
+        var ownBodyReport = false;
 
         // 寻找骇客击杀的尸体
         foreach (var db in DeadBodyList)
         {
             var dp = Utils.GetPlayerById(db);
             if (dp == null || dp.GetRealKiller() == null) continue;
-            if (dp.GetRealKiller().PlayerId == Player.PlayerId) targetId = db;
+            if (dp.GetRealKiller().PlayerId == Player.PlayerId)
+            {
+                targetId = db;
+                ownBodyReport = true;
+            }
         }
 
         // 未找到骇客击杀的尸体，寻找其他尸体
@@ -107,8 +115,14 @@ public sealed class Hacker : RoleBase, IImpostor
             targetId = DeadBodyList[IRandom.Instance.Next(0, DeadBodyList.Count)];
 
         if (targetId == byte.MaxValue)
+        {
+            NoBodyReport = true;
             _ = new LateTask(() => target?.NoCheckStartMeeting(target?.Data), 0.15f, "Hacker Hacking Report Self");
+        }
         else
+        {
+            if (ownBodyReport) HackerForceReport.Trigger(Player);
             _ = new LateTask(() => target?.NoCheckStartMeeting(Utils.GetPlayerById(targetId)?.Data), 0.15f, "Hacker Hacking Report");
+        }
     }
 }

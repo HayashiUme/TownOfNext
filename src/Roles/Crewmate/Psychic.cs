@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Crewmate;
 
 namespace TONX.Roles.Crewmate;
 public sealed class Psychic : RoleBase
@@ -98,6 +99,8 @@ public sealed class Psychic : RoleBase
 
         Logger.Info($"需要{OptionRedNameNum.GetInt()}个红名，其中需要{ENum}个邪恶。计算后显示红名{RedNames.Count}个", "Psychic");
         RedNames.Do(x => Logger.Info($"红名：{x}: {Main.AllPlayerNames[x]}", "Psychic"));
+        if (RedNames.Any(id => Utils.GetPlayerById(id)?.Is(CustomRoleTypes.Impostor) == true))
+            PsychicRedName.Trigger(Player);
         RedNameInited = true;
     }
 }

@@ -28,6 +28,7 @@ public sealed class Provocateur : RoleBase, IAdditionalWinner
 
     }
     private bool IsKilled;
+    public bool HasKilled => IsKilled;
     public override void Add()
     {
         var playerId = Player.PlayerId;

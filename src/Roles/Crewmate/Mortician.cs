@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using TONX.Modules.Achievements.Crewmate;
 using UnityEngine;
 
 namespace TONX.Roles.Crewmate;
@@ -83,7 +84,10 @@ public sealed class Mortician : RoleBase
     public override void NotifyOnMeetingStart(ref List<(string, byte, string)> msgToSend)
     {
         if (MsgToSend != null)
+        {
             msgToSend.Add((MsgToSend, Player.PlayerId, Utils.ColorString(RoleInfo.RoleColor, GetString("MorticianCheckTitle"))));
+            MorticianLastContact.Trigger(Player);
+        }
         MsgToSend = null;
     }
     public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)

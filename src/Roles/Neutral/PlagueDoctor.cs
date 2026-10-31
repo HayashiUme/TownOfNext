@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using System.Text;
+using TONX.Modules.Achievements.Neutral;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -215,6 +216,7 @@ public sealed class PlagueDoctor : RoleBase, IKiller
                     changed = true;
                     Logger.Info($"InfectRate[{target.GetNameWithRole()}]:{newRate}%", "OnCheckMurderAsKiller");
                     PlagueDoctors[0].SendRPC(target.PlayerId, newRate);
+                    if (newRate >= 100) PlagueDoctorInfectComplete.Trigger(PlagueDoctors[0].Player);
                 }
             }
             if (changed)
@@ -290,6 +292,7 @@ public sealed class PlagueDoctor : RoleBase, IKiller
         InfectInfos[player.PlayerId] = 100;
         SendRPC(player.PlayerId, 100);
         Utils.NotifyRoles();
+        PlagueDoctorInfectComplete.Trigger(Player);
         CheckWin();
     }
     public static void CheckWin()

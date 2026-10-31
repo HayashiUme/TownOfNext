@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Impostor;
@@ -26,6 +27,15 @@ public sealed class ShapeMaster : RoleBase, IImpostor
     private static OptionItem OptionShapeshiftDuration;
 
     private static float shapeshiftDuration;
+
+    private readonly HashSet<byte> ShiftedTargets = new();
+    public override void Add() => ShiftedTargets.Clear();
+    public override void OnShapeshift(PlayerControl target)
+    {
+        if (Is(target)) return;
+        ShiftedTargets.Add(target.PlayerId);
+        if (ShiftedTargets.Count >= 2) ShapeMasterTwoForms.Trigger(Player);
+    }
 
     public static void SetupOptionItem()
     {

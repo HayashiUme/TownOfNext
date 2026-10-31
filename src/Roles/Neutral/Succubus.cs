@@ -52,6 +52,7 @@ public sealed class Succubus : RoleBase, IKiller
     }
 
     private int CharmLimit;
+    public int CharmedCount { get; private set; }
 
     private static void SetupOptionItem()
     {
@@ -93,6 +94,7 @@ public sealed class Succubus : RoleBase, IKiller
         if (CanBeCharmed(target))
         {
             CharmLimit--;
+            CharmedCount++;
             SendRPC();
             target.RpcSetCustomRole(CustomRoles.Charmed);
             if (target.Is(CustomRoles.Charmed))

@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -38,6 +39,8 @@ public sealed class SerialKiller : RoleBase, IImpostor
 
     public bool CanBeLastImpostor { get; } = false;
     public float? SuicideTimer;
+    public int Kills { get; private set; }
+    public override void Add() => Kills = 0;
 
     private static void SetUpOptionItem()
     {
@@ -61,6 +64,11 @@ public sealed class SerialKiller : RoleBase, IImpostor
     {
         SuicideTimer = null;
         Player.MarkDirtySettings();
+        if (!info.IsSuicide)
+        {
+            Kills++;
+            SerialKillerKill.Trigger(Player);
+        }
     }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {

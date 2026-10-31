@@ -27,6 +27,7 @@ public sealed class Innocent : RoleBase
         
     }
     private bool IsKilled;
+    public bool HasKilled => IsKilled;
     public override void Add()
     {
         var playerId = Player.PlayerId;

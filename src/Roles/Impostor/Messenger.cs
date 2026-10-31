@@ -2,6 +2,7 @@
 using Hazel;
 using System.Text;
 using TONX.Modules;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -86,6 +87,7 @@ public sealed class Messenger : RoleBase, IImpostor, IKillFlashSeeable
         }
         var admins = AdminProvider.CalculateAdmin();
         var builder = new StringBuilder(512);
+        var hasDeadMark = false;
 
         // 送信するメッセージを生成
         foreach (var admin in admins)
@@ -109,9 +111,12 @@ public sealed class Messenger : RoleBase, IImpostor, IKillFlashSeeable
             {
                 builder.Append('(').Append(GetString("Deadbody"));
                 builder.Append('×').Append(entry.NumDeadBodies).Append(')');
+                hasDeadMark = true;
             }
             builder.Append('\n');
         }
+
+        if (hasDeadMark) MessengerIntel.Trigger(Player);
 
         // 送信
         var message = builder.ToString();

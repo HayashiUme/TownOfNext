@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Impostor;
@@ -83,6 +84,8 @@ public sealed class Capitalist : RoleBase, IImpostor
 
         Player.SetKillCooldownV2();
         RPC.PlaySoundRPC(Player.PlayerId, Sounds.TaskUpdateSound);
+
+        CapitalistExtraTask.Trigger(Player);
 
         return false;
     }

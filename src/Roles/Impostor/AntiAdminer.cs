@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -121,6 +122,9 @@ public sealed class AntiAdminer : RoleBase, IImpostor
 
         var isChange = false;
 
+        var becameTrue = (Admin && !IsAdminWatch) || (Vital && !IsVitalWatch) || (DoorLog && !IsDoorLogWatch)
+            || (OptionCanCheckCamera.GetBool() && Camera && !IsCameraWatch);
+
         isChange |= IsAdminWatch != Admin;
         IsAdminWatch = Admin;
         isChange |= IsVitalWatch != Vital;
@@ -137,5 +141,7 @@ public sealed class AntiAdminer : RoleBase, IImpostor
         {
             Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.AntiAdminer)).Do(x => Utils.NotifyRoles(x));
         }
+
+        if (becameTrue) AntiAdminerProximity.Trigger(Player);
     }
 }

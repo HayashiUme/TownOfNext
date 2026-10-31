@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using Hazel;
 using UnityEngine;
 using TONX.Modules;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Impostor;
@@ -92,6 +93,7 @@ public sealed class EvilGrenadier : RoleBase, IImpostor
         }
         SendRPC();
         Player.RPCPlayCustomSound("FlashBang");
+        if (Blinds.Count > 0) EvilGrenadierFlash.Trigger(Player);
         if (!Player.IsModClient()) Player.RpcProtectedMurderPlayer();
         foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.IsImpTeam()))
             pc.Notify(GetString("GrenadierSkillInUse"), OptionSkillDuration.GetFloat());

@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using TONX.Modules;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using UnityEngine;
 
@@ -46,6 +47,8 @@ public sealed class Stealth : RoleBase, IImpostor
     private PlayerControl[] darkenedPlayers;
     /// <summary>暗くしている部屋</summary>
     private SystemTypes? darkenedRoom = null;
+    public int BlindKills { get; private set; }
+    public override void Add() => BlindKills = 0;
 
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {
@@ -65,6 +68,11 @@ public sealed class Stealth : RoleBase, IImpostor
             playersToDarken = playersToDarken.Where(player => !player.Is(CustomRoles.Impostor));
         }
         DarkenPlayers(playersToDarken);
+        if (playersToDarken.Any())
+        {
+            BlindKills++;
+            StealthBlindKill.Trigger(Player);
+        }
         return true;
     }
     /// <summary>自分と同じ部屋にいるプレイヤー全員を取得する</summary>

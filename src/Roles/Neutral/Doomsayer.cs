@@ -2,6 +2,7 @@
 using UnityEngine;
 using Hazel;
 using TONX.Modules;
+using TONX.Modules.Achievements.Neutral;
 using TONX.Roles.Core.Interfaces;
 using static TONX.GuesserHelper;
 
@@ -193,7 +194,11 @@ public sealed class Doomsayer : RoleBase, IKiller, IMeetingButton, IGuesser
     public bool OnGuessing(PlayerControl guesser, PlayerControl target, CustomRoles role, bool guesserSuicide, ref string reason)
     {
         if (guesserSuicide) HasWrongGuess = true;
-        else CorrectGuesses++;
+        else
+        {
+            CorrectGuesses++;
+            DoomsayerCorrectGuess.Trigger(guesser);
+        }
         if (!OptionSuicideIfGuessWrong.GetBool() && guesser == target)
         {
             reason = GetString("DoomsayerGuessSelf");

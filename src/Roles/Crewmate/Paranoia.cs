@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Crewmate;
 
 namespace TONX.Roles.Crewmate;
 public sealed class Paranoia : RoleBase
@@ -68,6 +69,7 @@ public sealed class Paranoia : RoleBase
             {
                 user?.NoCheckStartMeeting(user?.Data);
                 SkillLimit--;
+                if (GameStates.IsMeeting) ParanoiaFakeReport.Trigger(Player);
             }, 0.1f, "ParanoiaPortableButton");
 
             //ポータブルボタン時はベントから追い出す必要はない

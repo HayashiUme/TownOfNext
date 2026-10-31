@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Crewmate;
 
 namespace TONX.Roles.Crewmate;
 public sealed class DetectiveTONX : RoleBase
@@ -54,7 +55,10 @@ public sealed class DetectiveTONX : RoleBase
     public override void NotifyOnMeetingStart(ref List<(string, byte, string)> msgToSend)
     {
         if (MsgToSend != null)
+        {
             msgToSend.Add((MsgToSend, Player.PlayerId, Utils.ColorString(RoleInfo.RoleColor, GetString("DetectiveNoticeTitle"))));
+            DetectiveClue.Trigger(Player);
+        }
         MsgToSend = null;
     }
 }

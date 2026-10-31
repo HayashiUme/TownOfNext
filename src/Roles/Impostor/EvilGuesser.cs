@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using TONX.Modules;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 using TONX.Roles.Crewmate;
 using static TONX.GuesserHelper;
@@ -88,6 +89,12 @@ public sealed class EvilGuesser : RoleBase, IImpostor, IMeetingButton, IGuesser
     }
     public bool OnCheckSuicide(PlayerControl guesser, PlayerControl target, CustomRoles role)
         => role.IsImpostor() && !OptionCanGuessImp.GetBool();
+    public bool OnGuessing(PlayerControl guesser, PlayerControl target, CustomRoles role, bool guesserSuicide, ref string reason)
+    {
+        if (!guesserSuicide && guesser != null && guesser.PlayerId == Player.PlayerId)
+            EvilGuesserCorrectGuess.Trigger(Player);
+        return true;
+    }
     public List<CustomRoleTypes> GetCustomRoleTypesList()
     {
         List<CustomRoleTypes> list = new() { CustomRoleTypes.Impostor, CustomRoleTypes.Crewmate, CustomRoleTypes.Neutral, CustomRoleTypes.Addon };

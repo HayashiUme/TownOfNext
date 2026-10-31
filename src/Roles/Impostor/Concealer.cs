@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Impostor;
@@ -44,6 +45,8 @@ public sealed class Concealer : RoleBase, IImpostor
         Shapeshifting = !Is(target);
 
         if (!AmongUsClient.Instance.AmHost) return;
+
+        if (Shapeshifting) ConcealerActivate.Trigger(Player);
 
         Camouflage.CheckCamouflage();
     }

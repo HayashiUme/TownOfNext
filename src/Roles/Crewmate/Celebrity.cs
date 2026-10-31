@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Crewmate;
 
 namespace TONX.Roles.Crewmate;
 public sealed class Celebrity : RoleBase
@@ -53,8 +54,10 @@ public sealed class Celebrity : RoleBase
     {
         if (!Is(player)) return;
 
+        var notified = false;
         foreach (var pc in Main.AllPlayerControls.Where(x => CanSeeKillFlash(x) || player.Is(CustomRoles.Madmate)))
         {
+            notified = true;
             if (isOnMeeting)
             {
                 Utils.SendMessage(string.Format(GetString("CelebrityDead"), pc.GetRealName()), pc.PlayerId, Utils.ColorString(RoleInfo.RoleColor, GetString("CelebrityNewsTitle"))); ;
@@ -65,6 +68,7 @@ public sealed class Celebrity : RoleBase
                 pc.Notify(Utils.ColorString(RoleInfo.RoleColor, GetString("OnCelebrityDead")));
             }
         }
+        if (notified) CelebrityDeathNotice.Trigger(player);
     }
     public override void NotifyOnMeetingStart(ref List<(string, byte, string)> msgToSend)
     {

@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Impostor;
@@ -52,7 +53,9 @@ public sealed class Arrogance : RoleBase, IImpostor
     {
         if (info.IsSuicide) return;
         var killer = info.AttemptKiller;
+        var before = KillCooldown;
         KillCooldown = Math.Clamp(KillCooldown - ReduceKillCooldown.GetFloat(), MinKillCooldown.GetFloat(), DefaultKillCooldown.GetFloat());
+        if (KillCooldown < before) ArroganceCooldownReduce.Trigger(killer);
         killer.ResetKillCooldown();
         killer.SyncSettings();
     }

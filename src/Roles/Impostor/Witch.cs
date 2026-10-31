@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using Hazel;
 using System.Text;
 using TONX.Modules;
+using TONX.Modules.Achievements.Impostor;
 using TONX.Roles.Core.Interfaces;
 
 namespace TONX.Roles.Impostor;
@@ -47,6 +48,7 @@ public sealed class Witch : RoleBase, IImpostor, IDoubleTrigger
     public bool IsSpellMode;
     public List<byte> SpelledPlayer = new();
     public SwitchTrigger NowSwitchTrigger;
+    public int CurseKills { get; private set; }
 
     public static List<Witch> Witches = new();
     public static void SetupOptionItem()
@@ -57,6 +59,7 @@ public sealed class Witch : RoleBase, IImpostor, IDoubleTrigger
     {
         IsSpellMode = false;
         SpelledPlayer.Clear();
+        CurseKills = 0;
         NowSwitchTrigger = (SwitchTrigger)OptionModeSwitchAction.GetValue();
         Witches.Add(this);
         if (NowSwitchTrigger == SwitchTrigger.TriggerDouble) Player.AddDoubleTrigger();
@@ -168,6 +171,11 @@ public sealed class Witch : RoleBase, IImpostor, IDoubleTrigger
                 }
             }
             MeetingHudPatch.TryAddAfterMeetingDeathPlayers(CustomDeathReason.Spell, spelledIdList.ToArray());
+            if (spelledIdList.Count > 0)
+            {
+                CurseKills += spelledIdList.Count;
+                WitchCurseKill.Trigger(Player);
+            }
         }
         //実行してもしなくても呪いはすべて解除
         SpelledPlayer.Clear();

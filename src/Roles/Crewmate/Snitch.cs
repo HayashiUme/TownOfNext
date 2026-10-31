@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Crewmate;
 using UnityEngine;
 
 namespace TONX.Roles.Crewmate;
@@ -202,6 +203,8 @@ public class Snitch : RoleBase
                 if (EnableTargetArrow)
                     TargetArrow.Add(Player.PlayerId, targetId);
             }
+            if (TargetList.Any(id => Utils.GetPlayerById(id)?.Is(CustomRoleTypes.Impostor) == true))
+                SnitchFullTaskReveal.Trigger(Player);
             update = true;
         }
         if (update) Utils.NotifyRoles();

@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using TONX.Modules;
+using TONX.Modules.Achievements.Crewmate;
 
 namespace TONX.Roles.Crewmate;
 public sealed class Grenadier : RoleBase
@@ -73,6 +74,7 @@ public sealed class Grenadier : RoleBase
         else
         {
             Main.AllPlayerControls.Where(x => x.IsModClient()).Where(x => x.IsImp() || (x.IsNeutral() && OptionCanAffectNeutral.GetBool())).Do(x => x.RPCPlayCustomSound("FlashBang"));
+            if (Main.AllAlivePlayerControls.Any(x => x.IsImp())) GrenadierFlashImpostor.Trigger(Player);
         }
         if (!Player.IsModClient()) Player.RpcProtectedMurderPlayer();
         Player.RPCPlayCustomSound("FlashBang");

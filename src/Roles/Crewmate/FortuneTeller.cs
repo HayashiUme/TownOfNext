@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using TONX.Modules.Achievements.Crewmate;
 
 namespace TONX.Roles.Crewmate;
 public sealed class FortuneTeller : RoleBase
@@ -203,6 +204,7 @@ public sealed class FortuneTeller : RoleBase
         }
 
         ShowMsg(GetString("FortuneTellerCheck") + "\n" + msg + "\n\n" + string.Format(GetString("FortuneTellerCheckLimit"), CheckLimit) + GetString("SkillDoneAndYouCanVoteNormallyNow"));
+        FortuneTellerDivine.Trigger(Player);
 
         return false;
 
