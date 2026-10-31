@@ -43,7 +43,9 @@ public sealed class SecurityGuard : RoleBase
 
     public static void RecordBlockedEntry(int ventId, PlayerControl player)
     {
-        if (player?.GetCustomRole().IsImpostorTeam() != true) return;
+        if (player?.Data == null || player.Data.Disconnected) return;
+        var role = player.GetCustomRole();
+        if (!role.IsImpostorTeam() && !role.IsNeutralEvil()) return;
         foreach (var guard in Main.AllPlayerControls.Where(pc => pc.Is(CustomRoles.SecurityGuard)))
             if (guard.GetRoleClass() is SecurityGuard securityGuard
                 && LockedVents.Contains(ventId) && securityGuard.PersonallyLockedVents.Contains(ventId))

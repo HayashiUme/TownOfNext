@@ -27,6 +27,7 @@ public sealed class NeutralIndependentWin : SingleUnlockAchievement<NeutralIndep
             (Collector { BaseWinTriggered: true }, CustomWinner.Collector) => true,
             (Doomsayer { BaseWinTriggered: true }, CustomWinner.Doomsayer) => true,
             (PlagueDoctor { InfectionWinTriggered: true }, CustomWinner.PlagueDoctor) => true,
+            (Mario { BaseWinTriggered: true }, CustomWinner.Mario) => true,
             _ => false
         };
 }

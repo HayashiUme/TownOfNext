@@ -116,6 +116,7 @@ public static class CustomRoleManager
         if (Main.ShieldPlayer != byte.MaxValue && Main.ShieldPlayer == attemptTarget.PlayerId && Utils.IsAllAlive)
         {
             Main.ShieldPlayer = byte.MaxValue;
+            TONX.Roles.Crewmate.Observer.NotifyBlockedAttack(info);
             attemptKiller.SetKillCooldownV2(target: attemptTarget, forceAnime: true);
             return false;
         }

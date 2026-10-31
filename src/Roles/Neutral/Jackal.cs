@@ -75,6 +75,7 @@ public sealed class Jackal : RoleBase, IKiller
     public int RecruitLimit;
     public int KillCount;
     private readonly Dictionary<byte, string> RecruitedSidekicks = new();
+    private Jackal Recruiter;
     public bool SucceededFromSidekick { get; private set; }
     public bool HasSurvivingRecruit => RecruitedSidekicks.Any(pair =>
         Utils.GetPlayerById(pair.Key) is { } recruit && recruit.FriendCode == pair.Value
@@ -157,13 +158,17 @@ public sealed class Jackal : RoleBase, IKiller
             if (previousRole != null) previousRole.IsSucceeding = true;
             sidekick.RpcChangeRole(CustomRoles.Jackal);
             if (previousRole != null && sidekick.GetRoleClass() is Jackal successor)
+            {
                 successor.SucceededFromSidekick = wasActualDeath;
+                successor.Recruiter = previousRole.Recruiter;
+            }
             Logger.Info($"跟班{sidekick?.Data?.PlayerName}上位", "Jackal");
         }
         Utils.NotifyRoles();
     }
     public override void OnDestroy()
     {
+        Recruiter?.ForgetRecruit(Player.PlayerId);
         if (Player.GetRoleClass() == this)
             foreach (var pc in Main.AllPlayerControls)
                 if (pc.GetRoleClass() is Jackal jackal) jackal.ForgetRecruit(Player.PlayerId);

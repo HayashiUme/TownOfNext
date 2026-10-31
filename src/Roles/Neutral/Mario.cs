@@ -37,6 +37,7 @@ public sealed class Mario : RoleBase
     private int VentedTimes;
     public int SuccessfulVents => VentedTimes;
     public bool VentWinTriggered { get; private set; }
+    public bool BaseWinTriggered { get; private set; }
     private static void SetupOptionItem()
     {
         OptionVentNums = IntegerOptionItem.Create(RoleInfo, 10, OptionName.MarioVentNumWin, new(1, 999, 1), 55, false);
@@ -74,11 +75,13 @@ public sealed class Mario : RoleBase
         else CustomSoundsManager.Play("MarioJump");
         if (Main.IsAprilFools && VentedTimes >= 236)
         {
+            BaseWinTriggered |= CustomWinnerHolder.WinnerTeam == CustomWinner.Default;
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Mario);
             CustomWinnerHolder.WinnerIds.Add(Player.PlayerId);
         }
         else if (!Main.IsAprilFools && VentedTimes >= OptionVentNums.GetInt())
         {
+            BaseWinTriggered |= CustomWinnerHolder.WinnerTeam == CustomWinner.Default;
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Mario);
             CustomWinnerHolder.WinnerIds.Add(Player.PlayerId);
         }

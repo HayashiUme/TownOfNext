@@ -42,6 +42,7 @@ public sealed class Luckey : RoleBase
         {
             Logger.Info($"幸运儿 {Player.GetNameWithRole()} 触发技能，阻挡了 {info.AttemptKiller.GetNameWithRole()} 的击杀", "Luckey.OnCheckMurderAsTarget");
             info.AttemptKiller.ResetKillCooldown();
+            Observer.NotifyBlockedAttack(info);
             info.AttemptKiller.SetKillCooldownV2(target: Player, forceAnime: true);
             if (!info.IsSuicide)
             {

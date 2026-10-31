@@ -145,10 +145,19 @@ static partial class ExileControllerWrapUpPatch
                     var roleClass = CustomRoleManager.GetByPlayerId(x.Key);
                     var requireResetCam = player?.GetCustomRole().GetRoleInfo()?.IsDesyncImpostor == true;
                     var state = PlayerState.GetByPlayerId(x.Key);
+                    var wasPhysicallyAlive = player?.Data != null && !player.Data.IsDead && !player.Data.Disconnected;
                     Logger.Info($"{player.GetNameWithRole()}を{x.Value}で死亡させました", "AfterMeetingDeath");
                     state.DeathReason = x.Value;
                     state.SetDead();
                     player?.RpcExile();
+                    if (x.Value == CustomDeathReason.Vote && wasPhysicallyAlive && player?.Data?.IsDead == true)
+                    {
+                        var role = player.GetCustomRole();
+                        if (role.IsImpostorTeam()) ExiledImpostorCount++;
+                        else if (role.IsCrewmate()) ExiledCrewCount++;
+                        foreach (var activeRole in CustomRoleManager.AllActiveRoles.Values.ToList())
+                            if (activeRole is TONX.Roles.Crewmate.Justice justice) justice.RecordMeetingExile(player);
+                    }
                     if (x.Value == CustomDeathReason.Suicide)
                         player?.SetRealKiller(player, true);
                     if (requireResetCam)

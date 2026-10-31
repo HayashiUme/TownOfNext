@@ -149,6 +149,7 @@ public sealed class Medic : RoleBase, IKiller
             source.Owner.blockedAttacks.Add(info);
         SendRPC_SyncList();
 
+        Observer.NotifyBlockedAttack(info);
         killer.SetKillCooldownV2(target: target, forceAnime: true);
         killer.RpcProtectedMurderPlayer(target);
 
