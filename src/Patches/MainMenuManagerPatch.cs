@@ -138,7 +138,7 @@ public class MainMenuManagerPatch
         if (InviteButton == null) InviteButton = CreatButton(extraLinkName, () =>
         {
 #if Android || iOS
-            OpenURLAndroid(extraLinkUrl);
+            OpenURL(extraLinkUrl);
 #elif Windows
             Application.OpenURL(extraLinkUrl);
 #endif
@@ -149,7 +149,7 @@ public class MainMenuManagerPatch
         if (WebsiteButton == null) WebsiteButton = CreatButton(websiteLinkName, () =>
         {
 #if Android || iOS
-            OpenURLAndroid(websiteLinkUrl);
+            OpenURL(websiteLinkUrl);
 #elif Windows
             Application.OpenURL(websiteLinkUrl);
 #endif
@@ -187,7 +187,7 @@ public class MainMenuManagerPatch
         Application.targetFrameRate = Main.UnlockFPS.Value ? 165 : 60;
     }
 #if Android || iOS
-    private static void OpenURLAndroid(string url)
+    private static void OpenURL(string url)
     {
         Constants.OpenURL(url);
     }

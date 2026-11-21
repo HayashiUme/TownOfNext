@@ -94,16 +94,16 @@ public static class RemoteHelper
             AllowAutoRedirect = true,
             AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
             UseCookies = false,
-            CheckCertificateRevocationList = false // Android 上关闭证书吊销检查
+            CheckCertificateRevocationList = false // Mobile 上关闭证书吊销检查
         };
 
-        // Android SSL 配置
-        ConfigureAndroidSSL(handler);
+        // Mobile SSL 配置
+        ConfigureSSL(handler);
 
         return handler;
     }
 
-    private static void ConfigureAndroidSSL(HttpClientHandler handler)
+    private static void ConfigureSSL(HttpClientHandler handler)
     {
         handler.ServerCertificateCustomValidationCallback = (_, cert, _, sslPolicyErrors) =>
         {
