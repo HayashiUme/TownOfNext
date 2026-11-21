@@ -56,6 +56,7 @@ public abstract class RoleBase : IDisposable
             RoleTypes.Tracker or
             RoleTypes.Detective or
             RoleTypes.Judge or 
+            RoleTypes.SpiritGuide or
             RoleTypes.CrewmateGhost or
             RoleTypes.Shapeshifter or
             RoleTypes.Phantom or
